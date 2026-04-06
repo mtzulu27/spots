@@ -1,0 +1,5 @@
+type,slug,name,short_description,cover_image_url,gallery_urls,category,city,tags,moods,is_active,is_featured
+place,la-azotea-gastrobar,La Azotea Gastrobar,"Gastrobar y rooftop en Granada con cocteleria, cocina para compartir y operacion reciente confirmada.",,,Vida nocturna,Cali,"rooftop,granada,cocteles,gastrobar,noche","fiesta,noche,algo especial",true,false
+place,caruzo-rooftop,Caruzo Rooftop,"Rooftop gastrobar en Pance con cocina internacional, cocteleria de autor y reservas activas.",,,Vida nocturna,Cali,"rooftop,pance,gastrobar,cocteles,terraza","fiesta,noche,algo especial",true,false
+place,la-buena-vida-cocina,La Buena Vida Cocina,"Restaurante italiano en el sector de la Novena con menu amplio y operacion activa.",,,Restaurantes,Cali,"italiano,pizza,pasta,novena,brunch","comer rico,tranqui,con amigos",true,false
+place,terraza-san-camilo,Terraza San Camilo,"Terraza de cocteles y encuentros en El Peñon dentro del universo San Camilo y Foresto 365.",,,Vida nocturna,Cali,"terraza,cocteles,el penon,hotel,bar","noche,pareja,con amigos",true,false

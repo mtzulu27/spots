@@ -1,0 +1,14 @@
+type,slug,name,short_description,cover_image_url,gallery_urls,category,city,tags,moods,is_active,is_featured
+place,platillos-voladores,Platillos Voladores,"Restaurante de cocina contemporanea en el norte de Cali con carta propia y unica sede confirmada.",,,Restaurantes,Cali,"cocina contemporanea,autor,granada,norte","algo especial,comer rico,pareja",true,false
+place,cafe-quindio,Café Quindío,"Cadena de cafe colombiano con multiples sedes activas en Cali y oferta de cafe, reposteria y tienda.",,,Restaurantes,Cali,"cafe,cafe colombiano,reposteria,cali","cafe,tranqui,hablar",true,false
+place,la-topa-tolondra,La Topa Tolondra,"Salsa bar iconico de Cali para musica en vivo, baile y noche larga.",,,Vida nocturna,Cali,"salsa,bar,baile,iconico","fiesta,noche,con amigos",true,false
+place,la-fugitiva,La Fugitiva,"Pizzeria bar artesanal en Granada con carta propia y servicio de cena.",,,Restaurantes,Cali,"pizza,italiano,granada,bar","algo especial,cena,con amigos",true,false
+place,greens-bolos-club,Greens Bolos Club,"Club de bolos y entretenimiento con sedes norte y sur, ideal para planes en grupo y familia.",,,Familiar,Cali,"bolos,arcade,billar,karaoke","familiar,con amigos,activo",true,false
+place,space-jump,Space Jump,"Parque de trampolines y entretenimiento familiar con dos sedes activas en Cali.",,,Familiar,Cali,"trampolines,parque,entretenimiento,familia","familiar,activo,plan de dia",true,false
+place,mister-wings,Mister Wings,"Cadena de sport bar tipo americano con multiples sedes activas en Cali.",,,Restaurantes,Cali,"alitas,sport bar,hamburguesas,tex mex","con amigos,casual,noche",true,false
+place,karens-pizza,Karen's Pizza,"Pizzeria tradicional de Cali con varias sedes activas y servicio extendido.",,,Restaurantes,Cali,"pizza,pasta,cali","casual,comer rico,con amigos",true,false
+place,storia-damore,Storia d’Amore,"Restaurante italiano con varias sedes activas en Cali y fuerte presencia en Granada.",,,Restaurantes,Cali,"italiano,pizza,pastas,granada","algo especial,pareja,comer rico",true,false
+place,dose-sky-lounge,Dosé Sky Lounge,"Rooftop bar con cocteles de autor y vista urbana en el centro de Cali.",,,Vida nocturna,Cali,"rooftop,cocteles,bar,centro","noche,algo especial,con amigos",true,false
+place,zorro-azul,Zorro Azul,"Restaurante bar en el centro historico de Cali con horario de tarde y noche.",,,Restaurantes,Cali,"bar,centro,cocteles,restaurante","noche,casual,con amigos",true,false
+place,saipan-airsoft,Saipan Airsoft,"Campo de airsoft y experiencia tactica con operacion activa en Cali.",,,Deporte y bienestar,Cali,"airsoft,deporte,aventura,tactico","activo,con amigos,deporte",true,false
+place,ecoparque-de-la-biodiversidad,Ecoparque de la Biodiversidad,"Parque natural y recorrido guiado en Pance con acceso publico activo.",,,Naturaleza y aire libre,Cali,"ecoparque,naturaleza,pance,recorrido","naturaleza,plan de dia,aprender",true,false

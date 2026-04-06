@@ -1,0 +1,23 @@
+{
+  "name": "Spots",
+  "short_name": "Spots",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["standalone"],
+  "orientation": "portrait",
+  "background_color": "#050305",
+  "theme_color": "#050305",
+  "icons": [
+    {
+      "src": "/apple-touch-icon-v2.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "/apple-touch-icon-v2.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

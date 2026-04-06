@@ -1,0 +1,37 @@
+canonical_name,suggested_variants,db_status,db_slug,web_status,real_name_on_web,uploaded_vs_real_name,category,confidence,notes
+Palo Mulata,Palo mulata,exists,palo-mulata,confirmed_active,Palo Mulata,exact_match_case_only,Restaurantes,high,Ya existe en base y hay presencia web activa.
+Sushi Green,Sushi green,exists,sushi-green,confirmed_active,Sushi Green,exact_match_case_only,Restaurantes,high,Ya existe en base y aparece activo en web.
+Huna Huna Social Club,Huna huna,not_found_by_exact_name,,confirmed_active,Huna Huna Social Club,needs_standardization,Vida nocturna,high,El nombre sugerido estaba incompleto y duplicado dentro del CSV.
+Bengala & Bandolero,Bengala bandolero | Bengala y bandolero,not_found_by_exact_name,,confirmed_active,Bengala & Bandolero,merged_aliases,Vida nocturna,medium,Dos variantes del mismo lugar; conviene tratarlo como un solo spot.
+El Colibri,El colibri | Colibri,not_found_by_exact_name,,confirmed_active,El Colibri,merged_aliases,Restaurantes,medium,Las dos variantes parecen referirse al mismo restaurante.
+Gente Comun,Gente comun | Gente común san antonio,not_found_by_exact_name,,likely_active,Gente Comun,brand_plus_branch_variant,Restaurantes,medium,Parece marca + sede San Antonio; faltan datos de sucursal exacta.
+Platillos Voladores,Platillos voladores,not_found_by_exact_name,,confirmed_active,Platillos Voladores,exact_match_case_only,Restaurantes,high,Restaurante reconocido en Cali con evidencia web actual.
+Crepes & Waffles,Crepes & waffles,not_found_by_exact_name,,confirmed_active,Crepes & Waffles,exact_match_case_only,Restaurantes,high,Cadena activa con sedes en Cali.
+La Topa Tolondra,La topa tolondra,not_found_by_exact_name,,confirmed_active,La Topa Tolondra Nightclub,slight_name_extension,Vida nocturna,high,La marca pública suele aparecer con descriptor de nightclub o salsa bar.
+Pampa Malbec,Pampa malbec,not_found_by_exact_name,,confirmed_active,Pampa Malbec,exact_match,Restaurantes,high,Asador/parrilla con presencia actual en web.
+Café Quindio,Café quindio,not_found_by_exact_name,,confirmed_active,Café Quindío,accent_fix,Restaurantes,high,La forma pública usa tilde en Quindío.
+Miyamoto,Miyamoto,not_found_by_exact_name,,confirmed_active,Miyamoto,exact_match,Restaurantes,high,Restaurante japonés / sushi con evidencia actual.
+Fuku Ramen Bar,Fuku ramen bar,not_found_by_exact_name,,confirmed_active,Fuku Ramen Bar,exact_match_case_only,Restaurantes,high,El nombre sugerido coincide con la marca pública.
+Kora Vibes,Kora vibes,not_found_by_exact_name,,confirmed_active,Kora Vibes,exact_match_case_only,Vida nocturna,medium,El posicionamiento público parece más cercano a bar o spot social.
+La Fugitiva,La fugitiva,not_found_by_exact_name,,confirmed_active,La Fugitiva Pizzeria Bar,needs_standardization,Restaurantes,high,Conviene guardar el nombre corto como marca y no el descriptor largo.
+Sonido Central,Sonido central,not_found_by_exact_name,,confirmed_active,Sonido Central,exact_match_case_only,Vida nocturna,high,Hay evidencia web reciente de operación.
+La Boheme,La boheme,not_found_by_exact_name,,confirmed_active,La Bohème Restaurante-Bar,accent_and_descriptor_fix,Vida nocturna,medium,La marca pública suele llevar acento y descriptor adicional.
+Furtivo,Furtivo,not_found_by_exact_name,,confirmed_active,Furtivo,exact_match,Vida nocturna,high,Bar/restaurante con evidencia actual.
+Hacienda El Bosque,Hacienda el bosque,not_found_by_exact_name,,confirmed_active,Hacienda El Bosque,case_fix,Familiar,medium,Plan campestre/eventos; categoría final puede variar entre Familiar y Naturaleza.
+Saipan Airsoft,Saipan airsoft,not_found_by_exact_name,,confirmed_active,Saipan Airsoft,case_fix,Deporte y bienestar,high,Actividad deportiva / táctica.
+Greens Bolos Club,Greens bolos,not_found_by_exact_name,,confirmed_active,Greens Bolos Club,needs_standardization,Familiar,high,Puede también mapear a Deporte y bienestar según tu criterio editorial.
+Space Jump,Space jump,not_found_by_exact_name,,confirmed_active,Space Jump,case_fix,Familiar,high,Parque de trampolines / entretenimiento familiar.
+Once Once,Once once,not_found_by_exact_name,,confirmed_active,Once Once Restaurante Bar,slight_name_extension,Restaurantes,medium,La marca pública puede incluir descriptor restaurante bar.
+Lengua de Mariposa,Lengua de mariposa,not_found_by_exact_name,,confirmed_active,Lengua de Mariposa,case_fix,Restaurantes,medium,Café/restaurante con evidencia web.
+Penélope Martini,Penélope martini,not_found_by_exact_name,,confirmed_active,Penelope Martini,accent_variation,Vida nocturna,medium,La tilde no siempre aparece en la marca pública.
+Tom Glen,Tom glen,not_found_by_exact_name,,confirmed_active,Tom Glen,case_fix,Restaurantes,medium,Aparece activo en listados web.
+Ecoparque Biodiversidad,Ecoparque biodiversidad,not_found_by_exact_name,,confirmed_active,Ecoparque de la Biodiversidad,needs_standardization,Naturaleza y aire libre,high,El nombre oficial público incluye “de la”.
+Cima del Viento Dapa,Cima del viento dapa,not_found_by_exact_name,,likely_active,Cima del Viento Dapa,case_fix,Naturaleza y aire libre,medium,Más señal como mirador/restaurante de destino.
+Cantina La 15,Cantina la 15,not_found_by_exact_name,,confirmed_active,Cantina La 15,case_fix,Vida nocturna,high,Cantina/bar con evidencia pública reciente.
+Karen’s Pizza,Karen’s pizza,not_found_by_exact_name,,confirmed_active,Karen’s Pizza,exact_match_case_only,Restaurantes,high,Pizzería activa.
+Mister Wings,Mister wings,not_found_by_exact_name,,confirmed_active,Mister Wings,case_fix,Restaurantes,high,Restaurante casual / alitas.
+Brunch Duquesa,Brunch duquesa,not_found_by_exact_name,,confirmed_active,Brunch Duquesa,case_fix,Restaurantes,high,Marca pública coherente con brunch/café.
+Zorro Azul,Zorro azul,not_found_by_exact_name,,confirmed_active,Zorro Azul,case_fix,Restaurantes,high,Restaurante/bar con presencia pública actual.
+Dosé Sky Lounge,Dose sky lounge,not_found_by_exact_name,,confirmed_active,Dosé Sky Lounge,accent_fix,Vida nocturna,medium,El nombre público suele llevar tilde en Dosé.
+Storia d’Amore,Storia damore,not_found_by_exact_name,,confirmed_active,Storia D’Amore Granada,apostrophe_and_case_fix,Restaurantes,medium,La forma sugerida venía sin apóstrofo; además suele mencionar Granada.
+Floret de Autor,Floret,not_found_by_exact_name,,confirmed_active,Floret de Autor,needs_standardization,Arte y cultura,medium,La marca web encontrada es floristería/atelier; revisar si aplica al catálogo de spots.

@@ -1,0 +1,61 @@
+branch_id,spot_id,slug,neighborhood,mall,hours,address,min_budget,max_people,menu_url,whatsapp,instagram,latitude,longitude,is_active,sort_order
+6,3,casa-banana-granada,Granada,,Lun-Dom 09:00:00-20:00:00 · Festivos 09:00:00-20:00:00,+s.replace(/"/g,)+,18000,6,,,,3.4604,-76.5351,true,0
+5,3,casa-banana-puerto-125,Pance,Puerto 125,Lun-Dom 09:00:00-20:00:00,+s.replace(/"/g,)+,18000,6,,,,3.3379,-76.5432,true,1
+10,6,la-corteza,Peñón,,Lun-Sab 08:00:00-20:00:00 · Dom 08:00:00-19:00:00 · Festivos 08:00:00-19:00:00,+s.replace(/"/g,)+,40000,6,https://menupp.co/lacorteza,https://api.whatsapp.com/send?phone=573173278616,https://www.instagram.com/lacortezabakery/,3.4597912,-76.5350992,true,0
+16,10,izumi-granada,Granada,,Lun-Mie 12:00-22:00 · Jue-Sab 12:00-00:00 · Dom 12:00-22:00,+s.replace(/"/g,)+,50000,4,https://menupp.co/izumi/group/A2X0R5a1NcAuYjfehCYW?fbclid=PAZXh0bgNhZW0CMTEAAadsN9Uuzqeu_IQsbWFrlR8gYlw6IiOSx_Ungdji6FkhdrYYqHFv4p4YUoM4vw_aem_XHfZkc0mpEA6UKirdNknGQ,https://wa.me/573012019527,https://www.instagram.com/izumirestaurantco/,,,true,0
+17,11,loco-por-ti-el-penon,El Peñon,,,+s.replace(/"/g,)+,0,1,,,,,,true,0
+18,12,mantra-coffee-club-granada,Granada,,Lun-Dom 09:00-19:30,+s.replace(/"/g,)+,19900,1,,,,,,true,0
+19,13,luci-bakery-ciudad-jardin,Ciudad Jardin,Solaz Plaza,Mar-Mie 07:30-19:30 · Jue 07:30-20:30 · Vie 07:30-21:30 · Sab 08:00-21:30 · Dom 08:00-15:30,+s.replace(/"/g,)+,0,1,https://www.lucibakery.com/,https://wa.me/573044226603,https://www.instagram.com/lucibakery.co/,,,true,0
+20,14,casa-cantera-granada,Granada,,Dom 09:00-19:00 · Lun Cerrado · Mar-Vie 15:00-23:00 · Sab 09:00-23:00,+s.replace(/"/g,)+,40000,1,,https://wa.me/573188246981,https://www.instagram.com/casa.cantera/,,,true,0
+21,15,cafe-gardenia-santa-monica,Santa Monica Residencial,,Lun-Sab 08:00-20:00 · Dom 08:00-19:00,+s.replace(/"/g,)+,10000,1,,https://wa.me/573107794126,https://www.instagram.com/cafegardenia.cali/,,,true,0
+22,16,lakasia-el-penon,El Peñon,,Lun-Mie 12:00-15:00 / 18:00-22:00 · Jue 12:00-15:00 / 18:00-22:00 · Vie 12:00-15:00 / 18:00-23:00 · Sab 12:00-23:00 · Dom 12:00-21:00,+s.replace(/"/g,)+,0,1,https://menupp.co/,https://wa.me/573160179277,https://www.instagram.com/lakasiakoreanhouse/,,,true,0
+23,17,museo-la-tertulia-el-penon,El Peñon,,Mar-Sab 10:00-19:00 · Dom 14:00-18:00,+s.replace(/"/g,)+,0,4,https://www.museolatertulia.com/,,https://www.instagram.com/museolatertulia/,,,true,10
+24,18,museo-caliwood-arboleda,Arboleda,,Lun-Vie 08:00-12:00 / 14:00-18:00 · Sab 15:00-18:00 · Dom 10:00-17:00,+s.replace(/"/g,)+,20000,4,https://www.caliwood.com.co,https://wa.me/573104732282,https://www.instagram.com/museocaliwood/,,,true,10
+25,19,zoologico-de-cali-oeste,Oeste,,Lun-Dom 09:00-16:30,+s.replace(/"/g,)+,27500,6,https://www.zoologicodecali.com.co/visita,,https://www.instagram.com/zoologicodecali/,,,true,10
+26,20,jardin-botanico-de-cali-santa-teresita,Arboledas Santa Teresita,,Recorridos y visitas con horario variable,+s.replace(/"/g,)+,15000,6,https://www.jardinbotanicodecali.com.co/,https://wa.me/573189420388,,,,true,10
+27,21,cerro-de-las-tres-cruces-oeste,Oeste,,Plan temprano; acceso controlado segun operacion,+s.replace(/"/g,)+,0,6,,,,,,true,10
+28,22,cristo-rey-los-cristales,Los Cristales,,Turnos 09:00 / 12:00 / 15:00 con registro,+s.replace(/"/g,)+,0,6,,,,,,true,10
+30,24,callao-centro,Centro,Hotel Aristi,,+s.replace(/"/g,)+,0,8,,, ,,,true,10
+31,25,la-pergola-clandestina-centro,Centro,,Mar-Mie 16:00-01:00 · Jue-Sab 16:00-03:00 · Dom 14:00-01:00,+s.replace(/"/g,)+,100000,8,https://lapergola.co/,https://wa.me/573245962005,https://www.instagram.com/lapergolaclandestina/,,,true,10
+32,26,dos-santos-cantina-marbella-plaza,Pance,Marbella Plaza,,+s.replace(/"/g,)+,35000,6,,, ,,,true,10
+33,27,hoi-an-cocina-vietnamita-marbella-plaza,Pance,Marbella Plaza,Lun-Jue 12:00-22:00 · Vie-Sab 12:00-23:00 · Dom 12:00-21:00,+s.replace(/"/g,)+,35000,6,https://www.hoianrestaurante.com/carta.html,https://wa.me/573174329563,,,,true,10
+34,28,purist-cafe-marbella-plaza,Pance,Marbella Plaza,Lun-Dom 14:00-20:30,+s.replace(/"/g,)+,12000,4,https://puristcafe.co/blogs/blog/donde-tomar-un-cafe-en-cali,https://wa.me/573108272156,https://www.instagram.com/puristcafe/,,,true,10
+35,29,valle-catalina-marbella-plaza,Pance,Marbella Plaza,Lun-Dom 00:00-22:30,+s.replace(/"/g,)+,45000,6,,, ,,,true,10
+36,30,el-cafe-del-sol-lago-verde,Pance,Lago Verde,Lun-Jue 12:00-22:00 · Vie-Sab 12:00-23:00 · Dom 12:00-22:00,+s.replace(/"/g,)+,40000,6,,, ,,,true,10
+37,30,el-cafe-del-sol-ciudad-jardin,Ciudad Jardin,Palmas Mall,Lun-Dom 12:00-22:00,+s.replace(/"/g,)+,40000,6,,, ,,,true,20
+38,31,el-toro-enamorao-granada,Granada,,Lun-Mie 12:00-22:00 · Jue 12:00-23:00 · Vie-Sab 12:00-00:00 · Dom 12:00-17:00,+s.replace(/"/g,)+,0,6,,https://wa.me/573160276332,https://www.instagram.com/eltoroenamorao/,,,true,10
+40,33,nikkei-232-el-parque,Ciudad Jardin,El Parque - Cocina al aire libre,Lun-Mie 11:30-18:00 · Jue-Sab 11:30-19:00 · Dom 11:30-18:00,+s.replace(/"/g,)+,24000,6,,https://wa.me/573177819553,,,,true,10
+42,35,chilitaco-parque-del-perro,San Fernando,Parque del Perro,Lun-Dom 11:15-22:00,+s.replace(/"/g,)+,18000,4,https://www.chilitaco.com.co/,https://wa.me/573243956630,,,,true,10
+66,35,chilitaco-pance,Pance,Lago Verde,Lun-Dom 11:15-22:00,+s.replace(/"/g,)+,18000,4,https://www.chilitaco.com.co/,https://wa.me/573243956630,,,,true,20
+43,36,sushi-green-parque-del-perro,San Fernando,Parque del Perro,Lun-Jue 12:00-22:00 · Vie-Sab 12:00-00:00 · Dom 12:00-22:00,+s.replace(/"/g,)+,25000,4,https://www.sushigreen.com.co/,, ,,,true,10
+126,36,sushi-green-puerto-125,Pance,Puerto 125,,+s.replace(/"/g,)+,25000,4,https://www.sushigreen.com.co/,, ,,,true,20
+127,36,sushi-green-jardin-plaza,Ciudad Jardin,Jardin Plaza,Lun-Jue 11:45-20:45 · Vie-Sab 11:45-21:45 · Dom 11:45-19:30,+s.replace(/"/g,)+,25000,4,https://www.sushigreen.com.co/,, ,,,true,30
+128,36,sushi-green-pacific-center,Versalles,Pacific Center,,+s.replace(/"/g,)+,25000,4,https://www.sushigreen.com.co/,, ,,,true,40
+44,37,cheers-pizzeria-parque-del-perro,San Fernando,Parque del Perro,Lun-Mie 12:00-22:30 · Jue 12:00-23:00 · Vie-Sab 12:00-23:30 · Dom 12:00-22:30,+s.replace(/"/g,)+,22000,6,,https://wa.me/576023451827,,,,true,10
+45,38,archies-parque-del-perro,San Fernando,Parque del Perro,Lun-Dom 08:00-22:00,+s.replace(/"/g,)+,25000,6,https://www.archies.co/,, ,,,true,10
+46,39,jugos-parque-del-perro-san-fernando,San Fernando,Parque del Perro,,+s.replace(/"/g,)+,12000,4,,https://wa.me/573057841195,,,,true,10
+84,75,el-chuzo-de-nando-lago-verde,Pance,Lago Verde,,+s.replace(/"/g,)+,22000,4,,, ,,,true,10
+85,76,mr-tenders-lago-verde,Pance,Lago Verde,,+s.replace(/"/g,)+,24000,4,,, ,,,true,10
+86,77,la-propia-burger-lago-verde,Pance,Lago Verde,,+s.replace(/"/g,)+,26000,4,,, ,,,true,10
+87,78,vital-bistro-lago-verde,Pance,Lago Verde,,+s.replace(/"/g,)+,22000,4,,, ,,,true,10
+88,79,klub-berry-acai-lago-verde,Pance,Lago Verde,,+s.replace(/"/g,)+,18000,4,,, ,,,true,10
+89,80,palo-mulata-lago-verde,Pance,Lago Verde,,+s.replace(/"/g,)+,35000,6,,, ,,,true,10
+90,81,la-botella-malecon-lago-verde,Pance,Lago Verde,,+s.replace(/"/g,)+,35000,6,,, ,,,true,10
+91,82,wetsunday-lago-verde,Pance,Lago Verde,,+s.replace(/"/g,)+,30000,6,,, ,,,true,10
+92,83,cafe-viajero-lago-verde,Pance,Lago Verde,,+s.replace(/"/g,)+,12000,4,,, ,,,true,10
+93,84,mushu-lago-verde,Pance,Lago Verde,,+s.replace(/"/g,)+,14000,4,,, ,,,true,10
+118,107,taqueria-chalacas-puerto-125,Pance,Puerto 125,,+s.replace(/"/g,)+,22000,4,,, ,,,true,10
+119,108,bbc-puerto-125,Pance,Puerto 125,,+s.replace(/"/g,)+,18000,6,,, ,,,true,10
+120,109,la-dulceria-puerto-125,Pance,Puerto 125,,+s.replace(/"/g,)+,12000,4,,, ,,,true,10
+121,110,el-paso-puerto-125,Pance,Puerto 125,,+s.replace(/"/g,)+,28000,6,,, ,,,true,10
+122,111,el-cilindro-puerto-125,Pance,Puerto 125,,+s.replace(/"/g,)+,32000,6,,, ,,,true,10
+123,112,uki-fresh-food-puerto-125,Pance,Puerto 125,,+s.replace(/"/g,)+,22000,4,,, ,,,true,10
+124,113,cafe-pintado-puerto-125,Pance,Puerto 125,,+s.replace(/"/g,)+,12000,4,,, ,,,true,10
+125,114,cascanueces-puerto-125,Pance,Puerto 125,,+s.replace(/"/g,)+,12000,4,,, ,,,true,10
+129,115,turk-house-puerto-125,Pance,Puerto 125,,+s.replace(/"/g,)+,28000,4,,https://wa.me/573024190012,,,,true,10
+130,115,turk-house-unico-outlet,La Flora,Unico Outlet,,+s.replace(/"/g,)+,28000,4,,https://wa.me/573024190012,,,,true,20
+131,115,turk-house-jardin-plaza,Ciudad Jardin,Jardin Plaza,,+s.replace(/"/g,)+,28000,4,,https://wa.me/573024190012,,,,true,30
+132,116,dolce-vicolo-puerto-125,Pance,Puerto 125,,+s.replace(/"/g,)+,14000,4,,, ,,,true,10
+133,116,dolce-vicolo-norte,Santa Monica Residencial,,Dom-Jue 13:00-20:00 · Vie-Sab 13:00-22:30,+s.replace(/"/g,)+,14000,4,,, ,,,true,20
+134,117,la-corte-de-la-carne-puerto-125,Pance,Puerto 125,,+s.replace(/"/g,)+,42000,6,,, ,,,true,10
+136,119,bomberry-puerto-125,Pance,Puerto 125,,+s.replace(/"/g,)+,12000,4,,, ,,,true,10

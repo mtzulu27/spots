@@ -1,0 +1,7 @@
+type,slug,name,short_description,cover_image_url,gallery_urls,category,city,tags,moods,is_active,is_featured
+place,odiseo-bistro,Odiseo Bistro,"Restaurante mediterraneo en Granada con alta señal de operacion, menu activo y reservas vigentes.",,,Restaurantes,Cali,"mediterraneo,granada,cena,vinos,cocina de autor","algo especial,pareja,comer rico",true,false
+place,espacio-10-60,Espacio 10-60,"Club multiespacio en el centro de Cali con programacion reciente, rooftop y operacion activa.",,,Vida nocturna,Cali,"club,centro,dj,baile,rooftop","noche,fiesta,con amigos",true,false
+place,alma-restaurante,ALMA Restaurante,"Restaurante con vista a Cristo Rey, cocina napolitana fusionada con raiz local y reservas activas.",,,Restaurantes,Cali,"cristo rey,vista,pizza,pasta,cocteles","algo especial,pareja,comer rico",true,false
+place,restaurante-la-querencia,Restaurante La Querencia,"Parrilla tradicional caleña con operacion activa, horario estable y fuerte señal de permanencia.",,,Restaurantes,Cali,"parrilla,carnes,santa monica,tradicional,argentino","comer rico,familiar,con amigos",true,false
+place,patti-gelateria,Patti Gelateria,"Gelateria artesanal italiana con sedes activas en Cali y presencia reciente confirmada.",,,Restaurantes,Cali,"gelato,helados,postres,el penon,san antonio","dulce,tranqui,antojo",true,false
+place,la-chocolatada,La Chocolatada,"Panaderia y restaurante de comida tipica 24 horas con sedes activas en Cali y menu visible.",,,Restaurantes,Cali,"panaderia,tipica,24 horas,ciudad jardin,desayunos","casual,antojo,plan de dia",true,false

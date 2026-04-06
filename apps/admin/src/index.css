@@ -1,0 +1,76 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap');
+
+:root {
+  --text: #5f5161;
+  --text-h: #201225;
+  --bg: #f7f4f2;
+  --border: #e6dfe3;
+  --shadow:
+    rgba(79, 32, 66, 0.08) 0 18px 40px -20px,
+    rgba(79, 32, 66, 0.08) 0 10px 18px -12px;
+  --sans: 'Montserrat', 'Segoe UI', sans-serif;
+  --heading: 'Montserrat', 'Segoe UI', sans-serif;
+
+  font: 18px/145% var(--sans);
+  letter-spacing: 0.18px;
+  color-scheme: light;
+  color: var(--text);
+  background: var(--bg);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100svh;
+}
+
+body {
+  margin: 0;
+  background:
+    radial-gradient(circle at top left, rgba(255, 99, 130, 0.12), transparent 24%),
+    radial-gradient(circle at right 20%, rgba(113, 54, 114, 0.12), transparent 24%),
+    var(--bg);
+}
+
+h1,
+h2 {
+  font-family: var(--heading);
+  font-weight: 700;
+  color: var(--text-h);
+}
+
+h1 {
+  font-size: 54px;
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+  margin: 0 0 16px;
+}
+
+h2 {
+  font-size: 24px;
+  line-height: 118%;
+  letter-spacing: -0.24px;
+  margin: 0 0 8px;
+}
+
+p {
+  margin: 0;
+}
+
+@media (max-width: 920px) {
+  :root {
+    font-size: 16px;
+  }
+
+  h1 {
+    font-size: 38px;
+  }
+}

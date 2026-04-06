@@ -1,0 +1,4 @@
+type,slug,name,short_description,cover_image_url,gallery_urls,category,city,tags,moods,is_active,is_featured
+place,bendito-cafe,Bendito Cafe,"Cafeteria caleña con operation reciente confirmada, menu visible y presencia en Granada y domicilios en Cali.",,,Restaurantes,Cali,"cafe,granada,brunch,coffee shop,postres","cafe,tranqui,brunch",true,false
+place,patolandia,Patolandia,"Parque tematico inflable y familiar en Mallplaza Cali con operacion reciente confirmada.",,,Familiar,Cali,"parque,familia,mallplaza,inflables,ninos","familiar,plan de dia,con ninos",true,false
+place,floret-de-autor,Floret de Autor,"Marca caleña de floristeria y cafe con sedes activas, menu visible y servicio reciente en Cali.",,,Restaurantes,Cali,"floristeria,cafe,santa monica,pance,postres","tranqui,algo especial,plan de dia",true,false

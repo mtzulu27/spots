@@ -1,0 +1,2 @@
+type,slug,name,short_description,cover_image_url,gallery_urls,category,city,tags,moods,is_active,is_featured
+place,maranello-pasta,Maranello Pasta,"Restaurante italiano en Cali con menu activo en delivery, operacion reciente y fuerte afinidad con la sugerencia Maranello del Parque del Perro.",,,Restaurantes,Cali,"italiano,pasta,parque del perro,san fernando,delivery","comer rico,casual,con amigos",true,false

@@ -1,0 +1,8 @@
+spot_slug,slug,neighborhood,mall,hours,address,min_budget,max_people,menu_url,whatsapp,instagram,latitude,longitude,is_active,sort_order
+izumi,izumi-granada,Granada,,Lun-Mie 12:00-22:00 · Jue-Sab 12:00-00:00 · Dom 12:00-22:00,"Av. 9 Nte. #17 Norte-11, Granada, Cali",0,1,,https://wa.me/573012019527,, , ,true,10
+loco-por-ti,loco-por-ti-el-penon,El Peñon,,,"Calle 3 Oeste #1-80, El Peñon, Cali",0,1,,,, , ,true,10
+mantra-coffee-club,mantra-coffee-club-granada,Granada,,Mar-Dom 08:30-20:00 · Lun Cerrado,"Av. 9A Nte. #10N-22, Primer piso, Granada, Cali",19900,1,https://mantracoffeeclub.com/,https://wa.me/573151595600,https://instagram.com/mantracoffee__/, , ,true,10
+luci-bakery,luci-bakery-ciudad-jardin,Ciudad Jardin,Solaz Plaza,"Mar-Mie 07:30-19:30 · Jue 07:30-20:30 · Vie 07:30-21:30 · Sab 08:00-21:30 · Dom 08:00-15:30","Calle 15A #104-25, Solaz Plaza, Ciudad Jardin, Cali",0,1,https://www.lucibakery.com/,https://wa.me/573044226603,https://instagram.com/lucibakery/, , ,true,10
+casa-cantera,casa-cantera-granada,Granada,,Dom 09:00-19:00 · Lun Cerrado · Mar-Vie 15:00-23:00 · Sab 09:00-23:00,"Cl. 14 Nte. #8-61, Granada, Cali",40000,1,,https://wa.me/573188246981,https://instagram.com/casa.cantera/, , ,true,10
+cafe-gardenia,cafe-gardenia-santa-monica,Santa Monica Residencial,,Lun-Sab 08:00-20:00 · Dom 08:00-19:00,"Calle 20 Norte #8N-40, Santa Monica Residencial, Cali",10000,1,,https://wa.me/573107794126,https://instagram.com/cafegardenia.cali/, , ,true,10
+lakasia,lakasia-el-penon,El Peñon,,"Lun-Mie 12:00-15:00 / 18:00-22:00 · Jue 12:00-15:00 / 18:00-22:00 · Vie 12:00-15:00 / 18:00-23:00 · Sab 12:00-23:00 · Dom 12:00-21:00","Cl. 4 Oe. #3A-32, El Peñon, Cali",0,1,https://menupp.co/,https://wa.me/573160179277,https://instagram.com/lakasiakoreanhouse/, , ,true,10

@@ -1,0 +1,65 @@
+spot_id,type,slug,name,short_description,category,city,likes,is_active,is_featured,branch_count
+3,place,casa-banana-granada,Casa Bananá,"Bakery y brunch para cafe, postres y antojo dulce con sedes en Granada y Puerto 125.",Restaurantes,Cali,0,true,false,2
+6,place,la-corteza,La Corteza,"Un rincón en Granada que huele a mantequilla y masa recién horneada. Perfecto para darte un gusto, sentarte sin afán y dejar que un buen postre te arregle el día.",Restaurantes,Cali,0,true,true,1
+10,place,izumi,Izumi,Restaurante japones y de sushi en Granada.,Restaurantes,Cali,0,true,false,1
+11,place,loco-por-ti,Loco Por Ti,"Cafe, panaderia y restaurante en El Peñon.",Restaurantes,Cali,0,true,false,1
+12,place,mantra-coffee-club,Mantra Coffee Club,Cafe de especialidad y brunch en el norte de Cali.,Restaurantes,Cali,0,true,false,1
+13,place,luci-bakery,Luci Bakery,"Bakery y brunch en Ciudad Jardin, Solaz Plaza.",Restaurantes,Cali,0,true,false,1
+14,place,casa-cantera,Casa Cantera,Restaurante mexicano en Granada.,Restaurantes,Cali,0,true,false,1
+16,place,lakasia,Lakasia,Restaurante coreano y asiatico en El Peñon.,Restaurantes,Cali,0,true,false,1
+17,place,museo-la-tertulia,Museo La Tertulia,"Museo iconico del oeste caleño para arte, cine y plan cultural tranquilo.",Arte y cultura,Cali,0,true,false,1
+18,place,museo-caliwood,Museo Caliwood,Museo dedicado a la historia del cine en una casa patrimonial del oeste.,Cine,Cali,0,true,false,1
+19,place,zoologico-de-cali,Zoologico de Cali,"Plan familiar clasico con recorrido largo, animales y mucho verde.",Familiar,Cali,0,true,false,1
+20,place,jardin-botanico-de-cali,Jardin Botanico de Cali,Recorrido natural y educativo para bajar el ritmo en el oeste.,Naturaleza y aire libre,Cali,0,true,false,1
+21,place,cerro-de-las-tres-cruces,Cerro de las Tres Cruces,Caminata de mirador y ejercicio para plan temprano con vista a la ciudad.,Naturaleza y aire libre,Cali,0,true,false,1
+22,place,cristo-rey,Cristo Rey,Plan de mirador y recorrido natural en uno de los iconos de Cali.,Naturaleza y aire libre,Cali,0,true,false,1
+24,place,callao,Callao,Rooftop bar y discoteca en el centro para noche larga con vista urbana.,Vida nocturna,Cali,0,true,false,1
+25,place,la-pergola-clandestina,La Pergola Clandestina,Bar y club de terrazas para rumba y cocteles en el centro.,Vida nocturna,Cali,0,true,false,1
+26,place,dos-santos-cantina,Dos Santos Cantina,Cantina moderna en Marbella Plaza para compartir platos y tragos.,Restaurantes,Cali,0,true,false,1
+27,place,hoi-an-cocina-vietnamita,Hoi An Cocina Vietnamita,Cocina vietnamita con ambiente cuidado y buen parche en Pance.,Restaurantes,Cali,0,true,false,1
+28,place,purist-cafe,Purist Cafe,Cafe de especialidad para parche suave y tarde tranquila en Pance.,Restaurantes,Cali,0,true,false,1
+29,place,valle-catalina,Valle Catalina,Restaurante de ambiente vistoso para almuerzo largo o cena en Marbella.,Restaurantes,Cali,0,true,false,1
+30,place,el-cafe-del-sol,El Cafe del Sol,Marca de sushi y cocina variada con sedes utiles en Pance y Ciudad Jardin.,Restaurantes,Cali,0,true,false,2
+31,place,el-toro-enamorao,El Toro Enamorao,Parrilla y cocina carnivora para plan de almuerzo o cena en Granada.,Restaurantes,Cali,0,true,false,1
+33,place,nikkei-232,Nikkei 232,Cocina nikkei para plan de sushi y piqueo en el sur.,Restaurantes,Cali,0,true,false,1
+35,place,chilitaco,Chilitaco,Taqueria casual y rendidora para parche relajado en el Parque del Perro.,Restaurantes,Cali,0,true,false,2
+36,place,sushi-green,Sushi Green,Sushi de plan casual para almuerzo o noche tranquila en el Parque del Perro.,Restaurantes,Cali,0,true,false,4
+37,place,cheers-pizzeria,Cheers Pizzeria,Pizzeria de parche amplio y facil para grupos en el Parque del Perro.,Restaurantes,Cali,0,true,false,1
+39,place,jugos-parque-del-perro,Jugos Parque del Perro,Parada simple y conocida para jugos y comida rapida en la zona.,Restaurantes,Cali,0,true,false,1
+75,place,el-chuzo-de-nando,El Chuzo de Nando,Chuzos y comida rapida para parche casual en Pance.,Restaurantes,Cali,0,true,false,1
+76,place,mr-tenders,Mr Tenders,Chicken tenders y combos para plan facil en Lago Verde.,Restaurantes,Cali,0,true,false,1
+77,place,la-propia-burger,La Propia Burger,Hamburgueseria casual para antojo y plan relajado en Pance.,Restaurantes,Cali,0,true,false,1
+78,place,vital-bistro,Vital Bistro,Cocina ligera y bowls para plan saludable en Lago Verde.,Restaurantes,Cali,0,true,false,1
+79,place,klub-berry-acai,Klub Berry Acai,Bowls de acai y smoothies para plan fresco en Pance.,Restaurantes,Cali,0,true,false,1
+80,place,palo-mulata,Palo Mulata,Restaurante bar para comer y alargar la tarde en Lago Verde.,Restaurantes,Cali,0,true,false,1
+81,place,la-botella-malecon,La Botella Malecon,Cocteleria y comida para parche de tarde y noche en Pance.,Restaurantes,Cali,0,true,false,1
+82,place,wetsunday,Wetsunday,Bar de plan social y drinks dentro del circuito de Lago Verde.,Restaurantes,Cali,0,true,false,1
+83,place,cafe-viajero,El Café Viajero,Cafe para pausa suave y parche conversado en Pance.,Restaurantes,Cali,0,true,false,2
+84,place,mushu,Mushu,Cafe y plan dulce con vista al lago dentro de Lago Verde.,Restaurantes,Cali,0,true,false,1
+107,place,taqueria-chalacas,Taqueria Chalacas,Tacos y antojos mexicanos para plan casual en Puerto 125.,Restaurantes,Cali,0,true,false,1
+108,place,bbc,BBC,Cerveza artesanal y cocina de bar para parche de tarde o noche.,Vida nocturna,Cali,0,true,false,3
+109,place,la-dulceria,La Dulceria,Postres y dulces para cerrar la vuelta con algo rico.,Restaurantes,Cali,0,true,false,1
+110,place,el-paso,El Paso,Cocina casual para almuerzo y noche en el corredor sur de Cali.,Restaurantes,Cali,0,true,false,1
+111,place,el-cilindro,El Cilindro,Carnes y platos contundentes para parche de grupo en Puerto 125.,Restaurantes,Cali,0,true,false,1
+112,place,uki-fresh-food,Uki Fresh Food,Comida fresca y ligera para almuerzo en Pance.,Restaurantes,Cali,0,true,false,1
+113,place,cafe-pintado,Cafe Pintado,"Cafe, arte y postres para una pausa suave en distintas zonas de Cali.",Restaurantes,Cali,0,true,false,4
+114,place,cascanueces,Cascanueces,Dulce y cafe para antojo rapido dentro de Puerto 125.,Restaurantes,Cali,0,true,false,1
+115,place,turk-house,Turk House,Cocina turca y bowls para comer distinto en varias zonas de Cali.,Restaurantes,Cali,0,true,false,3
+116,place,dolce-vicolo,Dolce Vicolo,Gelato y postres artesanales para tarde suave o plan dulce.,Restaurantes,Cali,0,true,false,2
+117,place,la-corte-de-la-carne,La Corte de la Carne,Carnes y platos fuertes con sedes en Puerto 125 y Granada para ir con hambre en Cali.,Restaurantes,Cali,0,true,false,2
+119,place,bomberry,Bomberry,"Fresas con crema, helados y postres para parche dulce en Puerto 125.",Restaurantes,Cali,0,true,false,1
+442,place,cafe-gardenia,Cafe Gardenia,"Cafe, pasteleria y brunch para parche suave y mesa larga.",Restaurantes,Cali,0,true,false,3
+949,place,kyomu-sushi,Kyomu Sushi,"Sushi para plan casual de noche con sedes en Fusion Plaza y Lago Verde, Cali.",Restaurantes,Cali,0,true,false,2
+950,place,local-burger,Local Burger,Hamburguesas artesanales de plan casual con varias sedes en Cali.,Restaurantes,Cali,0,true,false,4
+987,place,ultimate-padel,Ultimate Padel,Padel para jugar en parche y reservar cancha en Pance.,Deporte y bienestar,Cali,0,true,false,1
+1355,place,cuuc,Cuuc,"Restaurante casual en Marbella Plaza con bebidas, pandebonos, pizzas y rollos.",Restaurantes,Cali,0,true,false,1
+1517,place,agave-azul-cocina-bar,Agave Azul,Cocina mexicana y cocteleria de autor en Lago Verde para tardeo o noche.,Restaurantes,Cali,0,true,false,1
+1518,place,vinciatti,Vinciatti,"Gelato italiano, tarta vasca, brownies y cafe para parche dulce en Lago Verde.",Restaurantes,Cali,0,true,false,1
+1519,place,renata-tacos,Renata Tacos,"Taqueria mexicana para tacos, gringas y antojo casual en Cali.",Restaurantes,Cali,0,true,false,2
+1520,place,la-gaucha-angus,La Gaucha Angus,Hamburgueseria para parche casual y noche ligera en Lago Verde.,Restaurantes,Cali,0,true,false,1
+1521,place,panaderia-le-croissant,Le Croissant,"Panaderia y desayunos para cafe, antojo salado y parche suave en Lago Verde.",Restaurantes,Cali,0,true,false,2
+1522,place,cafe-milagro-de-junio,Milagro de Junio,"Cafe de especialidad para brunch, bebidas y parche suave dentro de Lago Verde.",Restaurantes,Cali,0,true,false,1
+1523,place,artesapan-gourmet,Artesapan Gourmet,"Panaderia y cafe para desayunos, hojaldres y bebidas en Lago Verde.",Restaurantes,Cali,0,true,false,1
+1524,place,nami-reposteria,Nami Reposteria,Postres y pavlovas para parche dulce en Lago Verde.,Restaurantes,Cali,0,true,false,1
+1525,place,rainbow-bakery,Rainbow Bakery,"Bakery de galletas, brownies y antojos dulces en Lago Verde.",Restaurantes,Cali,0,true,false,1
+1526,place,t4,T4,Bebidas a base de te y plan fresco para tardear en Cali.,Restaurantes,Cali,0,true,false,2

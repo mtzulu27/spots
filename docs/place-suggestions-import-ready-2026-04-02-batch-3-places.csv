@@ -1,0 +1,10 @@
+type,slug,name,short_description,cover_image_url,gallery_urls,category,city,tags,moods,is_active,is_featured
+place,la-romanezca,La Romanezca,"Cafe restaurante en Pance con panaderia, brunch y oferta italiana informal.",,,Restaurantes,Cali,"cafe,brunch,pance,italiano","cafe,tranqui,comer rico",true,false
+place,amasijo-cocina,Amasijo Cocina,"Panaderia y cocina de autor en San Antonio con desayuno, brunch y almuerzo.",,,Restaurantes,Cali,"panaderia,brunch,san antonio,desayuno","brunch,cafe,tranqui",true,false
+place,mantra-rooftop,Mantra Rooftop,"Rooftop bar en Granada con cocteles, comida y horario de tarde y noche.",,,Vida nocturna,Cali,"rooftop,granada,cocteles,bar","noche,con amigos,algo especial",true,false
+place,sonoma,Sonoma Restaurante Peruano,"Restaurante peruano en El Peñon con cocina de autor y horario extendido.",,,Restaurantes,Cali,"peruano,el peñon,cocteles,autor","algo especial,comer rico,pareja",true,false
+place,sattvica-cafe-bistro,Sattvica Cafe Bistro,"Cafe bistro saludable en Santa Monica con brunch y opciones vegetarianas.",,,Restaurantes,Cali,"saludable,vegetariano,brunch,cafe","light,tranqui,cafe",true,false
+place,ostinato-pasta-para-tutti,Ostinato Pasta para Tutti,"Restaurante italiano casual especializado en pastas con sede activa en el norte.",,,Restaurantes,Cali,"italiano,pasta,norte,casual","comer rico,pareja,casual",true,false
+place,nuevo-leon,Nuevo Leon,"Restaurante internacional con carnes, sushi y horario nocturno en el sur de Cali.",,,Restaurantes,Cali,"internacional,sushi,carnes,sur","algo especial,con amigos,cena",true,false
+place,pizza-della-madonna,Pizza Della Madonna,"Pizzeria artesanal con operacion activa en el sur de Cali y menu visible en delivery.",,,Restaurantes,Cali,"pizza,artesanal,sur,domicilios","casual,antojo,con amigos",true,false
+place,ramiros-hamburguesas,Ramiros Hamburguesas,"Hamburgueseria casual en Granada con horario de tarde y noche.",,,Restaurantes,Cali,"hamburguesas,granada,casual","antojo,con amigos,casual",true,false

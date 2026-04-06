@@ -1,0 +1,13 @@
+node_modules
+.DS_Store
+.expo
+.expo-shared
+dist
+build
+.turbo
+.env
+.env.local
+.env.*.local
+coverage
+supabase/.temp
+.aider*

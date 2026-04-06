@@ -1,0 +1,4 @@
+spot_slug,slug,neighborhood,mall,hours,address,min_budget,max_people,menu_url,whatsapp,phone,instagram,latitude,longitude,is_active,sort_order
+brunchs-house,brunchs-house-ciudad-jardin,Ciudad Jardin,Bio Mall,Mar-Dom 08:00-16:00,"Cra. 100 #11-60, Bio Mall, Cali",18000,6,,,,https://www.instagram.com/,3.371000,-76.538000,true,10
+brunchs-house,brunchs-house-el-jardin,El Jardin,,Mar-Dom 08:00-16:00,"Cra. 29 #7-40, Cali",18000,6,,,,https://www.instagram.com/,3.440000,-76.534000,true,20
+mantra-coffee-club,mantra-coffee-club-granada,Granada,,Lun-Dom 08:00-20:00,"Av. 9N #15N-31, Granada, Cali",14000,6,,,,https://www.instagram.com/,3.458000,-76.536000,true,10

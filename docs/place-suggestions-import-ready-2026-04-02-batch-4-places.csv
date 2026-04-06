@@ -1,0 +1,7 @@
+type,slug,name,short_description,cover_image_url,gallery_urls,category,city,tags,moods,is_active,is_featured
+place,zuly-arepas,Zuly Arepas,"Marca caleña de arepas con varias sedes activas y menu visible en delivery.",,,Restaurantes,Cali,"arepas,comida colombiana,santa monica,ciudad jardin,san fernando","casual,antojo,con amigos",true,false
+place,montallegro-gelateria-italiana,Montallegro Gelateria Italiana,"Gelateria artesanal en San Antonio con helados y postres italianos.",,,Restaurantes,Cali,"gelato,helados,postres,san antonio","dulce,tranqui,algo especial",true,false
+place,casa-d-cali,Casa D Cali,"Bar de despecho y karaoke en Granada con horario nocturno y reserva activa.",,,Vida nocturna,Cali,"despecho,karaoke,granada,bar","fiesta,noche,con amigos",true,false
+place,guadalupe-cafe,Guadalupe Café,"Café restaurante de destino en Dapa con vista panoramica y operacion activa.",,,Naturaleza y aire libre,Cali,"dapa,cafe,vista panoramica,restaurante","naturaleza,algo especial,plan de dia",true,false
+place,cafe-san-camilo,Café San Camilo,"Café y brunch en Normandía con menu visible y horario amplio todos los dias.",,,Restaurantes,Cali,"cafe,brunch,normandia,panaderia","cafe,tranqui,brunch",true,false
+place,cima-del-viento-glamping,Cima del Viento Glamping,"Glamping y restaurante de destino en la via a Dapa con operacion reciente confirmada.",,,Naturaleza y aire libre,Cali,"glamping,dapa,naturaleza,escapada","naturaleza,algo especial,pareja",true,false

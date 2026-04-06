@@ -1,0 +1,13 @@
+{
+  "name": "spots",
+  "private": true,
+  "version": "0.1.0",
+  "packageManager": "pnpm@10.6.1",
+  "scripts": {
+    "dev:mobile": "pnpm --dir apps/mobile start",
+    "dev:admin": "pnpm --dir apps/admin dev",
+    "dev": "pnpm -r --parallel --filter ./apps/* dev",
+    "lint": "pnpm -r lint",
+    "typecheck": "pnpm -r typecheck"
+  }
+}

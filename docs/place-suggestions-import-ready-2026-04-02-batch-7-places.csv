@@ -1,0 +1,5 @@
+type,slug,name,short_description,cover_image_url,gallery_urls,category,city,tags,moods,is_active,is_featured
+place,winkle-waffle,Winkle Waffle,"Spot de waffles y postres en Ciudad Jardin con delivery activo, horario visible y operacion reciente confirmada.",,,Restaurantes,Cali,"waffles,postres,ciudad jardin,malteadas,dulce","dulce,tranqui,antojo",true,false
+place,cabo-leones,Cabo Leones,"Bar en Granada con terraza, cocteleria y operacion reciente confirmada segun fuentes publicas.",,,Vida nocturna,Cali,"bar,granada,cocteles,terraza,pub","noche,con amigos,algo especial",true,false
+place,antano-cerveceria-artesanal,Antaño Cervecería Artesanal,"Cerveceria artesanal caleña con carta de cervezas propias y operacion reciente confirmada.",,,Vida nocturna,Cali,"cerveza artesanal,bar,san fernando,noche","noche,con amigos,casual",true,false
+place,zur-cocina-de-autor,ZUR Cocina de Autor,"Restaurante de cocina fusión al sur de Cali con menu activo, musica en vivo y operacion reciente confirmada.",,,Restaurantes,Cali,"fusion,pance,cena,vinos,musica en vivo","algo especial,comer rico,pareja",true,false

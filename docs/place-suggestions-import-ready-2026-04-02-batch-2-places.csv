@@ -1,0 +1,19 @@
+type,slug,name,short_description,cover_image_url,gallery_urls,category,city,tags,moods,is_active,is_featured
+place,hacienda-del-bosque,Hacienda del Bosque,"Restaurante iconico del oeste caleño en una hacienda restaurada con cocina colombiana y ambiente patrimonial.",,,Familiar,Cali,"hacienda,tradicional,oeste,almuerzo","familiar,algo especial,plan de dia",true,false
+place,once-once,Once Once Restaurante Bar,"Restaurante bar con ambiente social y dos puntos activos en el sur y norte de Cali.",,,Restaurantes,Cali,"restaurante bar,terraza,cocteles,cali","con amigos,noche,casual",true,false
+place,lengua-de-mariposa,Lengua de Mariposa,"Heladeria y postres de autor con sabores colombianos y sedes activas en Cali.",,,Restaurantes,Cali,"heladeria,postres,gelato,san antonio","dulce,tranqui,algo especial",true,false
+place,tom-glen,Tom Glen,"Cadena casual de comida mexicana con sedes activas en Cali.",,,Restaurantes,Cali,"mexicano,burritos,tacos,casual","antojo,con amigos,casual",true,false
+place,penelope-martini,Penélope Martini,"Bar restaurante del Peñon con cocteles, comida y noches activas; tambien con operacion en Pance.",,,Vida nocturna,Cali,"bar,cocteles,el peñon,pance","noche,algo especial,con amigos",true,false
+place,pampa-malbec,Pampa Malbec,"Restaurante de carnes y vino con operacion activa en el sur de Cali.",,,Restaurantes,Cali,"parrilla,carnes,vino,las velas","algo especial,comer rico,pareja",true,false
+place,huna-huna-social-club,Huna Huna Social Club,"Club nocturno con rumba activa en San Nicolas y presencia digital reciente.",,,Vida nocturna,Cali,"discoteca,club nocturno,san nicolas","fiesta,noche,con amigos",true,false
+place,miyamoto,Miyamoto,"Restaurante japones y sushi con presencia activa en Cali.",,,Restaurantes,Cali,"japones,sushi,asiatico,granada","algo especial,comer rico,pareja",true,false
+place,crepes-y-waffles,Crepes & Waffles,"Cadena de restaurantes y heladerias con multiples sedes activas en Cali.",,,Restaurantes,Cali,"crepes,waffles,postres,cadena","casual,familiar,comer rico",true,false
+place,cantina-la-15,Cantina La 15,"Cantina mexicana con sedes activas en Granada y Ciudad Jardin.",,,Vida nocturna,Cali,"cantina,mexicano,granada,ciudad jardin","noche,con amigos,fiesta",true,false
+place,fuku-ramen-bar,Fuku Ramen Bar,"Ramen bar activo en El Peñon con menu y horarios visibles en web.",,,Restaurantes,Cali,"ramen,japones,el peñon","comer rico,casual,algo especial",true,false
+place,kora-vibes,Kora Vibes,"Restaurante bar de ambiente social en Granada con horario de tarde y noche.",,,Vida nocturna,Cali,"bar,granada,mediterraneo,cocteles","noche,algo especial,con amigos",true,false
+place,el-colibri,El Colibri,"Restaurante de cocina colombiana en Mercadillo del Peñon con componente artistico.",,,Restaurantes,Cali,"colombiana,mercadillo,el peñon,autor","comer rico,algo especial,tranqui",true,false
+place,bengala-bandolero,Bengala & Bandolero,"Speakeasy bar en Miraflores con cocteleria y horario nocturno.",,,Vida nocturna,Cali,"speakeasy,cocteles,miraflores,bar","noche,algo especial,con amigos",true,false
+place,sonido-central,Sonido Central,"Club de musica electronica en el centro de Cali con operacion nocturna.",,,Vida nocturna,Cali,"electronica,club,centro,techno","fiesta,noche,con amigos",true,false
+place,la-boheme,La Bohème,"Restaurante bar de cocina internacional y fusion en San Antonio.",,,Vida nocturna,Cali,"fusion,san antonio,cocteles,restaurante bar","algo especial,pareja,noche",true,false
+place,furtivo,Furtivo,"Restaurante bar tipo speakeasy en El Peñon con cocina nikkei y horario nocturno.",,,Vida nocturna,Cali,"speakeasy,nikkei,el peñon,bar","noche,algo especial,con amigos",true,false
+place,gente-comun,Gente Común,"Restaurante cafe en San Antonio con carta y operacion visible en web.",,,Restaurantes,Cali,"cafe,restaurante,san antonio","tranqui,cafe,hablar",true,false
