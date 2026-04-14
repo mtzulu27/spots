@@ -95,7 +95,7 @@ export default function RootHtml({ children }: PropsWithChildren) {
                       window.setTimeout(function () {
                         var measured = stableHeight;
                         var screenH = window.screen && window.screen.height;
-                        if (measured && screenH && (screenH - measured) > 80) {
+                        if (measured && screenH && (screenH - measured) > 30) {
                           try { window.localStorage.setItem('spots-layout-reload', '1'); } catch (e) {}
                           window.location.reload();
                         }
@@ -185,7 +185,7 @@ export default function RootHtml({ children }: PropsWithChildren) {
                   window.setTimeout(function () {
                     var measured = stableHeight;
                     var screenH = window.screen && window.screen.height;
-                    if (measured && screenH && (screenH - measured) > 80) {
+                    if (measured && screenH && (screenH - measured) > 30) {
                       try { window.localStorage.setItem('spots-layout-reload', '1'); } catch (e) {}
                       window.location.reload();
                     }

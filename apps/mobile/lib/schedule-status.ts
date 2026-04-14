@@ -229,6 +229,10 @@ function getStatusForDay(schedule: string, dayCode: string, currentMinutes: numb
     }
   }
 
+  if (isWithinPreviousDayCarryover(schedule, dayCode, currentMinutes)) {
+    return { label: 'Abierto ahora', tone: 'open' }
+  }
+
   return matchedDay ? { label: 'Cerrado ahora', tone: 'closed' } : null
 }
 
@@ -355,7 +359,33 @@ function parseTimeRanges(value: string) {
 }
 
 function isWithinRanges(value: number, ranges: Array<{ start: number; end: number }>) {
-  return ranges.some((range) => value >= range.start && value <= range.end)
+  return ranges.some((range) => {
+    if (range.end >= range.start) {
+      return value >= range.start && value <= range.end
+    }
+
+    return value >= range.start || value <= range.end
+  })
+}
+
+function isWithinPreviousDayCarryover(schedule: string, dayCode: string, currentMinutes: number) {
+  const directives = getRegularDirectives(schedule)
+  const previousDayCode = getPreviousDayCode(dayCode)
+
+  for (const directive of directives) {
+    if (directive.kind !== 'hours' || !directive.days.includes(previousDayCode)) {
+      continue
+    }
+
+    const hasCarryover = directive.ranges.some(
+      (range) => range.end < range.start && currentMinutes <= range.end,
+    )
+    if (hasCarryover) {
+      return true
+    }
+  }
+
+  return false
 }
 
 function formatRanges(ranges: Array<{ start: number; end: number }>) {
@@ -383,6 +413,15 @@ function formatTimeForDisplay(value: string) {
 
 function dayIndexToCode(dayIndex: number) {
   return dayOrder[dayIndex] ?? 'Lun'
+}
+
+function getPreviousDayCode(dayCode: string) {
+  const dayIndex = dayOrder.indexOf(dayCode as (typeof dayOrder)[number])
+  if (dayIndex === -1) {
+    return 'Dom'
+  }
+
+  return dayOrder[(dayIndex + dayOrder.length - 1) % dayOrder.length]
 }
 
 function expandDayToken(token: string) {

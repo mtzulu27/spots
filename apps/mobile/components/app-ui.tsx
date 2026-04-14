@@ -256,6 +256,71 @@ export function AppLikeButton({
   );
 }
 
+export function AppBookmarkButton({
+  bookmarked,
+  onPress,
+  tone = 'light',
+  activeColor = '#141417',
+  inactiveColor,
+}: {
+  bookmarked: boolean;
+  onPress?: (event?: any) => void;
+  tone?: 'light' | 'dark' | 'glass';
+  activeColor?: string;
+  inactiveColor?: string;
+}) {
+  const scale = useRef(new Animated.Value(1)).current;
+  const mountedRef = useRef(false);
+
+  useEffect(() => {
+    if (!mountedRef.current) {
+      mountedRef.current = true;
+      return;
+    }
+
+    Animated.sequence([
+      Animated.timing(scale, {
+        toValue: bookmarked ? 1.12 : 0.92,
+        duration: 90,
+        useNativeDriver: true,
+      }),
+      Animated.spring(scale, {
+        toValue: 1,
+        damping: 12,
+        stiffness: 240,
+        mass: 0.88,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, [bookmarked, scale]);
+
+  const defaultColor =
+    tone === 'dark' || tone === 'glass' ? spotsUi.textPrimary : appColors.primaryDark;
+
+  return (
+    <Animated.View
+      style={{
+        transform: [{ scale }],
+      }}
+    >
+      <Pressable
+        onPress={onPress}
+        style={[
+          styles.iconButton,
+          tone === 'dark' && styles.iconButtonDark,
+          tone === 'glass' && styles.iconButtonGlass,
+        ]}
+      >
+        <Ionicons
+          name={bookmarked ? 'bookmark' : 'bookmark-outline'}
+          size={20}
+          color={bookmarked ? activeColor : inactiveColor ?? defaultColor}
+        />
+      </Pressable>
+    </Animated.View>
+  );
+}
+
 export function AppPrimaryButton({
   label,
   onPress,
@@ -325,6 +390,7 @@ export function SearchField({
   onClear,
   showClearButton = false,
   variant = 'light',
+  debounceMs = 0,
 }: {
   value: string;
   onChangeText: (value: string) => void;
@@ -334,13 +400,47 @@ export function SearchField({
   onClear?: () => void;
   showClearButton?: boolean;
   variant?: 'light' | 'dark';
+  debounceMs?: number;
 }) {
   const inputRef = useRef<TextInput>(null);
+  const debounceTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [internalValue, setInternalValue] = useState(value);
   const isDark = variant === 'dark';
   const lightIcon = '#6d6d76';
   const lightText = '#17171b';
   const lightHint = '#8d8d96';
   const lightSelection = '#1f1f24';
+
+  useEffect(() => {
+    setInternalValue(value);
+  }, [value]);
+
+  useEffect(() => {
+    return () => {
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  function handleChangeText(nextValue: string) {
+    setInternalValue(nextValue);
+
+    if (debounceTimeoutRef.current) {
+      clearTimeout(debounceTimeoutRef.current);
+      debounceTimeoutRef.current = null;
+    }
+
+    if (debounceMs <= 0) {
+      onChangeText(nextValue);
+      return;
+    }
+
+    debounceTimeoutRef.current = setTimeout(() => {
+      onChangeText(nextValue);
+      debounceTimeoutRef.current = null;
+    }, debounceMs);
+  }
 
   return (
     <View style={[styles.searchWrap, isDark && styles.searchWrapDark]}>
@@ -349,8 +449,8 @@ export function SearchField({
         ref={inputRef}
         placeholder={placeholder}
         placeholderTextColor={isDark ? spotsUi.textHint : lightHint}
-        value={value}
-        onChangeText={onChangeText}
+        value={internalValue}
+        onChangeText={handleChangeText}
         onFocus={onFocus}
         onBlur={onBlur}
         selectionColor={isDark ? spotsUi.textPrimary : lightSelection}
@@ -367,10 +467,15 @@ export function SearchField({
             : null,
         ]}
       />
-      {showClearButton || value.trim().length > 0 ? (
+      {showClearButton || internalValue.trim().length > 0 ? (
         <Pressable
           onPress={() => {
-            if (value.trim().length > 0) {
+            if (debounceTimeoutRef.current) {
+              clearTimeout(debounceTimeoutRef.current);
+              debounceTimeoutRef.current = null;
+            }
+            if (internalValue.trim().length > 0) {
+              setInternalValue('');
               onChangeText('');
             }
             inputRef.current?.blur();

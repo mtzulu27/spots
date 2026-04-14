@@ -11,7 +11,7 @@ import type { Spot } from '@/lib/mock-spots';
 import { normalizeCommercialCenterLabel } from '@/lib/mock-spots';
 import { backendEnabled } from '@/lib/supabase';
 
-const spotsCacheKey = 'spots-cache-v4';
+const spotsCacheKey = 'spots-cache-v10';
 const staticCatalogPath = '/spots-catalog.json';
 
 type SpotRow = {
@@ -31,6 +31,7 @@ type SpotRow = {
   is_featured: boolean | null;
   created_at: string;
   updated_at: string;
+  editorial_badge?: string | null;
 };
 
 type BranchRow = {
@@ -229,6 +230,9 @@ function mapRowsToSpots(spotRows: SpotRow[], branchRows: BranchRow[], branchHour
         branchSlug: spot.slug,
         feedPriorityRank,
         manuallyAdjusted,
+        editorialBadge: spot.editorial_badge ?? null,
+        createdAt: spot.created_at,
+        updatedAt: spot.updated_at,
         likeTargetId: String(spot.id),
         type: spot.type,
         name: spot.name,
@@ -290,6 +294,9 @@ function mapRowsToSpots(spotRows: SpotRow[], branchRows: BranchRow[], branchHour
         branchSlug: branch.slug,
         feedPriorityRank,
         manuallyAdjusted,
+        editorialBadge: spot.editorial_badge ?? null,
+        createdAt: spot.created_at,
+        updatedAt: spot.updated_at,
         likeTargetId: String(spot.id),
         type: spot.type,
         name: spot.name,

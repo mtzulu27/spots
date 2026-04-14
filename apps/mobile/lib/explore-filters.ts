@@ -132,7 +132,7 @@ export const DEFAULT_FILTERS: ExploreFilters = {
   hubName: [],
   people: 0,
   minBudget: 0,
-  maxBudget: 150000,
+  maxBudget: 300000,
   time: '',
   period: '',
   days: [],
@@ -210,6 +210,15 @@ export function formatBudget(value: number) {
   return new Intl.NumberFormat('es-CO').format(value);
 }
 
+export function formatApproxBudgetPerPersonLabel(minBudget: number, maxBudget: number) {
+  if (minBudget <= 0 && maxBudget <= 0) {
+    return 'Por definir';
+  }
+
+  const baseBudget = minBudget > 0 ? minBudget : maxBudget;
+  return `~$${formatBudget(baseBudget)} COP / pers.`;
+}
+
 export function isFiltersActive(filters: ExploreFilters) {
   return (
     filters.interests.length !== DEFAULT_FILTERS.interests.length ||
@@ -272,9 +281,13 @@ export function matchesSpotToFilters(
   const matchesDistance =
     mergedFilters.distance === DEFAULT_FILTERS.distance
       ? true
-      : effectiveDistance !== null && effectiveDistance <= mergedFilters.distance;
+      : mergedFilters.distance < 0
+        ? effectiveDistance !== null && effectiveDistance > Math.abs(mergedFilters.distance)
+        : effectiveDistance !== null && effectiveDistance <= mergedFilters.distance;
+  const spotMinBudget = Number.isFinite(spot.minBudget) ? spot.minBudget : 0;
+  const spotMaxBudget = Number.isFinite(spot.maxBudget) ? spot.maxBudget : spotMinBudget;
   const matchesBudget =
-    spot.maxBudget >= mergedFilters.minBudget && spot.minBudget <= mergedFilters.maxBudget;
+    spotMaxBudget >= mergedFilters.minBudget && spotMinBudget <= mergedFilters.maxBudget;
   const matchesOpenNow = !mergedFilters.openNowOnly || isSpotOpenNow(spot);
   const matchesManualAdjusted = !mergedFilters.hideManuallyAdjusted || !spot.manuallyAdjusted;
 
@@ -643,9 +656,18 @@ export function sortSpots(
     .map((spot, index) => ({ spot, index }))
     .sort((a, b) => {
       if (sortBy === 'recent') {
-        const rankDiff = b.spot.feedPriorityRank - a.spot.feedPriorityRank;
-        if (rankDiff !== 0) {
-          return rankDiff;
+        const bIsNew = b.spot.editorialBadge === 'Recién añadido' ? 1 : 0;
+        const aIsNew = a.spot.editorialBadge === 'Recién añadido' ? 1 : 0;
+        const newDiff = bIsNew - aIsNew;
+        if (newDiff !== 0) {
+          return newDiff;
+        }
+
+        const bCreatedAt = Date.parse(b.spot.createdAt ?? '') || 0;
+        const aCreatedAt = Date.parse(a.spot.createdAt ?? '') || 0;
+        const createdDiff = bCreatedAt - aCreatedAt;
+        if (createdDiff !== 0) {
+          return createdDiff;
         }
 
         const diff = Number(b.spot.spotId ?? 0) - Number(a.spot.spotId ?? 0);
@@ -1089,6 +1111,9 @@ function normalizeSearchText(value: string) {
     .toLowerCase()
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
+    .replace(/['’`´"]/g, '')
+    .replace(/[^a-z0-9\s]/g, ' ')
+    .replace(/\s+/g, ' ')
     .trim();
 }
 

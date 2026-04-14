@@ -15,8 +15,10 @@ import {
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { AppAvatar, AppSegmentedTabs, spotsUi } from '@/components/app-ui';
+import { AppAvatar, AppBookmarkButton, AppSegmentedTabs, spotsUi } from '@/components/app-ui';
 import { useAuthStore } from '@/lib/auth-store';
+import { useBookmarksStore } from '@/lib/bookmarks-store';
+import { formatApproxBudgetPerPersonLabel, getEffectiveSpotDistanceKm } from '@/lib/explore-filters';
 import { formatLikesCount, useLikesStore } from '@/lib/likes-store';
 import {
   aggregatePlaceSpotsFromList,
@@ -29,6 +31,40 @@ import { useSpotsStore } from '@/lib/spots-store';
 
 type AccountTab = 'saved' | 'parches';
 type AccountLayoutMode = 'editorial' | 'grid' | 'list';
+
+const exploreFoodIcon = require('../../assets/explore_food_icon.png');
+const exploreCinemaIcon = require('../../assets/explore_cinema_icon.png');
+const exploreArtIcon = require('../../assets/explore_art_icon.png');
+const exploreNightlifeIcon = require('../../assets/explore_nightlife_icon.png');
+const exploreSportsIcon = require('../../assets/explore_sports_icon.png');
+const exploreFamilyIcon = require('../../assets/explore_family_icon.png');
+const exploreEventsIcon = require('../../assets/explore_events_icon.png');
+const exploreNatureIcon = require('../../assets/explore_nature_icon.png');
+
+function getCategoryImage(category: Spot['category']) {
+  switch (category) {
+    case 'Arte y cultura':
+      return exploreArtIcon;
+    case 'Bares y noche':
+      return exploreNightlifeIcon;
+    case 'Cine':
+      return exploreCinemaIcon;
+    case 'Restaurantes y cafés':
+    case 'Restaurantes':
+      return exploreFoodIcon;
+    case 'Eventos':
+      return exploreEventsIcon;
+    case 'Deporte y bienestar':
+      return exploreSportsIcon;
+    case 'Familiar':
+    case 'Pet friendly':
+      return exploreFamilyIcon;
+    case 'Naturaleza y aire libre':
+      return exploreNatureIcon;
+    default:
+      return null;
+  }
+}
 
 const layoutModes: Array<{
   key: AccountLayoutMode;
@@ -93,24 +129,50 @@ function getCategoryAccent(category: Spot['category']) {
 }
 
 function getPriceLabel(spot: Spot) {
-  if (spot.minBudget <= 0 && spot.maxBudget <= 0) {
-    return 'Por definir';
-  }
-
-  const baseBudget = spot.minBudget > 0 ? spot.minBudget : spot.maxBudget;
-  return `Desde $${baseBudget.toLocaleString('es-CO')}`;
+  return formatApproxBudgetPerPersonLabel(spot.minBudget, spot.maxBudget);
 }
 
 function getFeedMinPriceLabel(spot: Spot) {
-  if (spot.minBudget <= 0 && spot.maxBudget <= 0) {
-    return 'Por definir';
+  return formatApproxBudgetPerPersonLabel(spot.minBudget, spot.maxBudget);
+}
+
+function getPreferredDetailBranchId(spot: Spot) {
+  if (spot.type !== 'place') {
+    return null;
   }
 
-  if (spot.minBudget <= 0) {
-    return `Desde $${spot.maxBudget.toLocaleString('es-CO')}`;
+  const branchCandidates = spot.branches && spot.branches.length > 0 ? spot.branches : [spot];
+  if (!branchCandidates.length) {
+    return null;
   }
 
-  return `Desde $${spot.minBudget.toLocaleString('es-CO')}`;
+  let preferredBranch = branchCandidates[0] ?? null;
+  let bestDistance = preferredBranch ? getEffectiveSpotDistanceKm(preferredBranch, null) : null;
+
+  branchCandidates.slice(1).forEach((branch) => {
+    const branchDistance = getEffectiveSpotDistanceKm(branch, null);
+
+    if (branchDistance === null) {
+      return;
+    }
+
+    if (bestDistance === null || branchDistance < bestDistance) {
+      preferredBranch = branch;
+      bestDistance = branchDistance;
+    }
+  });
+
+  return preferredBranch?.id ?? null;
+}
+
+function getSpotHref(spot: Spot) {
+  const preferredBranchId = getPreferredDetailBranchId(spot);
+
+  if (!preferredBranchId) {
+    return `/spot/${spot.id}`;
+  }
+
+  return `/spot/${preferredBranchId}`;
 }
 
 const accountUi = {
@@ -131,6 +193,7 @@ export default function AccountScreen() {
   const { avatarUrl, fullName, signOut, user } = useAuthStore();
   const { spots } = useSpotsStore();
   const { getLikesCount, isLiked } = useLikesStore();
+  const { isBookmarked, toggleBookmark } = useBookmarksStore();
   const [activeTab, setActiveTab] = useState<AccountTab>('saved');
   const [layoutMode, setLayoutMode] = useState<AccountLayoutMode>('editorial');
   const [menuOpen, setMenuOpen] = useState(false);
@@ -154,9 +217,9 @@ export default function AccountScreen() {
   const savedSpots = useMemo(
     () =>
       aggregatePlaceSpotsFromList(
-        spots.filter((spot) => spot.type === 'place' && isLiked(spot.likeTargetId)),
+        spots.filter((spot) => spot.type === 'place' && isBookmarked(spot.likeTargetId)),
       ),
-    [isLiked, spots],
+    [isBookmarked, spots],
   );
   const parches = useMemo(
     () => spots.filter((spot) => spot.type === 'event' && isLiked(spot.likeTargetId)),
@@ -360,7 +423,7 @@ export default function AccountScreen() {
             <View style={styles.resultsBar}>
               <View style={styles.resultsInfo}>
                 <Text style={styles.resultsText}>{savedSpots.length} resultados</Text>
-                <Text style={styles.resultsHint}>Tus favoritos guardados</Text>
+                <Text style={styles.resultsHint}>Tus lugares guardados</Text>
               </View>
               <View style={styles.layoutSwitcher}>
                 {layoutModes.map((mode) => (
@@ -382,11 +445,11 @@ export default function AccountScreen() {
               </View>
             </View>
 
-            {savedSpots.length > 0 ? renderSavedSpots(savedSpots, layoutMode, getLikesCount) : (
+            {savedSpots.length > 0 ? renderSavedSpots(savedSpots, layoutMode, getLikesCount, isBookmarked, toggleBookmark) : (
               <View style={styles.emptyCard}>
                 <Text style={styles.emptyTitle}>Todavía no tienes guardados</Text>
                 <Text style={styles.emptyMeta}>
-                  Empieza a explorar y marca los lugares que te gusten para verlos aquí.
+                  Empieza a explorar y usa el bookmark para guardarlos aquí.
                 </Text>
               </View>
             )}
@@ -418,7 +481,7 @@ export default function AccountScreen() {
               </View>
             </View>
 
-            {parches.length > 0 ? renderSavedSpots(parches, layoutMode, getLikesCount) : (
+            {parches.length > 0 ? renderSavedSpots(parches, layoutMode, getLikesCount, isBookmarked, toggleBookmark) : (
               <View style={styles.emptyCard}>
                 <Text style={styles.emptyTitle}>Todavía no tienes parches guardados</Text>
                 <Text style={styles.emptyMeta}>
@@ -439,12 +502,14 @@ function renderSavedSpots(
   savedSpots: Spot[],
   layoutMode: AccountLayoutMode,
   getLikesCount: (spotId: string | number) => number,
+  isBookmarked: (spotId: string | number) => boolean,
+  toggleBookmark: (spotId: string | number) => Promise<void>,
 ) {
   if (layoutMode === 'grid') {
     return (
       <View style={styles.gridWrap}>
         {savedSpots.map((spot) => (
-          <Link key={spot.id} href={`/spot/${spot.id}`} asChild>
+          <Link key={spot.id} href={getSpotHref(spot)} asChild>
             <Pressable style={styles.gridCard}>
               <ImageBackground
                 source={{ uri: spot.image }}
@@ -453,12 +518,29 @@ function renderSavedSpots(
               >
                 <View style={styles.cardOverlay} />
                 <View style={styles.gridCardMeta}>
-                  <View style={styles.categoryChip}>
-                    <Ionicons
-                      name={getCategoryIcon(spot.category)}
-                      size={14}
-                      color={getCategoryAccent(spot.category)}
-                    />
+                  <View style={styles.cardImageActions}>
+                    {spot.type === 'place' ? (
+                      <AppBookmarkButton
+                        bookmarked={isBookmarked(spot.likeTargetId)}
+                        onPress={(event) => {
+                          event?.stopPropagation?.();
+                          event?.preventDefault?.();
+                          void toggleBookmark(spot.likeTargetId);
+                        }}
+                        activeColor={accountUi.text}
+                      />
+                    ) : null}
+                    <View style={styles.categoryChip}>
+                      {getCategoryImage(spot.category) ? (
+                        <Image source={getCategoryImage(spot.category)} style={styles.categoryChipImage} />
+                      ) : (
+                        <Ionicons
+                          name={getCategoryIcon(spot.category)}
+                          size={14}
+                          color={getCategoryAccent(spot.category)}
+                        />
+                      )}
+                    </View>
                   </View>
                 </View>
               </ImageBackground>
@@ -495,7 +577,7 @@ function renderSavedSpots(
     return (
       <View style={styles.listWrap}>
         {savedSpots.map((spot) => (
-          <Link key={spot.id} href={`/spot/${spot.id}`} asChild>
+          <Link key={spot.id} href={getSpotHref(spot)} asChild>
             <Pressable style={styles.listCard}>
               <ImageBackground
                 source={{ uri: spot.image }}
@@ -504,12 +586,29 @@ function renderSavedSpots(
               >
                 <View style={styles.cardOverlay} />
                 <View style={styles.listCardImageMeta}>
-                  <View style={styles.categoryChip}>
-                    <Ionicons
-                      name={getCategoryIcon(spot.category)}
-                      size={14}
-                      color={getCategoryAccent(spot.category)}
-                    />
+                  <View style={styles.cardImageActions}>
+                    {spot.type === 'place' ? (
+                      <AppBookmarkButton
+                        bookmarked={isBookmarked(spot.likeTargetId)}
+                        onPress={(event) => {
+                          event?.stopPropagation?.();
+                          event?.preventDefault?.();
+                          void toggleBookmark(spot.likeTargetId);
+                        }}
+                        activeColor={accountUi.text}
+                      />
+                    ) : null}
+                    <View style={styles.categoryChip}>
+                      {getCategoryImage(spot.category) ? (
+                        <Image source={getCategoryImage(spot.category)} style={styles.categoryChipImage} />
+                      ) : (
+                        <Ionicons
+                          name={getCategoryIcon(spot.category)}
+                          size={14}
+                          color={getCategoryAccent(spot.category)}
+                        />
+                      )}
+                    </View>
                   </View>
                 </View>
               </ImageBackground>
@@ -548,7 +647,7 @@ function renderSavedSpots(
   return (
     <View style={styles.editorialWrap}>
       {savedSpots.map((spot) => (
-        <Link key={spot.id} href={`/spot/${spot.id}`} asChild>
+        <Link key={spot.id} href={getSpotHref(spot)} asChild>
           <Pressable style={styles.card}>
             <ImageBackground
               source={{ uri: spot.image }}
@@ -557,12 +656,29 @@ function renderSavedSpots(
             >
               <View style={styles.cardOverlay} />
               <View style={styles.cardImageMeta}>
-                <View style={styles.categoryChip}>
-                  <Ionicons
-                    name={getCategoryIcon(spot.category)}
-                    size={14}
-                    color={getCategoryAccent(spot.category)}
-                  />
+                <View style={styles.cardImageActions}>
+                  {spot.type === 'place' ? (
+                    <AppBookmarkButton
+                      bookmarked={isBookmarked(spot.likeTargetId)}
+                      onPress={(event) => {
+                        event?.stopPropagation?.();
+                        event?.preventDefault?.();
+                        void toggleBookmark(spot.likeTargetId);
+                      }}
+                      activeColor={accountUi.text}
+                    />
+                  ) : null}
+                  <View style={styles.categoryChip}>
+                    {getCategoryImage(spot.category) ? (
+                      <Image source={getCategoryImage(spot.category)} style={styles.categoryChipImage} />
+                    ) : (
+                      <Ionicons
+                        name={getCategoryIcon(spot.category)}
+                        size={14}
+                        color={getCategoryAccent(spot.category)}
+                      />
+                    )}
+                  </View>
                 </View>
               </View>
             </ImageBackground>
@@ -802,6 +918,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 14,
   },
+  cardImageActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
   cardBody: {
     gap: 8,
     paddingHorizontal: 4,
@@ -863,9 +984,16 @@ const styles = StyleSheet.create({
     width: 30,
     height: 30,
     borderRadius: 8,
-    backgroundColor: 'rgba(255,255,255,0.12)',
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: 'rgba(20,20,23,0.08)',
     alignItems: 'center',
     justifyContent: 'center',
+    overflow: 'hidden',
+  },
+  categoryChipImage: {
+    width: 24,
+    height: 24,
   },
   cardSupportText: {
     fontSize: 13,

@@ -1,6 +1,15 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Link, useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
-import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import {
+  startTransition,
+  useCallback,
+  useDeferredValue,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from 'react';
 import {
   Animated,
   Image,
@@ -18,6 +27,7 @@ import {
 } from 'react-native';
 import {
   AppAvatar,
+  AppBookmarkButton,
   AppIconButton,
   AppPrimaryButton,
   AppSegmentedTabs,
@@ -28,7 +38,9 @@ import {
 import { ExploreMap } from '@/components/explore-map';
 import { FiltersSheet } from '@/components/filters-sheet';
 import { submitFeedbackNote } from '@/lib/feedback-notes';
+import { formatApproxBudgetPerPersonLabel } from '@/lib/explore-filters';
 import { useAuthStore } from '@/lib/auth-store';
+import { useBookmarksStore } from '@/lib/bookmarks-store';
 import {
   DEFAULT_FILTERS,
   type ExploreTab,
@@ -68,6 +80,31 @@ const exploreSportsIcon = require('../../assets/explore_sports_icon.png');
 const exploreFamilyIcon = require('../../assets/explore_family_icon.png');
 const exploreEventsIcon = require('../../assets/explore_events_icon.png');
 const exploreNatureIcon = require('../../assets/explore_nature_icon.png');
+
+function getCategoryImage(category: Spot['category']) {
+  switch (category) {
+    case 'Arte y cultura':
+      return exploreArtIcon;
+    case 'Bares y noche':
+      return exploreNightlifeIcon;
+    case 'Cine':
+      return exploreCinemaIcon;
+    case 'Restaurantes y cafés':
+    case 'Restaurantes':
+      return exploreFoodIcon;
+    case 'Eventos':
+      return exploreEventsIcon;
+    case 'Deporte y bienestar':
+      return exploreSportsIcon;
+    case 'Familiar':
+    case 'Pet friendly':
+      return exploreFamilyIcon;
+    case 'Naturaleza y aire libre':
+      return exploreNatureIcon;
+    default:
+      return null;
+  }
+}
 
 function getCategoryIcon(category: Spot['category']): keyof typeof Ionicons.glyphMap {
   switch (category) {
@@ -172,24 +209,11 @@ const categoryOptions: Array<{
 ];
 
 function getPriceLabel(spot: Spot) {
-  if (spot.minBudget <= 0 && spot.maxBudget <= 0) {
-    return 'Por definir';
-  }
-
-  const baseBudget = spot.minBudget > 0 ? spot.minBudget : spot.maxBudget;
-  return `Desde $${baseBudget.toLocaleString('es-CO')}`;
+  return formatApproxBudgetPerPersonLabel(spot.minBudget, spot.maxBudget);
 }
 
 function getFeedMinPriceLabel(spot: Spot) {
-  if (spot.minBudget <= 0 && spot.maxBudget <= 0) {
-    return 'Por definir'
-  }
-
-  if (spot.minBudget <= 0) {
-    return `Desde $${spot.maxBudget.toLocaleString('es-CO')}`
-  }
-
-  return `Desde $${spot.minBudget.toLocaleString('es-CO')}`
+  return formatApproxBudgetPerPersonLabel(spot.minBudget, spot.maxBudget)
 }
 
 function getPreferredDetailBranchId(
@@ -231,6 +255,10 @@ type NewPlaceBanner = {
   subtitle: string;
   image: string;
 };
+
+function isNewSpot(spot: Spot) {
+  return spot.editorialBadge === 'Recién añadido';
+}
 type WebPushToast = {
   title: string;
   message: string;
@@ -244,6 +272,7 @@ export default function ExploreScreen() {
   const activeTab = parseExploreTab(params.tab);
   const filters = parseFiltersFromParams(params);
   const query = typeof params.query === 'string' ? params.query : '';
+  const [draftQuery, setDraftQuery] = useState(query);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [suggestPlacesOpen, setSuggestPlacesOpen] = useState(false);
   const [suggestPlacesVisible, setSuggestPlacesVisible] = useState(false);
@@ -260,7 +289,8 @@ export default function ExploreScreen() {
   const [topBarHeight, setTopBarHeight] = useState(0);
   const [resultsBarHeight, setResultsBarHeight] = useState(0);
   const { spots, refresh } = useSpotsStore();
-  const { getLikesCount, isLiked } = useLikesStore();
+  const { getLikesCount, isLiked, toggleLike } = useLikesStore();
+  const { isBookmarked, toggleBookmark } = useBookmarksStore();
   const { userLocation } = useLocationStore();
   const { avatarUrl, fullName, session, user } = useAuthStore();
   const [refreshing, setRefreshing] = useState(false);
@@ -281,6 +311,9 @@ export default function ExploreScreen() {
     new Map(categoryOptions.map((option) => [option.value, new Animated.Value(0)])),
   ).current;
   const headerExpandedRef = useRef(true);
+  const headerAnimationInFlightRef = useRef(false);
+  const lastHeaderToggleAtRef = useRef(0);
+  const lastScrollHandledAtRef = useRef(0);
   const lastScrollY = useRef(0);
   const scrollDirectionRef = useRef<'up' | 'down' | null>(null);
   const scrollDistanceRef = useRef(0);
@@ -290,6 +323,46 @@ export default function ExploreScreen() {
   const feedbackModalCloseTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const previousResultsTriggerRef = useRef<string | null>(null);
   const webPushToastProgress = useRef(new Animated.Value(0)).current;
+  const querySyncTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const deferredQuery = useDeferredValue(draftQuery);
+
+  useEffect(() => {
+    setDraftQuery(query);
+  }, [query]);
+
+  useEffect(() => {
+    if (draftQuery === query) {
+      if (querySyncTimeoutRef.current) {
+        clearTimeout(querySyncTimeoutRef.current);
+        querySyncTimeoutRef.current = null;
+      }
+      return;
+    }
+
+    if (querySyncTimeoutRef.current) {
+      clearTimeout(querySyncTimeoutRef.current);
+    }
+
+    querySyncTimeoutRef.current = setTimeout(() => {
+      startTransition(() => {
+        router.replace({
+          pathname: '/(tabs)/explore',
+          params: {
+            ...serializeFilters(filters),
+            tab: activeTab,
+            query: draftQuery,
+          },
+        });
+      });
+    }, 180);
+
+    return () => {
+      if (querySyncTimeoutRef.current) {
+        clearTimeout(querySyncTimeoutRef.current);
+        querySyncTimeoutRef.current = null;
+      }
+    };
+  }, [activeTab, draftQuery, filters, query, router]);
 
   const greetingName = useMemo(() => {
     if (fullName.trim()) {
@@ -396,6 +469,7 @@ export default function ExploreScreen() {
       if (webPushToastTimeoutRef.current) {
         clearTimeout(webPushToastTimeoutRef.current);
       }
+      
     };
   }, []);
 
@@ -558,11 +632,11 @@ export default function ExploreScreen() {
   const filteredData = useMemo(
     () =>
       activeData.filter((spot) =>
-        matchesSpotToFilters(spot, filters, query, userLocation),
+        matchesSpotToFilters(spot, filters, deferredQuery, userLocation),
       ),
-    [activeData, filters, query, userLocation],
+    [activeData, deferredQuery, filters, userLocation],
   );
-  const hasActiveFilters = query.trim().length > 0 || isFiltersActive(filters);
+  const hasActiveFilters = deferredQuery.trim().length > 0 || isFiltersActive(filters);
   const visibleBaseData =
     !hasActiveFilters && filteredData.length === 0 && activeData.length > 0
       ? activeData
@@ -584,8 +658,9 @@ export default function ExploreScreen() {
     }
   }, [layoutMode]);
   const activeFiltersCount = getActiveFiltersCount(filters);
-  const activeCriteriaCount = activeFiltersCount + (query.trim().length > 0 ? 1 : 0);
-  const resultsAnimationTrigger = `${activeTab}|${query}|${serializeFilters(filters)}`;
+  const activeCriteriaCount = activeFiltersCount + (deferredQuery.trim().length > 0 ? 1 : 0);
+  const resultsAnimationTrigger = `${activeTab}|${deferredQuery}|${serializeFilters(filters)}`;
+  const disableFeedBounce = layoutMode !== 'map' && visibleData.length <= 2;
 
   function getSpotHref(spot: Spot) {
     const preferredBranchId = getPreferredDetailBranchId(spot, userLocation);
@@ -596,6 +671,8 @@ export default function ExploreScreen() {
 
     return `/spot/${preferredBranchId}`;
   }
+
+  
 
   function resetSuggestionDraft() {
     setSuggestedPlacesDraft(['']);
@@ -906,6 +983,7 @@ export default function ExploreScreen() {
   }, []);
 
   function changeTab(nextTab: ExploreTab) {
+    setDraftQuery('');
     router.replace({
       pathname: '/(tabs)/explore',
       params: {
@@ -917,14 +995,7 @@ export default function ExploreScreen() {
   }
 
   function updateQuery(nextQuery: string) {
-    router.replace({
-      pathname: '/(tabs)/explore',
-      params: {
-        ...serializeFilters(filters),
-        tab: activeTab,
-        query: nextQuery,
-      },
-    });
+    setDraftQuery(nextQuery);
   }
 
   function applyFilters(nextFilters: typeof filters) {
@@ -933,7 +1004,7 @@ export default function ExploreScreen() {
       params: {
         ...serializeFilters(nextFilters),
         tab: activeTab,
-        query,
+        query: draftQuery,
       },
     });
   }
@@ -948,6 +1019,7 @@ export default function ExploreScreen() {
   }
 
   function clearAppliedFilters() {
+    setDraftQuery('');
     router.replace({
       pathname: '/(tabs)/explore',
       params: {
@@ -959,6 +1031,7 @@ export default function ExploreScreen() {
   }
 
   function clearQueryOnly() {
+    setDraftQuery('');
     router.replace({
       pathname: '/(tabs)/explore',
       params: {
@@ -969,15 +1042,31 @@ export default function ExploreScreen() {
     });
   }
 
-  function animateHeader(expanded: boolean) {
+  function animateHeader(expanded: boolean, options?: { force?: boolean }) {
     if (headerExpandedRef.current === expanded) return;
+    const now = Date.now();
+
+    if (!options?.force) {
+      if (headerAnimationInFlightRef.current) {
+        return;
+      }
+
+      if (now - lastHeaderToggleAtRef.current < 180) {
+        return;
+      }
+    }
+
     headerExpandedRef.current = expanded;
+    headerAnimationInFlightRef.current = true;
+    lastHeaderToggleAtRef.current = now;
     Animated.timing(headerChromeProgress, {
       toValue: expanded ? 1 : 0,
       duration: 220,
       easing: expanded ? undefined : undefined,
       useNativeDriver: false,
-    }).start();
+    }).start(() => {
+      headerAnimationInFlightRef.current = false;
+    });
   }
 
   function handleScroll(event: {
@@ -987,36 +1076,60 @@ export default function ExploreScreen() {
       layoutMeasurement: { height: number };
     };
   }) {
+    const now = Date.now();
+    if (now - lastScrollHandledAtRef.current < 32) {
+      return;
+    }
+    lastScrollHandledAtRef.current = now;
+
     const nextY = Math.max(0, event.nativeEvent.contentOffset.y);
     const maxScrollY = Math.max(
       0,
       event.nativeEvent.contentSize.height - event.nativeEvent.layoutMeasurement.height,
     );
-    const delta = nextY - lastScrollY.current;
-    const isNearBottom = nextY >= Math.max(0, maxScrollY - 24);
-
-    if (nextY <= 8) {
+    const compactScrollRange = maxScrollY <= Math.max(96, headerChromeHeight + resultsBarHeight + 24);
+    if (maxScrollY <= 56) {
       scrollDirectionRef.current = null;
       scrollDistanceRef.current = 0;
-      animateHeader(true);
+      lastScrollY.current = 0;
+      animateHeader(true, { force: true });
+      return;
+    }
+    const delta = nextY - lastScrollY.current;
+    if (Math.abs(delta) < 6) {
+      lastScrollY.current = nextY;
+      return;
+    }
+    const isNearBottom = nextY >= Math.max(0, maxScrollY - 24);
+
+    if (nextY <= 24) {
+      scrollDirectionRef.current = null;
+      scrollDistanceRef.current = 0;
+      animateHeader(true, { force: true });
     } else if (Math.abs(delta) > 2) {
       const direction = delta > 0 ? 'down' : 'up';
 
       if (scrollDirectionRef.current !== direction) {
         scrollDirectionRef.current = direction;
-        scrollDistanceRef.current = 0;
+        scrollDistanceRef.current = Math.min(Math.abs(delta), 4);
       }
 
       scrollDistanceRef.current += Math.abs(delta);
 
-      if (direction === 'down' && nextY > 48 && scrollDistanceRef.current > 28) {
+      if (
+        direction === 'down' &&
+        (
+          (compactScrollRange && nextY > 18 && scrollDistanceRef.current > 18) ||
+          (!compactScrollRange && nextY > 56 && scrollDistanceRef.current > 34)
+        )
+      ) {
         animateHeader(false);
         scrollDistanceRef.current = 0;
       }
 
       if (direction === 'up' && isNearBottom) {
         scrollDistanceRef.current = 0;
-      } else if (direction === 'up' && scrollDistanceRef.current > 18) {
+      } else if (direction === 'up' && scrollDistanceRef.current > 42) {
         animateHeader(true);
         scrollDistanceRef.current = 0;
       }
@@ -1048,15 +1161,15 @@ export default function ExploreScreen() {
   });
   const topBarShadowOpacity = headerChromeProgress.interpolate({
     inputRange: [0, 1],
-    outputRange: [0.08, 0],
+    outputRange: [0.12, 0],
   });
   const topBarShadowRadius = headerChromeProgress.interpolate({
     inputRange: [0, 1],
-    outputRange: [18, 0],
+    outputRange: [24, 0],
   });
   const topBarShadowOffsetY = headerChromeProgress.interpolate({
     inputRange: [0, 1],
-    outputRange: [10, 0],
+    outputRange: [12, 0],
   });
   const headerChromePaddingBottom = headerChromeProgress.interpolate({
     inputRange: [0, 1],
@@ -1184,9 +1297,10 @@ export default function ExploreScreen() {
         <View style={styles.searchRow}>
           <View style={styles.searchFieldWrap}>
             <SearchField
-              value={query}
+              value={draftQuery}
               onChangeText={updateQuery}
-              showClearButton={query.trim().length > 0}
+              showClearButton={draftQuery.trim().length > 0}
+              debounceMs={140}
               placeholder="Busca un lugar o escribe lo que quieres hacer"
               variant="light"
             />
@@ -1229,8 +1343,8 @@ export default function ExploreScreen() {
                     setCategoriesHeight(nextHeight);
                   }
                 }}
-              >
-                <Animated.ScrollView
+      >
+        <Animated.ScrollView
                   horizontal
                   showsHorizontalScrollIndicator={false}
                   contentContainerStyle={styles.quickCategories}
@@ -1315,16 +1429,6 @@ export default function ExploreScreen() {
                             />
                           )}
                         </Animated.View>
-                        <Text
-                          style={[
-                            styles.quickCategoryLabel,
-                            {
-                              color: active ? theme.textPrimary : theme.textSecondary,
-                            },
-                          ]}
-                        >
-                          {option.label}
-                        </Text>
                       </Pressable>
                     );
                   })}
@@ -1379,7 +1483,7 @@ export default function ExploreScreen() {
                 </Pressable>
               ) : (
                 <Text style={[styles.resultsHint, { color: theme.textSecondary }]}>
-                  {query.trim().length > 0 ? 'Búsqueda activa' : 'Sin filtros'}
+                  {deferredQuery.trim().length > 0 ? 'Búsqueda activa' : 'Sin filtros'}
                 </Text>
               )}
             </View>
@@ -1473,6 +1577,8 @@ export default function ExploreScreen() {
             flexGrow: 1,
           },
         ]}
+        bounces={!disableFeedBounce}
+        alwaysBounceVertical={!disableFeedBounce}
         showsVerticalScrollIndicator={false}
         onScroll={handleScroll}
         scrollEventThrottle={16}
@@ -1522,9 +1628,18 @@ export default function ExploreScreen() {
                 {mapVisibleData.length ? (
                   <View style={styles.listWrap}>
                     {mapVisibleData.map((spot) => (
-                      <Link key={spot.id} href={getSpotHref(spot)} asChild>
-                        <Pressable style={styles.listCard}>
-                          <Image source={{ uri: spot.image }} style={styles.listCardImage} />
+                        <Link key={spot.id} href={getSpotHref(spot)} asChild>
+                          <Pressable style={styles.listCard}>
+                          <View style={styles.listCardImageWrap}>
+                            <Image source={{ uri: spot.image }} style={styles.listCardImage} />
+                            {isNewSpot(spot) ? (
+                              <View style={styles.newBadgeWrap}>
+                                <View style={styles.newBadge}>
+                                  <Text style={styles.newBadgeText}>Recién añadido</Text>
+                                </View>
+                              </View>
+                            ) : null}
+                          </View>
                           <View style={styles.listCardBody}>
                             <View style={styles.listCardHeader}>
                               <Text
@@ -1533,12 +1648,36 @@ export default function ExploreScreen() {
                               >
                                 {spot.type === 'event' ? spot.name : spot.brandName}
                               </Text>
-                              <View style={styles.categoryChip}>
-                                <Ionicons
-                                  name={getCategoryIcon(spot.category)}
-                                  size={14}
-                                  color={getCategoryAccent(spot.category)}
-                                />
+                              <View style={styles.cardHeaderActions}>
+                                <View style={styles.cardHeaderLeading}>
+                                  <View style={styles.categoryChip}>
+                                    {getCategoryImage(spot.category) ? (
+                                      <Image source={getCategoryImage(spot.category)} style={styles.categoryChipImage} />
+                                    ) : (
+                                      <Ionicons
+                                        name={getCategoryIcon(spot.category)}
+                                        size={14}
+                                        color={getCategoryAccent(spot.category)}
+                                      />
+                                    )}
+                                  </View>
+                                  {isNewSpot(spot) ? (
+                                    <View style={styles.newBadge}>
+                                      <Text style={styles.newBadgeText}>Recién añadido</Text>
+                                    </View>
+                                  ) : null}
+                                </View>
+                                {spot.type === 'place' ? (
+                                  <AppBookmarkButton
+                                    bookmarked={isBookmarked(spot.likeTargetId)}
+                                    onPress={(event) => {
+                                      event?.stopPropagation?.();
+                                      event?.preventDefault?.();
+                                      void toggleBookmark(spot.likeTargetId);
+                                    }}
+                                    activeColor={theme.textPrimary}
+                                  />
+                                ) : null}
                               </View>
                             </View>
                             <View style={styles.listCardFooter}>
@@ -1575,7 +1714,7 @@ export default function ExploreScreen() {
                             </View>
                           </View>
                         </Pressable>
-                      </Link>
+                        </Link>
                     ))}
                   </View>
                 ) : (
@@ -1590,8 +1729,8 @@ export default function ExploreScreen() {
           ) : layoutMode === 'grid' ? (
             <View style={styles.gridWrap}>
               {visibleData.map((spot) => (
-                <Link key={spot.id} href={getSpotHref(spot)} asChild>
-                  <Pressable style={styles.gridCard}>
+                  <Link key={spot.id} href={getSpotHref(spot)} asChild>
+                    <Pressable style={styles.gridCard}>
                     <ImageBackground
                       source={{ uri: spot.image }}
                       style={styles.gridCardImage}
@@ -1599,12 +1738,36 @@ export default function ExploreScreen() {
                     >
                       <View style={styles.cardOverlay} />
                       <View style={styles.gridCardMeta}>
-                        <View style={styles.categoryChip}>
-                          <Ionicons
-                            name={getCategoryIcon(spot.category)}
-                            size={14}
-                            color={getCategoryAccent(spot.category)}
-                          />
+                        <View style={styles.cardHeaderActions}>
+                          <View style={styles.cardHeaderLeading}>
+                            <View style={styles.categoryChip}>
+                              {getCategoryImage(spot.category) ? (
+                                <Image source={getCategoryImage(spot.category)} style={styles.categoryChipImage} />
+                              ) : (
+                                <Ionicons
+                                  name={getCategoryIcon(spot.category)}
+                                  size={14}
+                                  color={getCategoryAccent(spot.category)}
+                                />
+                              )}
+                            </View>
+                            {isNewSpot(spot) ? (
+                              <View style={styles.newBadge}>
+                                <Text style={styles.newBadgeText}>Recién añadido</Text>
+                              </View>
+                            ) : null}
+                          </View>
+                          {spot.type === 'place' ? (
+                            <AppBookmarkButton
+                              bookmarked={isBookmarked(spot.likeTargetId)}
+                              onPress={(event) => {
+                                event?.stopPropagation?.();
+                                event?.preventDefault?.();
+                                void toggleBookmark(spot.likeTargetId);
+                              }}
+                              activeColor={theme.textPrimary}
+                            />
+                          ) : null}
                         </View>
                       </View>
                     </ImageBackground>
@@ -1642,14 +1805,14 @@ export default function ExploreScreen() {
                       </View>
                     </View>
                   </Pressable>
-                </Link>
+                  </Link>
               ))}
             </View>
           ) : layoutMode === 'list' ? (
             <View style={styles.listWrap}>
               {visibleData.map((spot) => (
-                <Link key={spot.id} href={getSpotHref(spot)} asChild>
-                  <Pressable style={styles.listCard}>
+                  <Link key={spot.id} href={getSpotHref(spot)} asChild>
+                    <Pressable style={styles.listCard}>
                     <ImageBackground
                       source={{ uri: spot.image }}
                       style={styles.listCardImage}
@@ -1657,12 +1820,36 @@ export default function ExploreScreen() {
                     >
                       <View style={styles.cardOverlay} />
                       <View style={styles.listCardImageMeta}>
-                        <View style={styles.categoryChip}>
-                          <Ionicons
-                            name={getCategoryIcon(spot.category)}
-                            size={14}
-                            color={getCategoryAccent(spot.category)}
-                          />
+                        <View style={styles.cardHeaderActions}>
+                          <View style={styles.cardHeaderLeading}>
+                            <View style={styles.categoryChip}>
+                              {getCategoryImage(spot.category) ? (
+                                <Image source={getCategoryImage(spot.category)} style={styles.categoryChipImage} />
+                              ) : (
+                                <Ionicons
+                                  name={getCategoryIcon(spot.category)}
+                                  size={14}
+                                  color={getCategoryAccent(spot.category)}
+                                />
+                              )}
+                            </View>
+                            {isNewSpot(spot) ? (
+                              <View style={styles.newBadge}>
+                                <Text style={styles.newBadgeText}>Recién añadido</Text>
+                              </View>
+                            ) : null}
+                          </View>
+                          {spot.type === 'place' ? (
+                            <AppBookmarkButton
+                              bookmarked={isBookmarked(spot.likeTargetId)}
+                              onPress={(event) => {
+                                event?.stopPropagation?.();
+                                event?.preventDefault?.();
+                                void toggleBookmark(spot.likeTargetId);
+                              }}
+                              activeColor={theme.textPrimary}
+                            />
+                          ) : null}
                         </View>
                       </View>
                     </ImageBackground>
@@ -1705,13 +1892,13 @@ export default function ExploreScreen() {
                       </View>
                     </View>
                   </Pressable>
-                </Link>
+                  </Link>
               ))}
             </View>
           ) : (
             visibleData.map((spot) => (
-              <Link key={spot.id} href={getSpotHref(spot)} asChild>
-                <Pressable style={styles.card}>
+                <Link key={spot.id} href={getSpotHref(spot)} asChild>
+                  <Pressable style={styles.card}>
                   <ImageBackground
                     source={{ uri: spot.image }}
                     style={styles.cardImage}
@@ -1719,12 +1906,36 @@ export default function ExploreScreen() {
                   >
                     <View style={styles.cardOverlay} />
                     <View style={styles.cardImageMeta}>
-                      <View style={styles.categoryChip}>
-                        <Ionicons
-                          name={getCategoryIcon(spot.category)}
-                          size={14}
-                          color={getCategoryAccent(spot.category)}
+                      <View style={styles.cardHeaderActions}>
+                        <View style={styles.cardHeaderLeading}>
+                          <View style={styles.categoryChip}>
+                            {getCategoryImage(spot.category) ? (
+                              <Image source={getCategoryImage(spot.category)} style={styles.categoryChipImage} />
+                            ) : (
+                              <Ionicons
+                                name={getCategoryIcon(spot.category)}
+                                size={14}
+                                color={getCategoryAccent(spot.category)}
+                              />
+                            )}
+                          </View>
+                          {isNewSpot(spot) ? (
+                            <View style={styles.newBadge}>
+                              <Text style={styles.newBadgeText}>Recién añadido</Text>
+                            </View>
+                          ) : null}
+                        </View>
+                        {spot.type === 'place' ? (
+                        <AppBookmarkButton
+                          bookmarked={isBookmarked(spot.likeTargetId)}
+                          onPress={(event) => {
+                            event?.stopPropagation?.();
+                            event?.preventDefault?.();
+                            void toggleBookmark(spot.likeTargetId);
+                          }}
+                          activeColor={theme.textPrimary}
                         />
+                        ) : null}
                       </View>
                     </View>
                   </ImageBackground>
@@ -1764,17 +1975,35 @@ export default function ExploreScreen() {
                     </View>
                   </View>
                 </Pressable>
-              </Link>
+                </Link>
             ))
           )
         ) : (
           <View style={styles.emptyState}>
-            <Text style={[styles.emptyTitle, { color: theme.textPrimary }]}>No hay resultados</Text>
-            <Text style={[styles.emptyCopy, { color: theme.textSecondary }]}>
-              {layoutMode === 'map'
-                ? 'Completa coordenadas o cambia filtros para ver lugares en el mapa.'
-                : 'Ajusta filtros o cambia la busqueda para encontrar algo mejor.'}
-            </Text>
+            {activeTab === 'now' ? (
+              <>
+                <View style={[styles.emptyBadge, { backgroundColor: theme.accentSoft }]}>
+                  <Ionicons name="sparkles-outline" size={14} color={theme.accent} />
+                  <Text style={[styles.emptyBadgeText, { color: theme.accent }]}>Muy pronto</Text>
+                </View>
+                <Text style={[styles.emptyTitle, { color: theme.textPrimary }]}>
+                  Los parches llegan pronto a Spots
+                </Text>
+                <Text style={[styles.emptyCopy, { color: theme.textSecondary }]}>
+                  Estamos armando esta pestaña para que encuentres planes, movidas y cosas que
+                  pasan en la ciudad sin tener que rebuscarlas por fuera.
+                </Text>
+              </>
+            ) : (
+              <>
+                <Text style={[styles.emptyTitle, { color: theme.textPrimary }]}>No hay resultados</Text>
+                <Text style={[styles.emptyCopy, { color: theme.textSecondary }]}>
+                  {layoutMode === 'map'
+                    ? 'Completa coordenadas o cambia filtros para ver lugares en el mapa.'
+                    : 'Ajusta filtros o cambia la busqueda para encontrar algo mejor.'}
+                </Text>
+              </>
+            )}
           </View>
         )}
         </Animated.View>
@@ -2049,7 +2278,7 @@ export default function ExploreScreen() {
         <FiltersSheet
           activeTab={activeTab}
           initialFilters={filters}
-          query={query}
+          query={deferredQuery}
           onApply={applyFilters}
           onClearQuery={clearQueryOnly}
           onClose={() => setFiltersOpen(false)}
@@ -2491,10 +2720,9 @@ const styles = StyleSheet.create({
   },
   quickCategory: {
     width: 78,
-    minHeight: 80,
+    minHeight: 78,
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 6,
   },
   quickCategoryIcon: {
     width: 54,
@@ -2524,12 +2752,6 @@ const styles = StyleSheet.create({
   quickCategoryImage: {
     width: 76,
     height: 76,
-  },
-  quickCategoryLabel: {
-    fontSize: 12,
-    lineHeight: 14,
-    fontWeight: '600',
-    textAlign: 'center',
   },
   resultsBar: {
     marginTop: 0,
@@ -2613,6 +2835,20 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 14,
   },
+  cardHeaderActions: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    minWidth: 0,
+  },
+  cardHeaderLeading: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    minWidth: 0,
+    flexShrink: 1,
+  },
   cardBody: {
     gap: 8,
     paddingHorizontal: 4,
@@ -2668,15 +2904,46 @@ const styles = StyleSheet.create({
     flexShrink: 1,
     minWidth: 0,
   },
+  newBadgeWrap: {
+    position: 'absolute',
+    top: 10,
+    left: 10,
+  },
+  newBadge: {
+    minHeight: 28,
+    borderRadius: 999,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    backgroundColor: 'rgba(255,255,255,0.96)',
+    borderWidth: 1,
+    borderColor: 'rgba(20,20,23,0.08)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000000',
+    shadowOpacity: 0.08,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 2,
+  },
+  newBadgeText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#141417',
+  },
   categoryChip: {
     width: 30,
     height: 30,
     borderRadius: 8,
-    backgroundColor: spotsUi.glassBg,
+    backgroundColor: '#FFFFFF',
     borderWidth: 1,
-    borderColor: spotsUi.glassBorder,
+    borderColor: 'rgba(20,20,23,0.08)',
     alignItems: 'center',
     justifyContent: 'center',
+    overflow: 'hidden',
+  },
+  categoryChipImage: {
+    width: 24,
+    height: 24,
   },
   cardSupportText: {
     fontSize: 13,
@@ -2717,7 +2984,9 @@ const styles = StyleSheet.create({
   gridCardMeta: {
     paddingHorizontal: 12,
     paddingVertical: 12,
-    alignItems: 'flex-start',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   gridCardBody: {
     gap: 8,
@@ -2752,6 +3021,10 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: spotsUi.borderSubtle,
   },
+  listCardImageWrap: {
+    width: 96,
+    height: 96,
+  },
   listCardImage: {
     width: 96,
     height: 96,
@@ -2767,7 +3040,9 @@ const styles = StyleSheet.create({
   listCardImageMeta: {
     paddingHorizontal: 10,
     paddingVertical: 10,
-    alignItems: 'flex-start',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   listCardBody: {
     flex: 1,
@@ -2829,10 +3104,25 @@ const styles = StyleSheet.create({
     gap: 10,
     alignItems: 'center',
   },
+  emptyBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 999,
+  },
+  emptyBadgeText: {
+    fontSize: 12,
+    fontWeight: '700',
+    letterSpacing: 0.2,
+    textTransform: 'uppercase',
+  },
   emptyTitle: {
     fontSize: 22,
     fontWeight: '700',
     color: spotsUi.textPrimary,
+    textAlign: 'center',
   },
   emptyCopy: {
     textAlign: 'center',

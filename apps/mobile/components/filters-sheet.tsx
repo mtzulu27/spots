@@ -104,9 +104,10 @@ const sortOptions: Array<{ label: string; value: ExploreSort }> = [
 ];
 
 const distancePresetOptions = [
-  { label: 'Cerca', value: 3 },
+  { label: 'Hasta 3 km', value: 3 },
   { label: 'Hasta 5 km', value: 5 },
   { label: 'Hasta 10 km', value: 10 },
+  { label: 'Más de 10 km', value: -10 },
 ] as const;
 
 const budgetPresetOptions = [
@@ -117,7 +118,6 @@ const budgetPresetOptions = [
 ] as const;
 
 const peoplePresetOptions = [
-  { label: 'Solo', value: 1 },
   { label: 'Pareja', value: 2 },
   { label: '3-4', value: 4 },
   { label: '5+', value: 5 },
@@ -595,6 +595,8 @@ export function FiltersSheet({
     setOpenNowOnly(DEFAULT_FILTERS.openNowOnly);
     setHideManuallyAdjusted(DEFAULT_FILTERS.hideManuallyAdjusted);
     setShowAdvancedWhen(false);
+    setShowAllLocationSectors(false);
+    setShowAllLocationMalls(false);
     setShowAllIdealFor(false);
     onClearQuery?.();
   }
@@ -992,6 +994,158 @@ export function FiltersSheet({
           <Divider />
 
           <Section
+            title="Disponibilidad"
+            actionLabel={selectedWhenPreset !== 'any' || showAdvancedWhen ? 'Quitar' : undefined}
+            onActionPress={
+              selectedWhenPreset !== 'any' || showAdvancedWhen
+                ? () => {
+                    applyWhenPreset('any');
+                    setShowAdvancedWhen(false);
+                  }
+                : undefined
+            }
+            onLayout={(event) => handleDynamicSectionLayout('availability', event)}
+          >
+            {!showAdvancedWhen ? (
+              <>
+                <View style={styles.presetGrid}>
+                  {whenPresetOptions.map((option) => {
+                    const active = selectedWhenPreset === option.value;
+                    return (
+                      <Pressable
+                        key={option.value}
+                        style={[styles.filterChip, active && styles.filterChipActive]}
+                        onPress={() => applyWhenPreset(option.value)}
+                      >
+                        <Text style={[styles.filterChipText, active && styles.filterChipTextActive]}>
+                          {option.label}
+                        </Text>
+                      </Pressable>
+                    );
+                  })}
+                </View>
+                <Pressable onPress={() => setShowAdvancedWhen(true)}>
+                  <Text style={styles.linkButtonText}>Refinar búsqueda</Text>
+                </Pressable>
+              </>
+            ) : (
+              <View style={styles.whenLayout}>
+                <View style={styles.whenDayChips}>
+                  {dayOptions
+                    .filter((day) => day.value !== 'Any' && day.value !== 'Festivos')
+                    .map((day) => {
+                      const active = selectedDays.includes(day.value);
+                      return (
+                        <Pressable
+                          key={day.value}
+                          style={[styles.whenDayChip, active && styles.whenDayChipActive]}
+                          onPress={() => toggleDaySelection(day.value)}
+                        >
+                          <Text style={[styles.whenDayChipText, active && styles.whenDayChipTextActive]}>
+                            {day.shortLabel}
+                          </Text>
+                        </Pressable>
+                      );
+                    })}
+                </View>
+                <View style={styles.timeRow}>
+                  <View
+                    style={[
+                      styles.timeInputWrap,
+                      Boolean(time.trim()) && styles.timeInputWrapSelected,
+                      !hasDaySelection && styles.whenDisabled,
+                    ]}
+                  >
+                    <TextInput
+                      value={time}
+                      onChangeText={handleTimeChange}
+                      placeholder="7:00"
+                      placeholderTextColor={Boolean(time.trim()) ? 'rgba(255,255,255,0.72)' : '#9d8ea2'}
+                      keyboardType="number-pad"
+                      style={[styles.timeInput, Boolean(time.trim()) && styles.timeInputSelected]}
+                      autoCorrect={false}
+                      autoCapitalize="none"
+                      editable={hasDaySelection}
+                      maxLength={5}
+                    />
+                  </View>
+                  <View
+                    style={[
+                      styles.periodToggle,
+                      !hasDaySelection && styles.whenDisabled,
+                    ]}
+                  >
+                    {(['AM', 'PM'] as const).map((value) => {
+                      const active = period === value;
+                      return (
+                        <Pressable
+                          key={value}
+                          style={[
+                            styles.periodSegment,
+                            active && styles.periodSegmentActive,
+                          ]}
+                          onPress={() =>
+                            hasDaySelection
+                              ? setPeriod((current) => (current === value ? '' : value))
+                              : undefined
+                          }
+                          disabled={!hasDaySelection}
+                        >
+                          <Text
+                            style={[
+                              styles.periodSegmentText,
+                              active && styles.periodSegmentTextActive,
+                              !hasDaySelection && styles.whenDisabledText,
+                            ]}
+                          >
+                            {value}
+                          </Text>
+                        </Pressable>
+                      );
+                    })}
+                  </View>
+                </View>
+                <Pressable onPress={() => setShowAdvancedWhen(false)}>
+                  <Text style={styles.linkButtonText}>Volver a sugeridos</Text>
+                </Pressable>
+              </View>
+            )}
+          </Section>
+
+          <Divider />
+
+          <Section
+            title="Distancia"
+            actionLabel={distance !== DEFAULT_FILTERS.distance ? 'Quitar' : undefined}
+            onActionPress={distance !== DEFAULT_FILTERS.distance ? () => setDistance(DEFAULT_FILTERS.distance) : undefined}
+            onLayout={(event) => handleDynamicSectionLayout('distance', event)}
+          >
+            <View style={styles.presetGrid}>
+              {distancePresetOptions.map((option) => {
+                const active = selectedDistancePreset === option.value;
+                return (
+                  <Pressable
+                    key={option.label}
+                    style={[styles.filterChip, active && styles.filterChipActive]}
+                    onPress={() => applyDistancePreset(option.value)}
+                  >
+                    <Text style={[styles.filterChipText, active && styles.filterChipTextActive]}>
+                      {option.label}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+            {locationError ? (
+              <Pressable onPress={requestLocation}>
+                <Text style={styles.locationText}>Activa ubicación para usar distancia real</Text>
+              </Pressable>
+            ) : null}
+          </Section>
+
+          <Divider />
+
+          <Section
             title="Ubicación"
             onLayout={(event) => handleDynamicSectionLayout('location', event)}
           >
@@ -1121,129 +1275,6 @@ export function FiltersSheet({
             </View>
           </Section>
 
-          <Divider />
-
-          <Section
-            title="Disponibilidad"
-            actionLabel={selectedWhenPreset !== 'any' || showAdvancedWhen ? 'Quitar' : undefined}
-            onActionPress={
-              selectedWhenPreset !== 'any' || showAdvancedWhen
-                ? () => {
-                    applyWhenPreset('any');
-                    setShowAdvancedWhen(false);
-                  }
-                : undefined
-            }
-            onLayout={(event) => handleDynamicSectionLayout('availability', event)}
-          >
-            {!showAdvancedWhen ? (
-              <>
-                <View style={styles.presetGrid}>
-                  {whenPresetOptions.map((option) => {
-                    const active = selectedWhenPreset === option.value;
-                    return (
-                      <Pressable
-                        key={option.value}
-                        style={[styles.filterChip, active && styles.filterChipActive]}
-                        onPress={() => applyWhenPreset(option.value)}
-                      >
-                        <Text style={[styles.filterChipText, active && styles.filterChipTextActive]}>
-                          {option.label}
-                        </Text>
-                      </Pressable>
-                    );
-                  })}
-                </View>
-                <Pressable onPress={() => setShowAdvancedWhen(true)}>
-                  <Text style={styles.linkButtonText}>Refinar búsqueda</Text>
-                </Pressable>
-              </>
-            ) : (
-              <View style={styles.whenLayout}>
-                <View style={styles.whenDayChips}>
-                  {dayOptions
-                    .filter((day) => day.value !== 'Any' && day.value !== 'Festivos')
-                    .map((day) => {
-                      const active = selectedDays.includes(day.value);
-                      return (
-                        <Pressable
-                          key={day.value}
-                          style={[styles.whenDayChip, active && styles.whenDayChipActive]}
-                          onPress={() => toggleDaySelection(day.value)}
-                        >
-                          <Text style={[styles.whenDayChipText, active && styles.whenDayChipTextActive]}>
-                            {day.shortLabel}
-                          </Text>
-                        </Pressable>
-                      );
-                    })}
-                </View>
-                <View style={styles.timeRow}>
-                  <View
-                    style={[
-                      styles.timeInputWrap,
-                      Boolean(time.trim()) && styles.timeInputWrapSelected,
-                      !hasDaySelection && styles.whenDisabled,
-                    ]}
-                  >
-                    <TextInput
-                      value={time}
-                      onChangeText={handleTimeChange}
-                      placeholder="7:00"
-                      placeholderTextColor={Boolean(time.trim()) ? 'rgba(255,255,255,0.72)' : '#9d8ea2'}
-                      keyboardType="number-pad"
-                      style={[styles.timeInput, Boolean(time.trim()) && styles.timeInputSelected]}
-                      autoCorrect={false}
-                      autoCapitalize="none"
-                      editable={hasDaySelection}
-                      maxLength={5}
-                    />
-                  </View>
-                  <View
-                    style={[
-                      styles.periodToggle,
-                      !hasDaySelection && styles.whenDisabled,
-                    ]}
-                  >
-                    {(['AM', 'PM'] as const).map((value) => {
-                      const active = period === value;
-                      return (
-                        <Pressable
-                          key={value}
-                          style={[
-                            styles.periodSegment,
-                            active && styles.periodSegmentActive,
-                          ]}
-                          onPress={() =>
-                            hasDaySelection
-                              ? setPeriod((current) => (current === value ? '' : value))
-                              : undefined
-                          }
-                          disabled={!hasDaySelection}
-                        >
-                          <Text
-                            style={[
-                              styles.periodSegmentText,
-                              active && styles.periodSegmentTextActive,
-                              !hasDaySelection && styles.whenDisabledText,
-                            ]}
-                          >
-                            {value}
-                          </Text>
-                        </Pressable>
-                      );
-                    })}
-                  </View>
-                </View>
-                <Pressable onPress={() => setShowAdvancedWhen(false)}>
-                  <Text style={styles.linkButtonText}>Volver a sugeridos</Text>
-                </Pressable>
-              </View>
-            )}
-          </Section>
-
-          <Divider />
-
           <Section
             title="Presupuesto"
             actionLabel={selectedBudgetPreset !== null ? 'Quitar' : undefined}
@@ -1338,36 +1369,6 @@ export function FiltersSheet({
             </View>
           </Section>
 
-          <Divider />
-
-          <Section
-            title="Distancia"
-            actionLabel={distance !== DEFAULT_FILTERS.distance ? 'Quitar' : undefined}
-            onActionPress={distance !== DEFAULT_FILTERS.distance ? () => setDistance(DEFAULT_FILTERS.distance) : undefined}
-            onLayout={(event) => handleDynamicSectionLayout('distance', event)}
-          >
-            <View style={styles.presetGrid}>
-              {distancePresetOptions.map((option) => {
-                const active = selectedDistancePreset === option.value;
-                return (
-                  <Pressable
-                    key={option.label}
-                    style={[styles.filterChip, active && styles.filterChipActive]}
-                    onPress={() => applyDistancePreset(option.value)}
-                  >
-                    <Text style={[styles.filterChipText, active && styles.filterChipTextActive]}>
-                      {option.label}
-                    </Text>
-                  </Pressable>
-                );
-              })}
-            </View>
-            {locationError ? (
-              <Pressable onPress={requestLocation}>
-                <Text style={styles.locationText}>Activa ubicación para usar distancia real</Text>
-              </Pressable>
-            ) : null}
-          </Section>
           </ScrollView>
 
           <View style={[styles.bottomBar, { paddingBottom: 20 + insets.bottom }]}>

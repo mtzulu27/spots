@@ -6,6 +6,7 @@ import {
   AppState,
   ActivityIndicator,
   Animated,
+  Image,
   ImageBackground,
   Modal,
   PanResponder,
@@ -18,9 +19,9 @@ import {
   View,
 } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { AppIconButton, AppLikeButton, AppPrimaryButton, appColors, spotsUi } from '@/components/app-ui'
-import { getEffectiveSpotDistanceKm } from '@/lib/explore-filters'
-import { formatBudget } from '@/lib/explore-filters'
+import { AppBookmarkButton, AppIconButton, AppLikeButton, AppPrimaryButton, appColors, spotsUi } from '@/components/app-ui'
+import { useBookmarksStore } from '@/lib/bookmarks-store'
+import { formatApproxBudgetPerPersonLabel, getEffectiveSpotDistanceKm } from '@/lib/explore-filters'
 import { formatLikesCount, useLikesStore } from '@/lib/likes-store'
 import { useLocationStore } from '@/lib/location-store'
 import { useRelayoutSubscription } from '@/lib/relayout'
@@ -44,6 +45,15 @@ import {
   type Spot,
 } from '@/lib/mock-spots'
 import { useSpotsStore } from '@/lib/spots-store'
+
+const exploreFoodIcon = require('../../assets/explore_food_icon.png')
+const exploreCinemaIcon = require('../../assets/explore_cinema_icon.png')
+const exploreArtIcon = require('../../assets/explore_art_icon.png')
+const exploreNightlifeIcon = require('../../assets/explore_nightlife_icon.png')
+const exploreSportsIcon = require('../../assets/explore_sports_icon.png')
+const exploreFamilyIcon = require('../../assets/explore_family_icon.png')
+const exploreEventsIcon = require('../../assets/explore_events_icon.png')
+const exploreNatureIcon = require('../../assets/explore_nature_icon.png')
 
 type DetailStat = {
   icon: keyof typeof Ionicons.glyphMap
@@ -103,12 +113,7 @@ const detailUi = {
 }
 
 function getPriceLabel(spot: Spot) {
-  if (spot.minBudget <= 0 && spot.maxBudget <= 0) {
-    return 'Por definir'
-  }
-
-  const baseBudget = spot.minBudget > 0 ? spot.minBudget : spot.maxBudget
-  return `Desde $${formatBudget(baseBudget)} COP`
+  return formatApproxBudgetPerPersonLabel(spot.minBudget, spot.maxBudget)
 }
 
 function getMenuActionLabel(category: Spot['category']) {
@@ -171,7 +176,7 @@ function buildGalleryImages(detailSpot: Spot) {
       ...(detailSpot.galleryImages ?? []),
       detailSpot.image,
     ].filter(Boolean)),
-  ).slice(0, 5)
+  ).slice(0, 10)
 }
 
 function getOpenStatus(schedule: string) {
@@ -186,6 +191,7 @@ export default function SpotDetailScreen() {
   const { id, branch } = useLocalSearchParams<{ id: string; branch?: string }>()
   const { spots, loading } = useSpotsStore()
   const { getLikesCount, isLiked, toggleLike } = useLikesStore()
+  const { isBookmarked, toggleBookmark } = useBookmarksStore()
   const { userLocation } = useLocationStore()
   const [, forceResumeRender] = useState(0)
   const [selectedBranchId, setSelectedBranchId] = useState<string | null>(null)
@@ -502,6 +508,7 @@ export default function SpotDetailScreen() {
 
   const likeCount = detailSpot ? getLikesCount(detailSpot.likeTargetId) : 0
   const liked = detailSpot ? isLiked(detailSpot.likeTargetId) : false
+  const bookmarked = detailSpot ? isBookmarked(detailSpot.likeTargetId) : false
   const similarSpots = detailSpot
     ? isEvent
       ? getSimilarSpotsFromList(spots, detailSpot)
@@ -541,9 +548,12 @@ export default function SpotDetailScreen() {
   const categoryIcon = getCategoryIcon(detailSpot?.category ?? 'Restaurantes y cafés')
   const baseHeroHeight = 352
   const sheetMaxOffset = clamp(windowHeight * 0.34, 160, 300)
+  const baseHeroHeightValue = useRef(new Animated.Value(baseHeroHeight)).current
+  const baseSheetTopValue = useRef(new Animated.Value(baseHeroHeight - 28)).current
   const sheetTranslateY = useRef(new Animated.Value(0)).current
   const sheetOffsetRef = useRef(0)
-  const heroAnimatedHeight = Animated.add(sheetTranslateY, new Animated.Value(baseHeroHeight))
+  const heroAnimatedHeight = Animated.add(sheetTranslateY, baseHeroHeightValue)
+  const sheetTranslateWithIntro = Animated.add(sheetTranslateY, sheetIntroTranslateY)
   const heroContentOpacity = sheetTranslateY.interpolate({
     inputRange: [0, sheetMaxOffset * 0.55, sheetMaxOffset],
     outputRange: [1, 0.4, 0],
@@ -647,7 +657,7 @@ export default function SpotDetailScreen() {
       PanResponder.create({
         onMoveShouldSetPanResponder: (_, gestureState) =>
           Math.abs(gestureState.dy) > Math.abs(gestureState.dx) &&
-          Math.abs(gestureState.dy) > 5,
+          Math.abs(gestureState.dy) > 3,
         onPanResponderGrant: () => {
           sheetTranslateY.stopAnimation((value) => {
             sheetOffsetRef.current = typeof value === 'number' ? value : 0
@@ -783,7 +793,6 @@ export default function SpotDetailScreen() {
               />
             ))}
           </Animated.View>
-          <View pointerEvents="none" style={styles.heroOverlay} />
         </Animated.View>
 
         <View pointerEvents="box-none" style={styles.heroChrome}>
@@ -806,6 +815,12 @@ export default function SpotDetailScreen() {
                 tone="glass"
                 activeColor={detailUi.accent}
                 onPress={() => toggleLike(detailSpot.likeTargetId)}
+              />
+              <AppBookmarkButton
+                bookmarked={bookmarked}
+                tone="glass"
+                activeColor={detailUi.text}
+                onPress={() => void toggleBookmark(detailSpot.likeTargetId)}
               />
               <AppIconButton
                 name="share-social-outline"
@@ -913,8 +928,8 @@ export default function SpotDetailScreen() {
           styles.sheet,
           {
             opacity: sheetIntroOpacity,
-            top: Animated.add(sheetTranslateY, new Animated.Value(baseHeroHeight - 28)),
-            transform: [{ translateY: sheetIntroTranslateY }],
+            top: baseSheetTopValue,
+            transform: [{ translateY: sheetTranslateWithIntro }],
           },
         ]}
       >
@@ -1294,7 +1309,6 @@ export default function SpotDetailScreen() {
                       <SimilarSpotCard
                         key={item.id}
                         spot={item}
-                        likes={formatLikesCount(getLikesCount(item.likeTargetId))}
                       />
                     ))}
                   </ScrollView>
@@ -1493,7 +1507,9 @@ function SelectorRadio({
   )
 }
 
-function SimilarSpotCard({ spot, likes }: { spot: Spot; likes: string }) {
+function SimilarSpotCard({ spot }: { spot: Spot }) {
+  const { isBookmarked, toggleBookmark } = useBookmarksStore()
+
   return (
     <Link href={`/spot/${spot.id}`} asChild>
       <Pressable style={styles.similarCard}>
@@ -1504,12 +1520,25 @@ function SimilarSpotCard({ spot, likes }: { spot: Spot; likes: string }) {
         >
           <View style={styles.cardOverlay} />
           <View style={styles.similarImageMeta}>
-            <View style={styles.similarCategoryChip}>
-              <Ionicons
-                name={getCategoryIcon(spot.category)}
-                size={14}
-                color={detailUi.text}
-              />
+            <View style={styles.similarImageActions}>
+              {spot.type === 'place' ? (
+                <AppBookmarkButton
+                  bookmarked={isBookmarked(spot.likeTargetId)}
+                  onPress={() => void toggleBookmark(spot.likeTargetId)}
+                  activeColor={detailUi.text}
+                />
+              ) : null}
+              <View style={styles.similarCategoryChip}>
+                {getCategoryImage(spot.category) ? (
+                  <Image source={getCategoryImage(spot.category)} style={styles.similarCategoryChipImage} />
+                ) : (
+                  <Ionicons
+                    name={getCategoryIcon(spot.category)}
+                    size={14}
+                    color={detailUi.text}
+                  />
+                )}
+              </View>
             </View>
           </View>
         </ImageBackground>
@@ -1527,7 +1556,6 @@ function SimilarSpotCard({ spot, likes }: { spot: Spot; likes: string }) {
                 <Ionicons name="cash-outline" size={12} color={detailUi.textSecondary} />
                 <Text style={styles.similarMetaText}>{getPriceLabel(spot)}</Text>
               </View>
-              <Text style={styles.similarMetaText}>♡ {likes}</Text>
             </View>
           </View>
         </View>
@@ -1608,6 +1636,31 @@ function getCategoryIcon(category: Spot['category']): keyof typeof Ionicons.glyp
       return 'leaf-outline'
     default:
       return 'sparkles-outline'
+  }
+}
+
+function getCategoryImage(category: Spot['category']) {
+  switch (category) {
+    case 'Arte y cultura':
+      return exploreArtIcon
+    case 'Bares y noche':
+      return exploreNightlifeIcon
+    case 'Cine':
+      return exploreCinemaIcon
+    case 'Restaurantes y cafés':
+    case 'Restaurantes':
+      return exploreFoodIcon
+    case 'Eventos':
+      return exploreEventsIcon
+    case 'Deporte y bienestar':
+      return exploreSportsIcon
+    case 'Familiar':
+    case 'Pet friendly':
+      return exploreFamilyIcon
+    case 'Naturaleza y aire libre':
+      return exploreNatureIcon
+    default:
+      return null
   }
 }
 
@@ -1862,8 +1915,8 @@ const styles = StyleSheet.create({
   },
   sheetHandleArea: {
     alignItems: 'center',
-    paddingTop: 12,
-    paddingBottom: 10,
+    paddingTop: 20,
+    paddingBottom: 20,
   },
   sheetHandle: {
     width: 42,
@@ -2598,19 +2651,29 @@ const styles = StyleSheet.create({
   similarImageMeta: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'flex-start',
+    justifyContent: 'flex-end',
     paddingHorizontal: 14,
     paddingVertical: 14,
+  },
+  similarImageActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
   },
   similarCategoryChip: {
     width: 30,
     height: 30,
     borderRadius: 8,
-    backgroundColor: 'rgba(255,255,255,0.14)',
+    backgroundColor: '#FFFFFF',
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.18)',
+    borderColor: 'rgba(20,20,23,0.08)',
     alignItems: 'center',
     justifyContent: 'center',
+    overflow: 'hidden',
+  },
+  similarCategoryChipImage: {
+    width: 24,
+    height: 24,
   },
   similarBody: {
     paddingHorizontal: 4,
