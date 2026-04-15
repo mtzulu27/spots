@@ -168,12 +168,8 @@ export default function RootLayout() {
         window.sessionStorage.removeItem(HARD_RECOVERY_SESSION_KEY);
       } else {
         const alreadyTriedHardRecovery = window.sessionStorage.getItem(HARD_RECOVERY_SESSION_KEY) === '1';
-        const shouldAllowHardRecovery = process.env.NODE_ENV === 'production';
-
-        if (shouldAllowHardRecovery && !alreadyTriedHardRecovery && recoveryState.epoch > 0) {
+        if (!alreadyTriedHardRecovery && recoveryState.epoch > 0) {
           window.sessionStorage.setItem(HARD_RECOVERY_SESSION_KEY, '1');
-          window.location.reload();
-          return;
         }
       }
     }

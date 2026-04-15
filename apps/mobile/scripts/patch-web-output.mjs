@@ -54,12 +54,6 @@ const viewportScript = `(function () {
   var rootReady = false;
   var resumeTimer = null;
   var skipHeightUpdate = false;
-  var justReloaded = false;
-  try {
-    justReloaded = window.localStorage.getItem('spots-layout-reload') === '1';
-    if (justReloaded) window.localStorage.removeItem('spots-layout-reload');
-  } catch (e) {}
-
   function readAppHeight() {
     return (
       (window.visualViewport && window.visualViewport.height) ||
@@ -91,16 +85,6 @@ const viewportScript = `(function () {
       skipHeightUpdate = false;
       resumeTimer = null;
       scheduleAppHeightSync({ allowShrink: true });
-      if (window.navigator && window.navigator.standalone && !justReloaded) {
-        window.setTimeout(function () {
-          var measured = stableHeight;
-          var screenH = window.screen && window.screen.height;
-          if (measured && screenH && (screenH - measured) > 80) {
-            try { window.localStorage.setItem('spots-layout-reload', '1'); } catch (e) {}
-            window.location.reload();
-          }
-        }, 900);
-      }
     }, 600);
   }
 
@@ -181,16 +165,6 @@ const viewportScript = `(function () {
 
   bootstrapAppHeight();
 
-  if (window.navigator && window.navigator.standalone && !justReloaded) {
-    window.setTimeout(function () {
-      var measured = stableHeight;
-      var screenH = window.screen && window.screen.height;
-      if (measured && screenH && (screenH - measured) > 80) {
-        try { window.localStorage.setItem('spots-layout-reload', '1'); } catch (e) {}
-        window.location.reload();
-      }
-    }, 1200);
-  }
   window.addEventListener('resize', function () {
     scheduleAppHeightSync({ allowShrink: true });
   });
