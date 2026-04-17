@@ -15,6 +15,7 @@ import {
   Image,
   ImageBackground,
   KeyboardAvoidingView,
+  type LayoutChangeEvent,
   Modal,
   Platform,
   Pressable,
@@ -525,51 +526,23 @@ export default function ExploreScreen() {
               ],
             }}
           >
-          <View
-            style={[styles.topRow, { marginBottom: 14 }]}
-            onLayout={(event) => {
-              const nextHeight = event.nativeEvent.layout.height;
-              if (nextHeight !== topBarHeight) {
-                setTopBarHeight(nextHeight);
-              }
-            }}
-          >
-            <View style={styles.profileWrap}>
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel="Ir a mi cuenta"
-                hitSlop={10}
-                onPress={() => router.push('/(tabs)/account')}
-              >
-                <AppAvatar uri={avatarUrl} size={48} />
-              </Pressable>
-              <View style={styles.titleWrap}>
-                <Text style={[styles.topGreeting, { color: '#141417' }]}>Hola, {fullName.trim() ? fullName.trim().split(' ')[0] : 'Mateo'}</Text>
-                <Text style={[styles.topSubtitle, { color: '#5f5f67' }]}>
-                  Buen día para descubrir algo nuevo
-                </Text>
-              </View>
-            </View>
-            <View style={styles.topActions}>
-              <AppIconButton
-                name={webPushSnapshot.subscribed ? 'notifications' : 'notifications-outline'}
-                tone="light"
-                onPress={() => {}}
-              />
-            </View>
+          <View style={{ marginBottom: 14 }}>
+            {renderHeaderTopRow({
+              greeting: `Hola, ${fullName.trim() ? fullName.trim().split(' ')[0] : 'Mateo'}`,
+              subtitle: 'Buen día para descubrir algo nuevo',
+              textPrimaryColor: '#141417',
+              textSecondaryColor: '#5f5f67',
+              onNotificationsPress: () => {},
+              onLayout: (event) => {
+                const nextHeight = event.nativeEvent.layout.height;
+                if (nextHeight !== topBarHeight) {
+                  setTopBarHeight(nextHeight);
+                }
+              },
+            })}
           </View>
 
-          <View style={styles.searchRow}>
-            <View style={styles.searchFieldWrap}>
-              <SearchField
-                value={draftQuery}
-                onChangeText={setDraftQuery}
-                showClearButton={draftQuery.trim().length > 0}
-                placeholder="Busca un lugar o escribe lo que quieres hacer"
-                variant="light"
-              />
-            </View>
-          </View>
+          {renderSearchRow({ onChangeText: setDraftQuery })}
 
           <View
             onLayout={(event) => {
@@ -579,110 +552,7 @@ export default function ExploreScreen() {
               }
             }}
           >
-            <Animated.ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.quickCategories}
-              style={{ marginTop: 14 }}
-            >
-              {categoryOptions.map((option) => {
-                const active = filters.interests.includes(option.value);
-                const accent = getCategoryAccent(option.value as Spot['category']);
-                const progress = quickCategoryProgress.get(option.value) ?? new Animated.Value(0);
-
-                return (
-                  <Pressable
-                    key={option.value}
-                    style={styles.quickCategory}
-                    onPress={() => {
-                      const nextInterests = filters.interests.includes(option.value) ? [] : [option.value];
-                      router.replace({
-                        pathname: '/(tabs)/explore',
-                        params: {
-                          ...serializeFilters({
-                            ...filters,
-                            interests: nextInterests,
-                          }),
-                          tab: activeTab,
-                          query: draftQuery,
-                        },
-                      });
-                    }}
-                  >
-                    <Animated.View
-                      style={[
-                        option.image ? styles.quickCategoryImageWrap : styles.quickCategoryIcon,
-                        {
-                          transform: [
-                            {
-                              scale: progress.interpolate({
-                                inputRange: [0, 1],
-                                outputRange: [1, 1.08],
-                              }),
-                            },
-                          ],
-                        },
-                        !active && !option.image && {
-                          backgroundColor: '#ffffff',
-                          borderColor: 'transparent',
-                        },
-                        active &&
-                          !option.image && {
-                            backgroundColor: accent,
-                          },
-                      ]}
-                    >
-                      <Animated.View
-                        pointerEvents="none"
-                        style={[
-                          styles.quickCategoryBlurBlob,
-                          {
-                            backgroundColor: accent,
-                            opacity: progress.interpolate({
-                              inputRange: [0, 1],
-                              outputRange: [0, 0.26],
-                            }),
-                            transform: [
-                              {
-                                scale: progress.interpolate({
-                                  inputRange: [0, 1],
-                                  outputRange: [0.72, 1.18],
-                                }),
-                              },
-                            ],
-                          },
-                        ]}
-                      />
-                      {option.image ? (
-                        <Animated.Image
-                          source={option.image}
-                          style={[
-                            styles.quickCategoryImage,
-                            {
-                              transform: [
-                                {
-                                  scale: progress.interpolate({
-                                    inputRange: [0, 1],
-                                    outputRange: [1.04, 1.14],
-                                  }),
-                                },
-                              ],
-                            },
-                          ]}
-                          resizeMode="contain"
-                        />
-                      ) : (
-                        <Ionicons
-                          name={option.icon}
-                          size={22}
-                          color={active ? '#141417' : '#5f5f67'}
-                        />
-                      )}
-                    </Animated.View>
-                  </Pressable>
-                );
-              })}
-            </Animated.ScrollView>
+            {renderQuickCategoryCarousel({ marginTop: 14 })}
 
             <View
               onLayout={(event) => {
@@ -693,24 +563,7 @@ export default function ExploreScreen() {
               }}
               style={{ marginTop: 14 }}
             >
-              <AppSegmentedTabs
-                value={activeTab}
-                onChange={(nextTab) => {
-                  setDraftQuery('');
-                  router.replace({
-                    pathname: '/(tabs)/explore',
-                    params: {
-                      ...serializeFilters(DEFAULT_FILTERS),
-                      tab: nextTab,
-                      query: '',
-                    },
-                  });
-                }}
-                options={[
-                  { key: 'places', label: 'Lugares' },
-                  { key: 'now', label: 'Parches' },
-                ]}
-              />
+              {renderExploreTabs()}
             </View>
           </View>
 
@@ -731,48 +584,36 @@ export default function ExploreScreen() {
                 }
               }}
             >
-              <View style={styles.resultsBar}>
-                <View style={styles.resultsInfo}>
-                  <Text style={[styles.resultsText, { color: '#141417' }]}>
-                    {iosSortedData.length} resultados
-                  </Text>
-                  {deferredQuery.trim().length > 0 || isFiltersActive(filters) ? (
-                    <Pressable
-                      style={[styles.resultsFilterPill, { backgroundColor: 'rgba(239,56,87,0.12)' }]}
-                      onPress={() => {
-                        setIosFeedAnimationNonce((current) => current + 1);
-                        setDraftQuery('');
-                        router.replace({
-                          pathname: '/(tabs)/explore',
-                          params: {
-                            ...serializeFilters(DEFAULT_FILTERS),
-                            tab: activeTab,
-                            query: '',
-                          },
-                        });
-                      }}
-                    >
-                      <Text style={[styles.resultsFilterPillText, { color: '#EF3857' }]}>
-                        Limpiar filtros
-                      </Text>
-                      <Ionicons name="close" size={14} color="#EF3857" />
-                    </Pressable>
-                  ) : (
-                    <Text style={[styles.resultsHint, { color: '#5f5f67' }]}>
-                      Sin filtros
-                    </Text>
-                  )}
-                </View>
-                <Pressable
-                  style={[
-                    styles.filterButton,
-                    { backgroundColor: '#ffffff', borderColor: 'transparent' },
-                  ]}
-                  onPress={() => setFiltersOpen(true)}
-                >
-                  <Ionicons name="options-outline" size={20} color="#2e2e34" />
-                </Pressable>
-              </View>
+              {renderResultsBar({
+                resultCount: iosSortedData.length,
+                activePill:
+                  getActiveFiltersCount(filters) + (deferredQuery.trim().length > 0 ? 1 : 0) > 0
+                    ? {
+                        label: `(${getActiveFiltersCount(filters) + (deferredQuery.trim().length > 0 ? 1 : 0)}) filtros`,
+                        backgroundColor: 'rgba(239,56,87,0.12)',
+                        color: '#EF3857',
+                        onPress: () => {
+                          setIosFeedAnimationNonce((current) => current + 1);
+                          setDraftQuery('');
+                          router.replace({
+                            pathname: '/(tabs)/explore',
+                            params: {
+                              ...serializeFilters(DEFAULT_FILTERS),
+                              tab: activeTab,
+                              query: '',
+                            },
+                          });
+                        },
+                      }
+                    : undefined,
+                hint: deferredQuery.trim().length > 0 ? 'Búsqueda activa' : 'Sin filtros',
+                textColor: '#141417',
+                hintColor: '#5f5f67',
+                filterButtonBackgroundColor: '#ffffff',
+                filterButtonBorderColor: 'transparent',
+                filterIconColor: '#2e2e34',
+                onOpenFilters: () => setFiltersOpen(true),
+              })}
             </View>
           </View>
           </Animated.View>
@@ -952,269 +793,9 @@ export default function ExploreScreen() {
           />
         ) : null}
 
-        <View
-          style={[
-            styles.feedbackFabStack,
-            {
-              bottom: Math.max(insets.bottom, 8) + 24,
-            },
-          ]}
-        >
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Añadir feedback"
-            onPress={openFeedback}
-            style={[styles.suggestFab, styles.feedbackFabSecondary]}
-          >
-            <Ionicons name="chatbubble-ellipses-outline" size={20} color={spotsUi.textPrimary} />
-            <Text style={[styles.suggestFabText, styles.feedbackFabSecondaryText]}>Añadir feedback</Text>
-          </Pressable>
-
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Sugerir lugares"
-            onPress={openSuggestPlaces}
-            style={styles.suggestFab}
-          >
-            <Ionicons name="add-circle-outline" size={20} color="#fff7fb" />
-            <Text style={styles.suggestFabText}>Sugerir lugares</Text>
-          </Pressable>
-        </View>
-
-        <Modal
-          visible={suggestPlacesVisible}
-          transparent
-          animationType="none"
-          onRequestClose={handleSuggestPlacesRequestClose}
-        >
-          <View style={styles.suggestModalRoot}>
-            <Animated.View
-              pointerEvents="none"
-              style={[
-                styles.suggestModalBackdrop,
-                {
-                  opacity: suggestModalProgress.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: [0, 1],
-                  }),
-                },
-              ]}
-            />
-            <Pressable style={StyleSheet.absoluteFillObject} onPress={handleSuggestPlacesRequestClose} />
-            <KeyboardAvoidingView
-              behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-              style={styles.suggestModalKeyboard}
-            >
-              <Animated.View
-                style={[
-                  styles.suggestModalCard,
-                  {
-                    paddingBottom: 18 + Math.max(insets.bottom, 12),
-                    maxHeight: '84%',
-                  },
-                  {
-                    opacity: suggestModalProgress,
-                    transform: [
-                      {
-                        translateY: suggestModalProgress.interpolate({
-                          inputRange: [0, 1],
-                          outputRange: [56, 0],
-                        }),
-                      },
-                      {
-                        scale: suggestModalProgress.interpolate({
-                          inputRange: [0, 1],
-                          outputRange: [0.98, 1],
-                        }),
-                      },
-                    ],
-                  },
-                ]}
-              >
-                <View style={styles.suggestModalHeader}>
-                  <View style={styles.suggestModalTitleWrap}>
-                    <Text style={styles.suggestModalTitle}>Sugerir lugares</Text>
-                    <Text style={styles.suggestModalCopy}>
-                      Escribe uno o varios lugares para revisarlos luego por fecha de sugerencia.
-                    </Text>
-                  </View>
-                  <Pressable
-                    accessibilityRole="button"
-                    accessibilityLabel="Cerrar sugerencias"
-                    onPress={handleSuggestPlacesRequestClose}
-                    style={styles.suggestModalClose}
-                  >
-                    <Ionicons name="close" size={20} color={spotsUi.textPrimary} />
-                  </Pressable>
-                </View>
-
-                <View style={styles.suggestFieldsWrap}>
-                  <ScrollView
-                    style={styles.suggestFieldsScroll}
-                    contentContainerStyle={styles.suggestFields}
-                    showsVerticalScrollIndicator={false}
-                    keyboardShouldPersistTaps="handled"
-                  >
-                    {suggestedPlacesDraft.map((value, index) => (
-                      <View key={`suggest-place-${index}`} style={styles.suggestFieldRow}>
-                        <View style={styles.suggestInputWrap}>
-                          <TextInput
-                            value={value}
-                            onChangeText={(nextValue) => updateSuggestedPlace(index, nextValue)}
-                            placeholder={`Lugar ${index + 1}`}
-                            placeholderTextColor="rgba(255,255,255,0.36)"
-                            style={[
-                              styles.suggestInput,
-                              Platform.OS === 'web'
-                                ? ({
-                                    outlineWidth: 0,
-                                    outlineStyle: 'none',
-                                    outlineColor: 'transparent',
-                                  } as never)
-                                : null,
-                            ]}
-                          />
-                        </View>
-
-                        {suggestedPlacesDraft.length > 1 ? (
-                          <Pressable
-                            accessibilityRole="button"
-                            accessibilityLabel={`Eliminar lugar ${index + 1}`}
-                            onPress={() => removeSuggestedPlaceField(index)}
-                            style={styles.suggestFieldAction}
-                          >
-                            <Ionicons name="remove" size={20} color="#fff7fb" />
-                          </Pressable>
-                        ) : null}
-
-                        {index === suggestedPlacesDraft.length - 1 ? (
-                          <Pressable
-                            accessibilityRole="button"
-                            accessibilityLabel="Agregar otro lugar"
-                            onPress={addSuggestedPlaceField}
-                            style={styles.suggestFieldAction}
-                          >
-                            <Ionicons name="add" size={20} color="#fff7fb" />
-                          </Pressable>
-                        ) : null}
-                      </View>
-                    ))}
-                  </ScrollView>
-                </View>
-
-                <View style={styles.suggestModalFooter}>
-                  <AppPrimaryButton
-                    label={suggestionSubmitting ? 'Enviando...' : 'Enviar sugerencia'}
-                    loading={suggestionSubmitting}
-                    onPress={handleSubmitSuggestion}
-                    fullWidth
-                  />
-                </View>
-              </Animated.View>
-            </KeyboardAvoidingView>
-          </View>
-        </Modal>
-
-        <Modal
-          visible={feedbackVisible}
-          transparent
-          animationType="none"
-          onRequestClose={handleFeedbackRequestClose}
-        >
-          <View style={styles.suggestModalRoot}>
-            <Animated.View
-              pointerEvents="none"
-              style={[
-                styles.suggestModalBackdrop,
-                {
-                  opacity: feedbackModalProgress.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: [0, 1],
-                  }),
-                },
-              ]}
-            />
-            <Pressable style={StyleSheet.absoluteFillObject} onPress={handleFeedbackRequestClose} />
-            <KeyboardAvoidingView
-              behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-              style={styles.suggestModalKeyboard}
-            >
-              <Animated.View
-                style={[
-                  styles.suggestModalCard,
-                  {
-                    paddingBottom: 18 + Math.max(insets.bottom, 12),
-                    maxHeight: '78%',
-                  },
-                  {
-                    opacity: feedbackModalProgress,
-                    transform: [
-                      {
-                        translateY: feedbackModalProgress.interpolate({
-                          inputRange: [0, 1],
-                          outputRange: [56, 0],
-                        }),
-                      },
-                      {
-                        scale: feedbackModalProgress.interpolate({
-                          inputRange: [0, 1],
-                          outputRange: [0.98, 1],
-                        }),
-                      },
-                    ],
-                  },
-                ]}
-              >
-                <View style={styles.suggestModalHeader}>
-                  <View style={styles.suggestModalTitleWrap}>
-                    <Text style={styles.suggestModalTitle}>Añadir feedback</Text>
-                    <Text style={styles.suggestModalCopy}>
-                      Deja ideas, problemas o mejoras que quieras que revisemos e implementemos después.
-                    </Text>
-                  </View>
-                  <Pressable
-                    accessibilityRole="button"
-                    accessibilityLabel="Cerrar feedback"
-                    onPress={handleFeedbackRequestClose}
-                    style={styles.suggestModalClose}
-                  >
-                    <Ionicons name="close" size={20} color={spotsUi.textPrimary} />
-                  </Pressable>
-                </View>
-
-                <View style={styles.feedbackTextAreaWrap}>
-                  <TextInput
-                    value={feedbackDraft}
-                    onChangeText={setFeedbackDraft}
-                    placeholder="Escribe aquí todo lo que notaste, ideas nuevas, bugs o mejoras que quieras guardar..."
-                    placeholderTextColor="rgba(255,255,255,0.36)"
-                    multiline
-                    textAlignVertical="top"
-                    style={[
-                      styles.feedbackTextArea,
-                      Platform.OS === 'web'
-                        ? ({
-                            outlineWidth: 0,
-                            outlineStyle: 'none',
-                            outlineColor: 'transparent',
-                          } as never)
-                        : null,
-                    ]}
-                  />
-                </View>
-
-                <View style={styles.suggestModalFooter}>
-                  <AppPrimaryButton
-                    label={feedbackSubmitting ? 'Guardando...' : 'Guardar feedback'}
-                    loading={feedbackSubmitting}
-                    onPress={handleSubmitFeedback}
-                    fullWidth
-                  />
-                </View>
-              </Animated.View>
-            </KeyboardAvoidingView>
-          </View>
-        </Modal>
+        {renderFeedbackFabStack()}
+        {renderSuggestPlacesSheet()}
+        {renderFeedbackSheet()}
       </View>
     );
   }
@@ -1942,6 +1523,513 @@ export default function ExploreScreen() {
     });
   }
 
+  function renderQuickCategoryCarousel(options?: {
+    marginTop?: number;
+    onLayout?: (event: LayoutChangeEvent) => void;
+  }) {
+    const carousel = (
+      <Animated.ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.quickCategories}
+        style={options?.marginTop != null ? { marginTop: options.marginTop } : undefined}
+      >
+        {categoryOptions.map((option) => {
+          const active = filters.interests.includes(option.value);
+          const accent = getCategoryAccent(option.value as Spot['category']);
+          const progress = quickCategoryProgress.get(option.value) ?? new Animated.Value(0);
+
+          return (
+            <Pressable
+              key={option.value}
+              style={styles.quickCategory}
+              onPress={() => toggleQuickCategory(option.value)}
+            >
+              <Animated.View
+                style={[
+                  option.image ? styles.quickCategoryImageWrap : styles.quickCategoryIcon,
+                  {
+                    transform: [
+                      {
+                        scale: progress.interpolate({
+                          inputRange: [0, 1],
+                          outputRange: [1, 1.08],
+                        }),
+                      },
+                    ],
+                  },
+                  !active &&
+                    !option.image && {
+                      backgroundColor: '#ffffff',
+                      borderColor: 'transparent',
+                    },
+                  active &&
+                    !option.image && {
+                      backgroundColor: accent,
+                    },
+                ]}
+              >
+                <Animated.View
+                  pointerEvents="none"
+                  style={[
+                    styles.quickCategoryBlurBlob,
+                    {
+                      backgroundColor: accent,
+                      opacity: progress.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [0, 0.26],
+                      }),
+                      transform: [
+                        {
+                          scale: progress.interpolate({
+                            inputRange: [0, 1],
+                            outputRange: [0.72, 1.18],
+                          }),
+                        },
+                      ],
+                    },
+                  ]}
+                />
+                {option.image ? (
+                  <Animated.Image
+                    source={option.image}
+                    style={[
+                      styles.quickCategoryImage,
+                      {
+                        transform: [
+                          {
+                            scale: progress.interpolate({
+                              inputRange: [0, 1],
+                              outputRange: [1.04, 1.14],
+                            }),
+                          },
+                        ],
+                      },
+                    ]}
+                    resizeMode="contain"
+                  />
+                ) : (
+                  <Ionicons
+                    name={option.icon}
+                    size={22}
+                    color={active ? '#141417' : '#5f5f67'}
+                  />
+                )}
+              </Animated.View>
+            </Pressable>
+          );
+        })}
+      </Animated.ScrollView>
+    );
+
+    if (options?.onLayout) {
+      return <View onLayout={options.onLayout}>{carousel}</View>;
+    }
+
+    return carousel;
+  }
+
+  function renderResultsBar(options: {
+    resultCount: number;
+    activePill?: {
+      label: string;
+      backgroundColor: string;
+      color: string;
+      onPress: () => void;
+    };
+    hint: string;
+    textColor: string;
+    hintColor: string;
+    filterButtonBackgroundColor: string;
+    filterButtonBorderColor: string;
+    filterIconColor: string;
+    onOpenFilters: () => void;
+  }) {
+    return (
+      <View style={styles.resultsBar}>
+        <View style={styles.resultsInfo}>
+          <Text style={[styles.resultsText, { color: options.textColor }]}>
+            {options.resultCount} resultados
+          </Text>
+          {options.activePill ? (
+            <Pressable
+              style={[
+                styles.resultsFilterPill,
+                { backgroundColor: options.activePill.backgroundColor },
+              ]}
+              onPress={options.activePill.onPress}
+            >
+              <Text style={[styles.resultsFilterPillText, { color: options.activePill.color }]}>
+                {options.activePill.label}
+              </Text>
+              <Ionicons name="close" size={14} color={options.activePill.color} />
+            </Pressable>
+          ) : (
+            <Text style={[styles.resultsHint, { color: options.hintColor }]}>{options.hint}</Text>
+          )}
+        </View>
+        <Pressable
+          style={[
+            styles.filterButton,
+            {
+              backgroundColor: options.filterButtonBackgroundColor,
+              borderColor: options.filterButtonBorderColor,
+            },
+          ]}
+          onPress={options.onOpenFilters}
+        >
+          <Ionicons name="options-outline" size={20} color={options.filterIconColor} />
+        </Pressable>
+      </View>
+    );
+  }
+
+  function renderHeaderTopRow(options: {
+    greeting: string;
+    subtitle: string;
+    textPrimaryColor: string;
+    textSecondaryColor: string;
+    onNotificationsPress: () => void;
+    onLayout?: (event: LayoutChangeEvent) => void;
+  }) {
+    return (
+      <View style={styles.topRow} onLayout={options.onLayout}>
+        <View style={styles.profileWrap}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Ir a mi cuenta"
+            hitSlop={10}
+            onPress={() => router.push('/(tabs)/account')}
+          >
+            <AppAvatar uri={avatarUrl} size={48} />
+          </Pressable>
+          <View style={styles.titleWrap}>
+            <Text style={[styles.topGreeting, { color: options.textPrimaryColor }]}>
+              {options.greeting}
+            </Text>
+            <Text style={[styles.topSubtitle, { color: options.textSecondaryColor }]}>
+              {options.subtitle}
+            </Text>
+          </View>
+        </View>
+        <View style={styles.topActions}>
+          <AppIconButton
+            name={webPushSnapshot.subscribed ? 'notifications' : 'notifications-outline'}
+            tone="light"
+            onPress={options.onNotificationsPress}
+          />
+        </View>
+      </View>
+    );
+  }
+
+  function renderSearchRow(options: {
+    onChangeText: (value: string) => void;
+  }) {
+    return (
+      <View style={styles.searchRow}>
+        <View style={styles.searchFieldWrap}>
+          <SearchField
+            value={draftQuery}
+            onChangeText={options.onChangeText}
+            showClearButton={draftQuery.trim().length > 0}
+            placeholder="Busca un lugar o escribe lo que quieres hacer"
+            variant="light"
+          />
+        </View>
+      </View>
+    );
+  }
+
+  function renderFeedbackFabStack() {
+    return (
+      <View
+        style={[
+          styles.feedbackFabStack,
+          {
+            bottom: Math.max(insets.bottom, 8) + 24,
+          },
+        ]}
+      >
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Añadir feedback"
+          onPress={openFeedback}
+          style={[styles.suggestFab, styles.feedbackFabSecondary]}
+        >
+          <Ionicons name="chatbubble-ellipses-outline" size={20} color={spotsUi.textPrimary} />
+          <Text style={[styles.suggestFabText, styles.feedbackFabSecondaryText]}>Añadir feedback</Text>
+        </Pressable>
+
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Sugerir lugares"
+          onPress={openSuggestPlaces}
+          style={styles.suggestFab}
+        >
+          <Ionicons name="add-circle-outline" size={20} color="#fff7fb" />
+          <Text style={styles.suggestFabText}>Sugerir lugares</Text>
+        </Pressable>
+      </View>
+    );
+  }
+
+  function renderSuggestPlacesSheet() {
+    return (
+      <Modal
+        visible={suggestPlacesVisible}
+        transparent
+        animationType="none"
+        onRequestClose={handleSuggestPlacesRequestClose}
+      >
+        <View style={styles.suggestModalRoot}>
+          <Animated.View
+            pointerEvents="none"
+            style={[
+              styles.suggestModalBackdrop,
+              {
+                opacity: suggestModalProgress.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [0, 1],
+                }),
+              },
+            ]}
+          />
+          <Pressable style={StyleSheet.absoluteFillObject} onPress={handleSuggestPlacesRequestClose} />
+          <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+            style={styles.suggestModalKeyboard}
+          >
+            <Animated.View
+              style={[
+                styles.suggestModalCard,
+                {
+                  paddingBottom: 18 + Math.max(insets.bottom, 12),
+                  maxHeight: '84%',
+                },
+                {
+                  opacity: suggestModalProgress,
+                  transform: [
+                    {
+                      translateY: suggestModalProgress.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [56, 0],
+                      }),
+                    },
+                    {
+                      scale: suggestModalProgress.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [0.98, 1],
+                      }),
+                    },
+                  ],
+                },
+              ]}
+            >
+              <View style={styles.suggestModalHeader}>
+                <View style={styles.suggestModalTitleWrap}>
+                  <Text style={styles.suggestModalTitle}>Sugerir lugares</Text>
+                  <Text style={styles.suggestModalCopy}>
+                    Escribe uno o varios lugares para revisarlos luego por fecha de sugerencia.
+                  </Text>
+                </View>
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel="Cerrar sugerencias"
+                  onPress={handleSuggestPlacesRequestClose}
+                  style={styles.suggestModalClose}
+                >
+                  <Ionicons name="close" size={20} color={spotsUi.textPrimary} />
+                </Pressable>
+              </View>
+
+              <View style={styles.suggestFieldsWrap}>
+                <ScrollView
+                  style={styles.suggestFieldsScroll}
+                  contentContainerStyle={styles.suggestFields}
+                  showsVerticalScrollIndicator={false}
+                  keyboardShouldPersistTaps="handled"
+                >
+                  {suggestedPlacesDraft.map((value, index) => (
+                    <View key={`suggest-place-${index}`} style={styles.suggestFieldRow}>
+                      <View style={styles.suggestInputWrap}>
+                        <TextInput
+                          value={value}
+                          onChangeText={(nextValue) => updateSuggestedPlace(index, nextValue)}
+                          placeholder={`Lugar ${index + 1}`}
+                          placeholderTextColor="rgba(255,255,255,0.36)"
+                          style={[
+                            styles.suggestInput,
+                            Platform.OS === 'web'
+                              ? ({
+                                  outlineWidth: 0,
+                                  outlineStyle: 'none',
+                                  outlineColor: 'transparent',
+                                } as never)
+                              : null,
+                          ]}
+                        />
+                      </View>
+
+                      {suggestedPlacesDraft.length > 1 ? (
+                        <Pressable
+                          accessibilityRole="button"
+                          accessibilityLabel={`Eliminar lugar ${index + 1}`}
+                          onPress={() => removeSuggestedPlaceField(index)}
+                          style={styles.suggestFieldAction}
+                        >
+                          <Ionicons name="remove" size={20} color="#fff7fb" />
+                        </Pressable>
+                      ) : null}
+
+                      {index === suggestedPlacesDraft.length - 1 ? (
+                        <Pressable
+                          accessibilityRole="button"
+                          accessibilityLabel="Agregar otro lugar"
+                          onPress={addSuggestedPlaceField}
+                          style={styles.suggestFieldAction}
+                        >
+                          <Ionicons name="add" size={20} color="#fff7fb" />
+                        </Pressable>
+                      ) : null}
+                    </View>
+                  ))}
+                </ScrollView>
+              </View>
+
+              <View style={styles.suggestModalFooter}>
+                <AppPrimaryButton
+                  label={suggestionSubmitting ? 'Enviando...' : 'Enviar sugerencia'}
+                  loading={suggestionSubmitting}
+                  onPress={handleSubmitSuggestion}
+                  fullWidth
+                />
+              </View>
+            </Animated.View>
+          </KeyboardAvoidingView>
+        </View>
+      </Modal>
+    );
+  }
+
+  function renderFeedbackSheet() {
+    return (
+      <Modal
+        visible={feedbackVisible}
+        transparent
+        animationType="none"
+        onRequestClose={handleFeedbackRequestClose}
+      >
+        <View style={styles.suggestModalRoot}>
+          <Animated.View
+            pointerEvents="none"
+            style={[
+              styles.suggestModalBackdrop,
+              {
+                opacity: feedbackModalProgress.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [0, 1],
+                }),
+              },
+            ]}
+          />
+          <Pressable style={StyleSheet.absoluteFillObject} onPress={handleFeedbackRequestClose} />
+          <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+            style={styles.suggestModalKeyboard}
+          >
+            <Animated.View
+              style={[
+                styles.suggestModalCard,
+                {
+                  paddingBottom: 18 + Math.max(insets.bottom, 12),
+                  maxHeight: '78%',
+                },
+                {
+                  opacity: feedbackModalProgress,
+                  transform: [
+                    {
+                      translateY: feedbackModalProgress.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [56, 0],
+                      }),
+                    },
+                    {
+                      scale: feedbackModalProgress.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [0.98, 1],
+                      }),
+                    },
+                  ],
+                },
+              ]}
+            >
+              <View style={styles.suggestModalHeader}>
+                <View style={styles.suggestModalTitleWrap}>
+                  <Text style={styles.suggestModalTitle}>Añadir feedback</Text>
+                  <Text style={styles.suggestModalCopy}>
+                    Deja ideas, problemas o mejoras que quieras que revisemos e implementemos después.
+                  </Text>
+                </View>
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel="Cerrar feedback"
+                  onPress={handleFeedbackRequestClose}
+                  style={styles.suggestModalClose}
+                >
+                  <Ionicons name="close" size={20} color={spotsUi.textPrimary} />
+                </Pressable>
+              </View>
+
+              <View style={styles.feedbackTextAreaWrap}>
+                <TextInput
+                  value={feedbackDraft}
+                  onChangeText={setFeedbackDraft}
+                  placeholder="Escribe aquí todo lo que notaste, ideas nuevas, bugs o mejoras que quieras guardar..."
+                  placeholderTextColor="rgba(255,255,255,0.36)"
+                  multiline
+                  textAlignVertical="top"
+                  style={[
+                    styles.feedbackTextArea,
+                    Platform.OS === 'web'
+                      ? ({
+                          outlineWidth: 0,
+                          outlineStyle: 'none',
+                          outlineColor: 'transparent',
+                        } as never)
+                      : null,
+                  ]}
+                />
+              </View>
+
+              <View style={styles.suggestModalFooter}>
+                <AppPrimaryButton
+                  label={feedbackSubmitting ? 'Guardando...' : 'Guardar feedback'}
+                  loading={feedbackSubmitting}
+                  onPress={handleSubmitFeedback}
+                  fullWidth
+                />
+              </View>
+            </Animated.View>
+          </KeyboardAvoidingView>
+        </View>
+      </Modal>
+    );
+  }
+
+  function renderExploreTabs() {
+    return (
+      <AppSegmentedTabs
+        value={activeTab}
+        onChange={changeTab}
+        options={[
+          { key: 'places', label: 'Lugares' },
+          { key: 'now', label: 'Parches' },
+        ]}
+      />
+    );
+  }
+
   function animateHeader(expanded: boolean, options?: { force?: boolean }) {
     if (headerExpandedRef.current === expanded) return;
     const now = Date.now();
@@ -2161,142 +2249,24 @@ export default function ExploreScreen() {
             },
           ]}
         >
-          <View
-            style={styles.topRow}
-            onLayout={(event) => {
+          {renderHeaderTopRow({
+            greeting: `Hola, ${greetingName}`,
+            subtitle: encouragement,
+            textPrimaryColor: theme.textPrimary,
+            textSecondaryColor: theme.textSecondary,
+            onNotificationsPress: handleNotificationsPress,
+            onLayout: (event) => {
               const nextHeight = event.nativeEvent.layout.height;
               if (nextHeight !== topBarHeight) {
                 setTopBarHeight(nextHeight);
               }
-            }}
-          >
-            <View style={styles.profileWrap}>
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel="Ir a mi cuenta"
-                hitSlop={10}
-                onPress={() => router.push('/(tabs)/account')}
-              >
-                <AppAvatar uri={avatarUrl} size={48} />
-              </Pressable>
-              <View style={styles.titleWrap}>
-                <Text style={[styles.topGreeting, { color: theme.textPrimary }]}>Hola, {greetingName}</Text>
-                <Text style={[styles.topSubtitle, { color: theme.textSecondary }]}>{encouragement}</Text>
-              </View>
-            </View>
-            <View style={styles.topActions}>
-              <AppIconButton
-                name={webPushSnapshot.subscribed ? 'notifications' : 'notifications-outline'}
-                tone="light"
-                onPress={handleNotificationsPress}
-              />
-            </View>
-          </View>
+            },
+          })}
 
-          <Animated.ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.quickCategories}
-            style={{ marginTop: 14 }}
-          >
-            {categoryOptions.map((option) => {
-              const active = filters.interests.includes(option.value);
-              const accent = getCategoryAccent(option.value as Spot['category']);
-              const progress = quickCategoryProgress.get(option.value) ?? new Animated.Value(0);
-
-              return (
-                <Pressable
-                  key={option.value}
-                  style={styles.quickCategory}
-                  onPress={() => toggleQuickCategory(option.value)}
-                >
-                  <Animated.View
-                    style={[
-                      option.image ? styles.quickCategoryImageWrap : styles.quickCategoryIcon,
-                      {
-                        transform: [
-                          {
-                            scale: progress.interpolate({
-                              inputRange: [0, 1],
-                              outputRange: [1, 1.08],
-                            }),
-                          },
-                        ],
-                      },
-                      !active && !option.image && {
-                        backgroundColor: '#ffffff',
-                        borderColor: 'transparent',
-                      },
-                      active &&
-                        !option.image && {
-                          backgroundColor: accent,
-                        },
-                    ]}
-                  >
-                    <Animated.View
-                      pointerEvents="none"
-                      style={[
-                        styles.quickCategoryBlurBlob,
-                        {
-                          backgroundColor: accent,
-                          opacity: progress.interpolate({
-                            inputRange: [0, 1],
-                            outputRange: [0, 0.26],
-                          }),
-                          transform: [
-                            {
-                              scale: progress.interpolate({
-                                inputRange: [0, 1],
-                                outputRange: [0.72, 1.18],
-                              }),
-                            },
-                          ],
-                        },
-                      ]}
-                    />
-                    {option.image ? (
-                      <Animated.Image
-                        source={option.image}
-                        style={[
-                          styles.quickCategoryImage,
-                          {
-                            transform: [
-                              {
-                                scale: progress.interpolate({
-                                  inputRange: [0, 1],
-                                  outputRange: [1.04, 1.14],
-                                }),
-                              },
-                            ],
-                          },
-                        ]}
-                        resizeMode="contain"
-                      />
-                    ) : (
-                      <Ionicons
-                        name={option.icon}
-                        size={22}
-                        color={active ? '#141417' : '#5f5f67'}
-                      />
-                    )}
-                  </Animated.View>
-                </Pressable>
-              );
-            })}
-          </Animated.ScrollView>
+          {renderQuickCategoryCarousel({ marginTop: 14 })}
         </Animated.View>
 
-        <View style={styles.searchRow}>
-          <View style={styles.searchFieldWrap}>
-            <SearchField
-              value={draftQuery}
-              onChangeText={updateQuery}
-              showClearButton={draftQuery.trim().length > 0}
-              placeholder="Busca un lugar o escribe lo que quieres hacer"
-              variant="light"
-            />
-          </View>
-        </View>
+        {renderSearchRow({ onChangeText: updateQuery })}
 
         <Animated.View
           style={[
@@ -2327,113 +2297,16 @@ export default function ExploreScreen() {
                 },
               ]}
             >
-              <View
-                onLayout={(event) => {
+              {renderQuickCategoryCarousel({
+                onLayout: (event) => {
                   const nextHeight = event.nativeEvent.layout.height;
                   if (nextHeight !== categoriesHeight) {
                     setCategoriesHeight(nextHeight);
                   }
-                }}
-      >
-        <Animated.ScrollView
-                  horizontal
-                  showsHorizontalScrollIndicator={false}
-                  contentContainerStyle={styles.quickCategories}
-                >
-                  {categoryOptions.map((option) => {
-                    const active = filters.interests.includes(option.value);
-                    const accent = getCategoryAccent(option.value as Spot['category']);
-                    const progress = quickCategoryProgress.get(option.value) ?? new Animated.Value(0);
-                    return (
-                      <Pressable
-                        key={option.value}
-                        style={styles.quickCategory}
-                        onPress={() => toggleQuickCategory(option.value)}
-                      >
-                        <Animated.View
-                          style={[
-                            option.image ? styles.quickCategoryImageWrap : styles.quickCategoryIcon,
-                            {
-                              transform: [
-                                {
-                                  scale: progress.interpolate({
-                                    inputRange: [0, 1],
-                                    outputRange: [1, 1.08],
-                                  }),
-                                },
-                              ],
-                            },
-                            !active && !option.image && {
-                              backgroundColor: theme.surface,
-                              borderColor: theme.border,
-                            },
-                            active &&
-                              !option.image && {
-                                backgroundColor: accent,
-                              },
-                          ]}
-                        >
-                          <Animated.View
-                            pointerEvents="none"
-                            style={[
-                              styles.quickCategoryBlurBlob,
-                              {
-                                backgroundColor: accent,
-                                opacity: progress.interpolate({
-                                  inputRange: [0, 1],
-                                  outputRange: [0, 0.26],
-                                }),
-                                transform: [
-                                  {
-                                    scale: progress.interpolate({
-                                      inputRange: [0, 1],
-                                      outputRange: [0.72, 1.18],
-                                    }),
-                                  },
-                                ],
-                              },
-                            ]}
-                          />
-                          {option.image ? (
-                            <Animated.Image
-                              source={option.image}
-                              style={[
-                                styles.quickCategoryImage,
-                                {
-                                  transform: [
-                                    {
-                                      scale: progress.interpolate({
-                                        inputRange: [0, 1],
-                                        outputRange: [1.04, 1.14],
-                                      }),
-                                    },
-                                  ],
-                                },
-                              ]}
-                              resizeMode="contain"
-                            />
-                          ) : (
-                            <Ionicons
-                              name={option.icon}
-                              size={22}
-                              color={active ? theme.textPrimary : theme.textSecondary}
-                            />
-                          )}
-                        </Animated.View>
-                      </Pressable>
-                    );
-                  })}
-                </Animated.ScrollView>
-              </View>
+                },
+              })}
             </Animated.View>
-            <AppSegmentedTabs
-              value={activeTab}
-              onChange={changeTab}
-              options={[
-                { key: 'places', label: 'Lugares' },
-                { key: 'now', label: 'Parches' },
-              ]}
-            />
+            {renderExploreTabs()}
           </View>
         </Animated.View>
 
@@ -2457,37 +2330,25 @@ export default function ExploreScreen() {
             ],
           }}
         >
-          <View style={styles.resultsBar}>
-            <View style={styles.resultsInfo}>
-              <Text style={[styles.resultsText, { color: theme.textPrimary }]}>
-                {visibleData.length} resultados
-              </Text>
-              {activeCriteriaCount > 0 ? (
-                <Pressable
-                  style={[styles.resultsFilterPill, { backgroundColor: theme.accentSoft }]}
-                  onPress={clearAppliedFilters}
-                >
-                  <Text style={[styles.resultsFilterPillText, { color: theme.accent }]}>
-                    ({activeCriteriaCount}) filtros
-                  </Text>
-                  <Ionicons name="close" size={14} color={theme.accent} />
-                </Pressable>
-              ) : (
-                <Text style={[styles.resultsHint, { color: theme.textSecondary }]}>
-                  {deferredQuery.trim().length > 0 ? 'Búsqueda activa' : 'Sin filtros'}
-                </Text>
-              )}
-            </View>
-            <Pressable
-              style={[
-                styles.filterButton,
-                { backgroundColor: theme.surface, borderColor: theme.border },
-              ]}
-              onPress={() => setFiltersOpen(true)}
-            >
-              <Ionicons name="options-outline" size={20} color={theme.iconMuted} />
-            </Pressable>
-          </View>
+          {renderResultsBar({
+            resultCount: visibleData.length,
+            activePill:
+              activeCriteriaCount > 0
+                ? {
+                    label: `(${activeCriteriaCount}) filtros`,
+                    backgroundColor: theme.accentSoft,
+                    color: theme.accent,
+                    onPress: clearAppliedFilters,
+                  }
+                : undefined,
+            hint: deferredQuery.trim().length > 0 ? 'Búsqueda activa' : 'Sin filtros',
+            textColor: theme.textPrimary,
+            hintColor: theme.textSecondary,
+            filterButtonBackgroundColor: theme.surface,
+            filterButtonBorderColor: theme.border,
+            filterIconColor: theme.iconMuted,
+            onOpenFilters: () => setFiltersOpen(true),
+          })}
         </Animated.View>
       </Animated.View>
 
@@ -3001,269 +2862,9 @@ export default function ExploreScreen() {
         </ResultsAppear>
       </Animated.ScrollView>
 
-      <View
-        style={[
-          styles.feedbackFabStack,
-          {
-            bottom: Math.max(insets.bottom, 8) + 24,
-          },
-        ]}
-      >
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Añadir feedback"
-          onPress={openFeedback}
-          style={[styles.suggestFab, styles.feedbackFabSecondary]}
-        >
-          <Ionicons name="chatbubble-ellipses-outline" size={20} color={spotsUi.textPrimary} />
-          <Text style={[styles.suggestFabText, styles.feedbackFabSecondaryText]}>Añadir feedback</Text>
-        </Pressable>
-
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Sugerir lugares"
-          onPress={openSuggestPlaces}
-          style={styles.suggestFab}
-        >
-          <Ionicons name="add-circle-outline" size={20} color="#fff7fb" />
-          <Text style={styles.suggestFabText}>Sugerir lugares</Text>
-        </Pressable>
-      </View>
-
-      <Modal
-        visible={suggestPlacesVisible}
-        transparent
-        animationType="none"
-        onRequestClose={handleSuggestPlacesRequestClose}
-      >
-        <View style={styles.suggestModalRoot}>
-          <Animated.View
-            pointerEvents="none"
-            style={[
-              styles.suggestModalBackdrop,
-              {
-                opacity: suggestModalProgress.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [0, 1],
-                }),
-              },
-            ]}
-          />
-          <Pressable style={StyleSheet.absoluteFillObject} onPress={handleSuggestPlacesRequestClose} />
-          <KeyboardAvoidingView
-            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-            style={styles.suggestModalKeyboard}
-          >
-            <Animated.View
-              style={[
-                styles.suggestModalCard,
-                {
-                  paddingBottom: 18 + Math.max(insets.bottom, 12),
-                  maxHeight: '84%',
-                },
-                {
-                  opacity: suggestModalProgress,
-                  transform: [
-                    {
-                      translateY: suggestModalProgress.interpolate({
-                        inputRange: [0, 1],
-                        outputRange: [56, 0],
-                      }),
-                    },
-                    {
-                      scale: suggestModalProgress.interpolate({
-                        inputRange: [0, 1],
-                        outputRange: [0.98, 1],
-                      }),
-                    },
-                  ],
-                },
-              ]}
-            >
-              <View style={styles.suggestModalHeader}>
-                <View style={styles.suggestModalTitleWrap}>
-                  <Text style={styles.suggestModalTitle}>Sugerir lugares</Text>
-                  <Text style={styles.suggestModalCopy}>
-                    Escribe uno o varios lugares para revisarlos luego por fecha de sugerencia.
-                  </Text>
-                </View>
-                <Pressable
-                  accessibilityRole="button"
-                  accessibilityLabel="Cerrar sugerencias"
-                  onPress={handleSuggestPlacesRequestClose}
-                  style={styles.suggestModalClose}
-                >
-                  <Ionicons name="close" size={20} color={spotsUi.textPrimary} />
-                </Pressable>
-              </View>
-
-              <View style={styles.suggestFieldsWrap}>
-                <ScrollView
-                  style={styles.suggestFieldsScroll}
-                  contentContainerStyle={styles.suggestFields}
-                  showsVerticalScrollIndicator={false}
-                  keyboardShouldPersistTaps="handled"
-                >
-                  {suggestedPlacesDraft.map((value, index) => (
-                    <View key={`suggest-place-${index}`} style={styles.suggestFieldRow}>
-                      <View style={styles.suggestInputWrap}>
-                        <TextInput
-                          value={value}
-                          onChangeText={(nextValue) => updateSuggestedPlace(index, nextValue)}
-                          placeholder={`Lugar ${index + 1}`}
-                          placeholderTextColor="rgba(255,255,255,0.36)"
-                          style={[
-                            styles.suggestInput,
-                            Platform.OS === 'web'
-                              ? ({
-                                  outlineWidth: 0,
-                                  outlineStyle: 'none',
-                                  outlineColor: 'transparent',
-                                } as never)
-                              : null,
-                          ]}
-                        />
-                      </View>
-
-                      {suggestedPlacesDraft.length > 1 ? (
-                        <Pressable
-                          accessibilityRole="button"
-                          accessibilityLabel={`Eliminar lugar ${index + 1}`}
-                          onPress={() => removeSuggestedPlaceField(index)}
-                          style={styles.suggestFieldAction}
-                        >
-                          <Ionicons name="remove" size={20} color="#fff7fb" />
-                        </Pressable>
-                      ) : null}
-
-                      {index === suggestedPlacesDraft.length - 1 ? (
-                        <Pressable
-                          accessibilityRole="button"
-                          accessibilityLabel="Agregar otro lugar"
-                          onPress={addSuggestedPlaceField}
-                          style={styles.suggestFieldAction}
-                        >
-                          <Ionicons name="add" size={20} color="#fff7fb" />
-                        </Pressable>
-                      ) : null}
-                    </View>
-                  ))}
-                </ScrollView>
-              </View>
-
-              <View style={styles.suggestModalFooter}>
-                <AppPrimaryButton
-                  label={suggestionSubmitting ? 'Enviando...' : 'Enviar sugerencia'}
-                  loading={suggestionSubmitting}
-                  onPress={handleSubmitSuggestion}
-                  fullWidth
-                />
-              </View>
-            </Animated.View>
-          </KeyboardAvoidingView>
-        </View>
-      </Modal>
-
-      <Modal
-        visible={feedbackVisible}
-        transparent
-        animationType="none"
-        onRequestClose={handleFeedbackRequestClose}
-      >
-        <View style={styles.suggestModalRoot}>
-          <Animated.View
-            pointerEvents="none"
-            style={[
-              styles.suggestModalBackdrop,
-              {
-                opacity: feedbackModalProgress.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [0, 1],
-                }),
-              },
-            ]}
-          />
-          <Pressable style={StyleSheet.absoluteFillObject} onPress={handleFeedbackRequestClose} />
-          <KeyboardAvoidingView
-            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-            style={styles.suggestModalKeyboard}
-          >
-            <Animated.View
-              style={[
-                styles.suggestModalCard,
-                {
-                  paddingBottom: 18 + Math.max(insets.bottom, 12),
-                  maxHeight: '78%',
-                },
-                {
-                  opacity: feedbackModalProgress,
-                  transform: [
-                    {
-                      translateY: feedbackModalProgress.interpolate({
-                        inputRange: [0, 1],
-                        outputRange: [56, 0],
-                      }),
-                    },
-                    {
-                      scale: feedbackModalProgress.interpolate({
-                        inputRange: [0, 1],
-                        outputRange: [0.98, 1],
-                      }),
-                    },
-                  ],
-                },
-              ]}
-            >
-              <View style={styles.suggestModalHeader}>
-                <View style={styles.suggestModalTitleWrap}>
-                  <Text style={styles.suggestModalTitle}>Añadir feedback</Text>
-                  <Text style={styles.suggestModalCopy}>
-                    Deja ideas, problemas o mejoras que quieras que revisemos e implementemos después.
-                  </Text>
-                </View>
-                <Pressable
-                  accessibilityRole="button"
-                  accessibilityLabel="Cerrar feedback"
-                  onPress={handleFeedbackRequestClose}
-                  style={styles.suggestModalClose}
-                >
-                  <Ionicons name="close" size={20} color={spotsUi.textPrimary} />
-                </Pressable>
-              </View>
-
-              <View style={styles.feedbackTextAreaWrap}>
-                <TextInput
-                  value={feedbackDraft}
-                  onChangeText={setFeedbackDraft}
-                  placeholder="Escribe aquí todo lo que notaste, ideas nuevas, bugs o mejoras que quieras guardar..."
-                  placeholderTextColor="rgba(255,255,255,0.36)"
-                  multiline
-                  textAlignVertical="top"
-                  style={[
-                    styles.feedbackTextArea,
-                    Platform.OS === 'web'
-                      ? ({
-                          outlineWidth: 0,
-                          outlineStyle: 'none',
-                          outlineColor: 'transparent',
-                        } as never)
-                      : null,
-                  ]}
-                />
-              </View>
-
-              <View style={styles.suggestModalFooter}>
-                <AppPrimaryButton
-                  label={feedbackSubmitting ? 'Guardando...' : 'Guardar feedback'}
-                  loading={feedbackSubmitting}
-                  onPress={handleSubmitFeedback}
-                  fullWidth
-                />
-              </View>
-            </Animated.View>
-          </KeyboardAvoidingView>
-        </View>
-      </Modal>
+      {renderFeedbackFabStack()}
+      {renderSuggestPlacesSheet()}
+      {renderFeedbackSheet()}
 
       {filtersOpen ? (
         <FiltersSheet

@@ -9,7 +9,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const appRoot = join(__dirname, '..');
 const distDir = join(appRoot, 'dist');
 const envLocalPath = join(appRoot, '.env.local');
-const envDeployPath = join(appRoot, '.env.deploy.local');
+const envDeployPath = join(appRoot, '..', '..', '.env.deploy.local');
 const remoteManifestName = '.spots-deploy-manifest.json';
 
 function parseEnvFile(pathname) {
