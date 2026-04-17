@@ -199,6 +199,8 @@ const isIOSWeb =
   Platform.OS === 'web' &&
   typeof navigator !== 'undefined' &&
   /iphone|ipad|ipod/i.test(navigator.userAgent);
+const useLegacyIOSWebExplorePath = false;
+const debugGeneralRenderLimit = 112;
 
 const categoryOptions: Array<{
   label: string;
@@ -337,7 +339,7 @@ export default function ExploreScreen() {
 
   useFocusEffect(
     useCallback(() => {
-      if (!isIOSWeb) {
+      if (!(isIOSWeb && useLegacyIOSWebExplorePath)) {
         return;
       }
 
@@ -360,7 +362,7 @@ export default function ExploreScreen() {
   );
 
   useEffect(() => {
-    if (!isIOSWeb) {
+    if (!(isIOSWeb && useLegacyIOSWebExplorePath)) {
       return;
     }
 
@@ -382,7 +384,7 @@ export default function ExploreScreen() {
     }).start();
   }, [feedIntro, iosResultsAnimationTrigger]);
 
-  if (isIOSWeb) {
+  if (isIOSWeb && useLegacyIOSWebExplorePath) {
     const iosActiveData = getSpotsByTypeFromList(spots, activeTab === 'places' ? 'place' : 'event');
     const iosFilteredData = iosActiveData.filter((spot) =>
       matchesSpotToFilters(spot, filters, deferredQuery, userLocation),
@@ -1302,6 +1304,27 @@ export default function ExploreScreen() {
     const visibleIds = new Set(mapVisibleSpotIds);
     return visibleData.filter((spot) => visibleIds.has(spot.id));
   }, [mappableData, mapVisibleSpotIds, visibleData]);
+  const renderedVisibleData = useMemo(
+    () =>
+      useLegacyIOSWebExplorePath
+        ? visibleData
+        : visibleData.slice(0, debugGeneralRenderLimit),
+    [visibleData],
+  );
+  const renderedMappableData = useMemo(
+    () =>
+      useLegacyIOSWebExplorePath
+        ? mappableData
+        : mappableData.slice(0, debugGeneralRenderLimit),
+    [mappableData],
+  );
+  const renderedMapVisibleData = useMemo(
+    () =>
+      useLegacyIOSWebExplorePath
+        ? mapVisibleData
+        : mapVisibleData.slice(0, debugGeneralRenderLimit),
+    [mapVisibleData],
+  );
   const theme = {
     background: '#f5f5f7',
     surface: '#ffffff',
@@ -2464,7 +2487,7 @@ export default function ExploreScreen() {
           layoutMode === 'map' ? (
             <View style={styles.mapWrap}>
               <ExploreMap
-                spots={mappableData}
+                spots={renderedMappableData}
                 onOpenSpot={(spotId) => router.push(`/spot/${spotId}`)}
                 onVisibleSpotsChange={handleVisibleSpotsChange}
               />
@@ -2474,12 +2497,12 @@ export default function ExploreScreen() {
                     En esta vista
                   </Text>
                   <Text style={[styles.mapFeedCount, { color: theme.textSecondary }]}>
-                    {mapVisibleData.length} lugar{mapVisibleData.length === 1 ? '' : 'es'}
+                    {renderedMapVisibleData.length} lugar{renderedMapVisibleData.length === 1 ? '' : 'es'}
                   </Text>
                 </View>
-                {mapVisibleData.length ? (
+                {renderedMapVisibleData.length ? (
                   <View style={styles.listWrap}>
-                    {mapVisibleData.map((spot) => (
+                    {renderedMapVisibleData.map((spot) => (
                         <Link key={spot.id} href={getSpotHref(spot)} asChild>
                           <Pressable style={styles.listCard}>
                           <View style={styles.listCardImageWrap}>
@@ -2580,7 +2603,7 @@ export default function ExploreScreen() {
             </View>
           ) : layoutMode === 'grid' ? (
             <View style={styles.gridWrap}>
-              {visibleData.map((spot) => (
+              {renderedVisibleData.map((spot) => (
                   <Link key={spot.id} href={getSpotHref(spot)} asChild>
                     <Pressable style={styles.gridCard}>
                     <ImageBackground
@@ -2662,7 +2685,7 @@ export default function ExploreScreen() {
             </View>
           ) : layoutMode === 'list' ? (
             <View style={styles.listWrap}>
-              {visibleData.map((spot) => (
+              {renderedVisibleData.map((spot) => (
                   <Link key={spot.id} href={getSpotHref(spot)} asChild>
                     <Pressable style={styles.listCard}>
                     <ImageBackground
@@ -2748,7 +2771,7 @@ export default function ExploreScreen() {
               ))}
             </View>
           ) : (
-            visibleData.map((spot) => (
+            renderedVisibleData.map((spot) => (
                 <Link key={spot.id} href={getSpotHref(spot)} asChild>
                   <Pressable style={styles.card}>
                   <ImageBackground
