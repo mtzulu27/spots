@@ -18,8 +18,28 @@ function isWebRuntime() {
   return Platform.OS === 'web' && typeof window !== 'undefined';
 }
 
+function isIOSWeb() {
+  if (!isWebRuntime()) {
+    return false;
+  }
+
+  const userAgent = navigator.userAgent.toLowerCase();
+  return /iphone|ipad|ipod/.test(userAgent);
+}
+
 function canUseServiceWorker() {
-  return isWebRuntime() && 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
+  if (!isWebRuntime()) {
+    return false;
+  }
+
+  // Temporary isolation: iPhone/iPad PWA is the main crash surface, so we
+  // disable web push there while we verify whether the boot crash is tied to
+  // service worker / push APIs.
+  if (isIOSWeb()) {
+    return false;
+  }
+
+  return 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
 }
 
 function getPermission(): WebPushPermission {
@@ -89,16 +109,27 @@ export async function registerWebPushServiceWorker() {
 }
 
 export async function getWebPushSnapshot(): Promise<WebPushSnapshot> {
+  const defaultWebPushSnapshot: WebPushSnapshot = {
+    installed: false,
+    permission: 'unsupported',
+    subscribed: false,
+    supported: false,
+  };
+
   if (!canUseServiceWorker()) {
-    return {
-      installed: false,
-      permission: 'unsupported',
-      subscribed: false,
-      supported: false,
-    };
+    return defaultWebPushSnapshot;
   }
 
   const registration = await navigator.serviceWorker.getRegistration(WEB_PUSH_SERVICE_WORKER_PATH);
+  if (!registration?.pushManager) {
+    return {
+      ...defaultWebPushSnapshot,
+      installed: isStandaloneWebApp(),
+      permission: getPermission(),
+      supported: true,
+    };
+  }
+
   const subscription = await registration?.pushManager.getSubscription();
 
   return {

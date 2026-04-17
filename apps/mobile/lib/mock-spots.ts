@@ -8,6 +8,9 @@ export type Spot = {
   branchSlug: string
   feedPriorityRank: number
   manuallyAdjusted: boolean
+  editorialBadge?: string | null
+  createdAt?: string | null
+  updatedAt?: string | null
   likeTargetId: string
   type: SpotType
   name: string
@@ -43,6 +46,18 @@ export type Spot = {
 }
 
 const emptySpots: Spot[] = []
+
+function toFiniteBudget(value: number | undefined, fallback: number | undefined) {
+  if (Number.isFinite(value)) {
+    return value as number
+  }
+
+  if (Number.isFinite(fallback)) {
+    return fallback as number
+  }
+
+  return 0
+}
 
 export function normalizeCommercialCenterLabel(value: string) {
   const cleaned = value
@@ -247,6 +262,10 @@ export function aggregatePlaceBranches(branches: Spot[]) {
   const uniqueDays = Array.from(new Set(branches.flatMap((branch) => branch.days)))
   const uniqueTags = Array.from(new Set(branches.flatMap((branch) => branch.tags)))
   const uniqueMoods = Array.from(new Set(branches.flatMap((branch) => branch.moods)))
+  const branchMinBudgets = branches.map((branch) => toFiniteBudget(branch.minBudget, 0))
+  const branchMaxBudgets = branches.map((branch) =>
+    toFiniteBudget(branch.maxBudget, toFiniteBudget(branch.minBudget, 0)),
+  )
   const uniqueGalleryImages = Array.from(
     new Set(
       branches.flatMap((branch) =>
@@ -270,8 +289,8 @@ export function aggregatePlaceBranches(branches: Spot[]) {
     maxPeople: Math.max(...branches.map((branch) => branch.maxPeople)),
     days: uniqueDays,
     distanceKm: Math.min(...branches.map((branch) => branch.distanceKm)),
-    minBudget: Math.min(...branches.map((branch) => branch.minBudget)),
-    maxBudget: Math.max(...branches.map((branch) => branch.maxBudget)),
+    minBudget: Math.min(...branchMinBudgets),
+    maxBudget: Math.max(...branchMaxBudgets),
     instagram: branches.find((branch) => branch.instagram)?.instagram ?? '',
     whatsapp: branches.find((branch) => branch.whatsapp)?.whatsapp ?? '',
     phone: branches.find((branch) => branch.phone)?.phone ?? '',

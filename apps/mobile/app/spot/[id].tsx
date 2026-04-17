@@ -6,6 +6,7 @@ import {
   AppState,
   ActivityIndicator,
   Animated,
+  Image,
   ImageBackground,
   Modal,
   PanResponder,
@@ -18,9 +19,9 @@ import {
   View,
 } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { AppIconButton, AppLikeButton, AppPrimaryButton, appColors, spotsUi } from '@/components/app-ui'
-import { getEffectiveSpotDistanceKm } from '@/lib/explore-filters'
-import { formatBudget } from '@/lib/explore-filters'
+import { AppBookmarkButton, AppIconButton, AppLikeButton, AppPrimaryButton, appColors, spotsUi } from '@/components/app-ui'
+import { useBookmarksStore } from '@/lib/bookmarks-store'
+import { formatApproxBudgetPerPersonLabel, getEffectiveSpotDistanceKm } from '@/lib/explore-filters'
 import { formatLikesCount, useLikesStore } from '@/lib/likes-store'
 import { useLocationStore } from '@/lib/location-store'
 import { useRelayoutSubscription } from '@/lib/relayout'
@@ -44,6 +45,15 @@ import {
   type Spot,
 } from '@/lib/mock-spots'
 import { useSpotsStore } from '@/lib/spots-store'
+
+const exploreFoodIcon = require('../../assets/explore_food_icon.png')
+const exploreCinemaIcon = require('../../assets/explore_cinema_icon.png')
+const exploreArtIcon = require('../../assets/explore_art_icon.png')
+const exploreNightlifeIcon = require('../../assets/explore_nightlife_icon.png')
+const exploreSportsIcon = require('../../assets/explore_sports_icon.png')
+const exploreFamilyIcon = require('../../assets/explore_family_icon.png')
+const exploreEventsIcon = require('../../assets/explore_events_icon.png')
+const exploreNatureIcon = require('../../assets/explore_nature_icon.png')
 
 type DetailStat = {
   icon: keyof typeof Ionicons.glyphMap
@@ -103,12 +113,7 @@ const detailUi = {
 }
 
 function getPriceLabel(spot: Spot) {
-  if (spot.minBudget <= 0 && spot.maxBudget <= 0) {
-    return 'Por definir'
-  }
-
-  const baseBudget = spot.minBudget > 0 ? spot.minBudget : spot.maxBudget
-  return `Desde $${formatBudget(baseBudget)} COP`
+  return formatApproxBudgetPerPersonLabel(spot.minBudget, spot.maxBudget)
 }
 
 function getMenuActionLabel(category: Spot['category']) {
@@ -171,7 +176,7 @@ function buildGalleryImages(detailSpot: Spot) {
       ...(detailSpot.galleryImages ?? []),
       detailSpot.image,
     ].filter(Boolean)),
-  ).slice(0, 5)
+  ).slice(0, 10)
 }
 
 function getOpenStatus(schedule: string) {
@@ -186,6 +191,7 @@ export default function SpotDetailScreen() {
   const { id, branch } = useLocalSearchParams<{ id: string; branch?: string }>()
   const { spots, loading } = useSpotsStore()
   const { getLikesCount, isLiked, toggleLike } = useLikesStore()
+  const { isBookmarked, toggleBookmark } = useBookmarksStore()
   const { userLocation } = useLocationStore()
   const [, forceResumeRender] = useState(0)
   const [selectedBranchId, setSelectedBranchId] = useState<string | null>(null)
@@ -502,6 +508,7 @@ export default function SpotDetailScreen() {
 
   const likeCount = detailSpot ? getLikesCount(detailSpot.likeTargetId) : 0
   const liked = detailSpot ? isLiked(detailSpot.likeTargetId) : false
+  const bookmarked = detailSpot ? isBookmarked(detailSpot.likeTargetId) : false
   const similarSpots = detailSpot
     ? isEvent
       ? getSimilarSpotsFromList(spots, detailSpot)
@@ -539,11 +546,19 @@ export default function SpotDetailScreen() {
     spot: resolvedContextSpot ?? spot ?? emptySpotForActions,
   })
   const categoryIcon = getCategoryIcon(detailSpot?.category ?? 'Restaurantes y cafés')
-  const baseHeroHeight = 352
+  const baseHeroHeight = 382
+  const heroPanelOverlap = 28
   const sheetMaxOffset = clamp(windowHeight * 0.34, 160, 300)
+  const panelCompressionFactor = 0.52
+  const baseHeroHeightValue = useRef(new Animated.Value(baseHeroHeight)).current
+  const baseSheetTopValue = useRef(new Animated.Value(baseHeroHeight - heroPanelOverlap)).current
   const sheetTranslateY = useRef(new Animated.Value(0)).current
   const sheetOffsetRef = useRef(0)
-  const heroAnimatedHeight = Animated.add(sheetTranslateY, new Animated.Value(baseHeroHeight))
+  const heroAnimatedHeight = Animated.add(sheetTranslateY, baseHeroHeightValue)
+  const sheetAnimatedTop = Animated.add(
+    baseSheetTopValue,
+    Animated.multiply(sheetTranslateY, panelCompressionFactor),
+  )
   const heroContentOpacity = sheetTranslateY.interpolate({
     inputRange: [0, sheetMaxOffset * 0.55, sheetMaxOffset],
     outputRange: [1, 0.4, 0],
@@ -647,7 +662,7 @@ export default function SpotDetailScreen() {
       PanResponder.create({
         onMoveShouldSetPanResponder: (_, gestureState) =>
           Math.abs(gestureState.dy) > Math.abs(gestureState.dx) &&
-          Math.abs(gestureState.dy) > 5,
+          Math.abs(gestureState.dy) > 3,
         onPanResponderGrant: () => {
           sheetTranslateY.stopAnimation((value) => {
             sheetOffsetRef.current = typeof value === 'number' ? value : 0
@@ -740,6 +755,7 @@ export default function SpotDetailScreen() {
             imageStyle={styles.heroImage}
           />
           <View pointerEvents="none" style={styles.heroOverlay} />
+          <View pointerEvents="none" style={styles.heroBottomShadow} />
         </Animated.View>
 
         <Animated.View
@@ -783,7 +799,6 @@ export default function SpotDetailScreen() {
               />
             ))}
           </Animated.View>
-          <View pointerEvents="none" style={styles.heroOverlay} />
         </Animated.View>
 
         <View pointerEvents="box-none" style={styles.heroChrome}>
@@ -806,6 +821,12 @@ export default function SpotDetailScreen() {
                 tone="glass"
                 activeColor={detailUi.accent}
                 onPress={() => toggleLike(detailSpot.likeTargetId)}
+              />
+              <AppBookmarkButton
+                bookmarked={bookmarked}
+                tone="glass"
+                activeColor={detailUi.text}
+                onPress={() => void toggleBookmark(detailSpot.likeTargetId)}
               />
               <AppIconButton
                 name="share-social-outline"
@@ -851,18 +872,6 @@ export default function SpotDetailScreen() {
                     </Text>
                   </View>
                 </View>
-                {resolvedContextSpot.moods.length > 0 ? (
-                  <View style={styles.heroIdealForRow}>
-                    <Text style={styles.heroIdealForLabel}>Ideal para:</Text>
-                    <View style={styles.heroIdealForChips}>
-                      {resolvedContextSpot.moods.slice(0, 3).map((mood) => (
-                        <View key={mood} style={styles.heroIdealForChip}>
-                          <Text style={styles.heroIdealForChipText}>{mood}</Text>
-                        </View>
-                      ))}
-                    </View>
-                  </View>
-                ) : null}
               </>
             ) : (
               <>
@@ -874,18 +883,6 @@ export default function SpotDetailScreen() {
                     </Text>
                   </View>
                 </View>
-                {resolvedContextSpot.moods.length > 0 ? (
-                  <View style={styles.heroIdealForRow}>
-                    <Text style={styles.heroIdealForLabel}>Ideal para:</Text>
-                    <View style={styles.heroIdealForChips}>
-                      {resolvedContextSpot.moods.slice(0, 3).map((mood) => (
-                        <View key={mood} style={styles.heroIdealForChip}>
-                          <Text style={styles.heroIdealForChipText}>{mood}</Text>
-                        </View>
-                      ))}
-                    </View>
-                  </View>
-                ) : null}
               </>
             )}
           </Animated.View>
@@ -906,6 +903,20 @@ export default function SpotDetailScreen() {
             </View>
           </Animated.View>
         ) : null}
+
+        <View
+          style={[
+            styles.heroHandleArea,
+            Platform.OS === 'web'
+              ? ({
+                  touchAction: 'none',
+                } as never)
+              : null,
+          ]}
+          {...sheetPanResponder.panHandlers}
+        >
+          <View style={styles.heroHandle} />
+        </View>
       </Animated.View>
 
       <Animated.View
@@ -913,14 +924,12 @@ export default function SpotDetailScreen() {
           styles.sheet,
           {
             opacity: sheetIntroOpacity,
-            top: Animated.add(sheetTranslateY, new Animated.Value(baseHeroHeight - 28)),
+            top: sheetAnimatedTop,
             transform: [{ translateY: sheetIntroTranslateY }],
           },
         ]}
       >
-        <View style={styles.sheetHandleArea} {...sheetPanResponder.panHandlers}>
-          <View style={styles.sheetHandle} />
-        </View>
+        <View style={styles.sheetTopInset} />
         <ScrollView
           style={styles.sheetScroll}
           scrollIndicatorInsets={{ bottom: insets.bottom }}
@@ -1294,7 +1303,6 @@ export default function SpotDetailScreen() {
                       <SimilarSpotCard
                         key={item.id}
                         spot={item}
-                        likes={formatLikesCount(getLikesCount(item.likeTargetId))}
                       />
                     ))}
                   </ScrollView>
@@ -1493,7 +1501,9 @@ function SelectorRadio({
   )
 }
 
-function SimilarSpotCard({ spot, likes }: { spot: Spot; likes: string }) {
+function SimilarSpotCard({ spot }: { spot: Spot }) {
+  const { isBookmarked, toggleBookmark } = useBookmarksStore()
+
   return (
     <Link href={`/spot/${spot.id}`} asChild>
       <Pressable style={styles.similarCard}>
@@ -1504,12 +1514,25 @@ function SimilarSpotCard({ spot, likes }: { spot: Spot; likes: string }) {
         >
           <View style={styles.cardOverlay} />
           <View style={styles.similarImageMeta}>
-            <View style={styles.similarCategoryChip}>
-              <Ionicons
-                name={getCategoryIcon(spot.category)}
-                size={14}
-                color={detailUi.text}
-              />
+            <View style={styles.similarImageActions}>
+              {spot.type === 'place' ? (
+                <AppBookmarkButton
+                  bookmarked={isBookmarked(spot.likeTargetId)}
+                  onPress={() => void toggleBookmark(spot.likeTargetId)}
+                  activeColor={detailUi.text}
+                />
+              ) : null}
+              <View style={styles.similarCategoryChip}>
+                {getCategoryImage(spot.category) ? (
+                  <Image source={getCategoryImage(spot.category)} style={styles.similarCategoryChipImage} />
+                ) : (
+                  <Ionicons
+                    name={getCategoryIcon(spot.category)}
+                    size={14}
+                    color={detailUi.text}
+                  />
+                )}
+              </View>
             </View>
           </View>
         </ImageBackground>
@@ -1527,7 +1550,6 @@ function SimilarSpotCard({ spot, likes }: { spot: Spot; likes: string }) {
                 <Ionicons name="cash-outline" size={12} color={detailUi.textSecondary} />
                 <Text style={styles.similarMetaText}>{getPriceLabel(spot)}</Text>
               </View>
-              <Text style={styles.similarMetaText}>♡ {likes}</Text>
             </View>
           </View>
         </View>
@@ -1611,6 +1633,31 @@ function getCategoryIcon(category: Spot['category']): keyof typeof Ionicons.glyp
   }
 }
 
+function getCategoryImage(category: Spot['category']) {
+  switch (category) {
+    case 'Arte y cultura':
+      return exploreArtIcon
+    case 'Bares y noche':
+      return exploreNightlifeIcon
+    case 'Cine':
+      return exploreCinemaIcon
+    case 'Restaurantes y cafés':
+    case 'Restaurantes':
+      return exploreFoodIcon
+    case 'Eventos':
+      return exploreEventsIcon
+    case 'Deporte y bienestar':
+      return exploreSportsIcon
+    case 'Familiar':
+    case 'Pet friendly':
+      return exploreFamilyIcon
+    case 'Naturaleza y aire libre':
+      return exploreNatureIcon
+    default:
+      return null
+  }
+}
+
 async function openExternal(url: string) {
   await Linking.openURL(url)
 }
@@ -1689,6 +1736,11 @@ const styles = StyleSheet.create({
   },
   heroStage: {
     overflow: 'hidden',
+    position: 'relative',
+    zIndex: 3,
+    elevation: 10,
+    borderBottomLeftRadius: 44,
+    borderBottomRightRadius: 44,
   },
   heroBaseWrap: {
     ...StyleSheet.absoluteFillObject,
@@ -1719,14 +1771,22 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 18,
     paddingTop: 0,
-    paddingBottom: 42,
+    paddingBottom: 62,
   },
   heroImage: {
     resizeMode: 'cover',
   },
   heroOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(12,9,13,0.38)',
+    backgroundColor: 'rgba(12,9,13,0.2)',
+  },
+  heroBottomShadow: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: 0,
+    backgroundColor: 'transparent',
   },
   topActions: {
     flexDirection: 'row',
@@ -1827,7 +1887,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 18,
     right: 18,
-    bottom: 42,
+    bottom: 70,
     alignItems: 'center',
   },
   galleryDots: {
@@ -1859,17 +1919,27 @@ const styles = StyleSheet.create({
     shadowRadius: 18,
     shadowOffset: { width: 0, height: -4 },
     elevation: 8,
+    zIndex: 1,
   },
-  sheetHandleArea: {
+  heroHandleArea: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 12,
     alignItems: 'center',
     paddingTop: 12,
-    paddingBottom: 10,
+    paddingBottom: 8,
+    backgroundColor: 'transparent',
+    zIndex: 4,
   },
-  sheetHandle: {
-    width: 42,
-    height: 5,
+  heroHandle: {
+    width: 46,
+    height: 6,
     borderRadius: 999,
-    backgroundColor: '#d2d2d8',
+    backgroundColor: '#ffffff',
+  },
+  sheetTopInset: {
+    height: 42,
   },
   sheetScroll: {
     flex: 1,
@@ -1880,7 +1950,7 @@ const styles = StyleSheet.create({
   panel: {
     backgroundColor: detailUi.bg,
     paddingHorizontal: 20,
-    paddingTop: 18,
+    paddingTop: 28,
     paddingBottom: 26,
     gap: 22,
   },
@@ -2598,19 +2668,29 @@ const styles = StyleSheet.create({
   similarImageMeta: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'flex-start',
+    justifyContent: 'flex-end',
     paddingHorizontal: 14,
     paddingVertical: 14,
+  },
+  similarImageActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
   },
   similarCategoryChip: {
     width: 30,
     height: 30,
     borderRadius: 8,
-    backgroundColor: 'rgba(255,255,255,0.14)',
+    backgroundColor: '#FFFFFF',
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.18)',
+    borderColor: 'rgba(20,20,23,0.08)',
     alignItems: 'center',
     justifyContent: 'center',
+    overflow: 'hidden',
+  },
+  similarCategoryChipImage: {
+    width: 24,
+    height: 24,
   },
   similarBody: {
     paddingHorizontal: 4,

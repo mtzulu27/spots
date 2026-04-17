@@ -8,6 +8,7 @@ import {
   useState,
   type ReactNode,
 } from 'react';
+import { Platform } from 'react-native';
 import { useAuthStore } from '@/lib/auth-store';
 import { supabase } from '@/lib/supabase';
 
@@ -36,6 +37,11 @@ const LikesStoreContext = createContext<LikesStoreValue>({
   getLikesCount: () => 0,
   toggleLike: async () => undefined,
 });
+
+const isIOSWeb =
+  Platform.OS === 'web' &&
+  typeof navigator !== 'undefined' &&
+  /iphone|ipad|ipod/i.test(navigator.userAgent);
 
 function buildLikeState(rows: LikeRow[], userId?: string) {
   const counts: Record<string, number> = {};
@@ -106,7 +112,7 @@ export function LikesStoreProvider({ children }: { children: ReactNode }) {
   const currentUserId = user?.id ?? null;
 
   useEffect(() => {
-    if (!supabase || !currentUserId) {
+    if (isIOSWeb || !supabase || !currentUserId) {
       setCounts({});
       setLikedIds(new Set());
       setReady(true);

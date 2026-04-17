@@ -1,6 +1,15 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Link, useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
-import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import {
+  startTransition,
+  useCallback,
+  useDeferredValue,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from 'react';
 import {
   Animated,
   Image,
@@ -18,6 +27,7 @@ import {
 } from 'react-native';
 import {
   AppAvatar,
+  AppBookmarkButton,
   AppIconButton,
   AppPrimaryButton,
   AppSegmentedTabs,
@@ -28,7 +38,9 @@ import {
 import { ExploreMap } from '@/components/explore-map';
 import { FiltersSheet } from '@/components/filters-sheet';
 import { submitFeedbackNote } from '@/lib/feedback-notes';
+import { formatApproxBudgetPerPersonLabel } from '@/lib/explore-filters';
 import { useAuthStore } from '@/lib/auth-store';
+import { useBookmarksStore } from '@/lib/bookmarks-store';
 import {
   DEFAULT_FILTERS,
   type ExploreTab,
@@ -68,6 +80,31 @@ const exploreSportsIcon = require('../../assets/explore_sports_icon.png');
 const exploreFamilyIcon = require('../../assets/explore_family_icon.png');
 const exploreEventsIcon = require('../../assets/explore_events_icon.png');
 const exploreNatureIcon = require('../../assets/explore_nature_icon.png');
+
+function getCategoryImage(category: Spot['category']) {
+  switch (category) {
+    case 'Arte y cultura':
+      return exploreArtIcon;
+    case 'Bares y noche':
+      return exploreNightlifeIcon;
+    case 'Cine':
+      return exploreCinemaIcon;
+    case 'Restaurantes y cafés':
+    case 'Restaurantes':
+      return exploreFoodIcon;
+    case 'Eventos':
+      return exploreEventsIcon;
+    case 'Deporte y bienestar':
+      return exploreSportsIcon;
+    case 'Familiar':
+    case 'Pet friendly':
+      return exploreFamilyIcon;
+    case 'Naturaleza y aire libre':
+      return exploreNatureIcon;
+    default:
+      return null;
+  }
+}
 
 function getCategoryIcon(category: Spot['category']): keyof typeof Ionicons.glyphMap {
   switch (category) {
@@ -157,6 +194,11 @@ const defaultWebPushSnapshot: WebPushSnapshot = {
   supported: false,
 };
 
+const isIOSWeb =
+  Platform.OS === 'web' &&
+  typeof navigator !== 'undefined' &&
+  /iphone|ipad|ipod/i.test(navigator.userAgent);
+
 const categoryOptions: Array<{
   label: string;
   value: string;
@@ -172,24 +214,11 @@ const categoryOptions: Array<{
 ];
 
 function getPriceLabel(spot: Spot) {
-  if (spot.minBudget <= 0 && spot.maxBudget <= 0) {
-    return 'Por definir';
-  }
-
-  const baseBudget = spot.minBudget > 0 ? spot.minBudget : spot.maxBudget;
-  return `Desde $${baseBudget.toLocaleString('es-CO')}`;
+  return formatApproxBudgetPerPersonLabel(spot.minBudget, spot.maxBudget);
 }
 
 function getFeedMinPriceLabel(spot: Spot) {
-  if (spot.minBudget <= 0 && spot.maxBudget <= 0) {
-    return 'Por definir'
-  }
-
-  if (spot.minBudget <= 0) {
-    return `Desde $${spot.maxBudget.toLocaleString('es-CO')}`
-  }
-
-  return `Desde $${spot.minBudget.toLocaleString('es-CO')}`
+  return formatApproxBudgetPerPersonLabel(spot.minBudget, spot.maxBudget)
 }
 
 function getPreferredDetailBranchId(
@@ -231,6 +260,10 @@ type NewPlaceBanner = {
   subtitle: string;
   image: string;
 };
+
+function isNewSpot(spot: Spot) {
+  return spot.editorialBadge === 'Recién añadido';
+}
 type WebPushToast = {
   title: string;
   message: string;
@@ -244,6 +277,7 @@ export default function ExploreScreen() {
   const activeTab = parseExploreTab(params.tab);
   const filters = parseFiltersFromParams(params);
   const query = typeof params.query === 'string' ? params.query : '';
+  const [draftQuery, setDraftQuery] = useState(query);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [suggestPlacesOpen, setSuggestPlacesOpen] = useState(false);
   const [suggestPlacesVisible, setSuggestPlacesVisible] = useState(false);
@@ -260,7 +294,8 @@ export default function ExploreScreen() {
   const [topBarHeight, setTopBarHeight] = useState(0);
   const [resultsBarHeight, setResultsBarHeight] = useState(0);
   const { spots, refresh } = useSpotsStore();
-  const { getLikesCount, isLiked } = useLikesStore();
+  const { getLikesCount, isLiked, toggleLike } = useLikesStore();
+  const { isBookmarked, toggleBookmark } = useBookmarksStore();
   const { userLocation } = useLocationStore();
   const { avatarUrl, fullName, session, user } = useAuthStore();
   const [refreshing, setRefreshing] = useState(false);
@@ -269,6 +304,7 @@ export default function ExploreScreen() {
   const [webPushToast, setWebPushToast] = useState<WebPushToast | null>(null);
   const [webPushSnapshot, setWebPushSnapshot] = useState<WebPushSnapshot>(defaultWebPushSnapshot);
   const [webPushLoading, setWebPushLoading] = useState(false);
+  const [iosFeedAnimationNonce, setIosFeedAnimationNonce] = useState(0);
   const headerChromeProgress = useRef(new Animated.Value(1)).current;
   const layoutTransition = useRef(new Animated.Value(1)).current;
   const topBarIntro = useRef(new Animated.Value(0)).current;
@@ -281,6 +317,9 @@ export default function ExploreScreen() {
     new Map(categoryOptions.map((option) => [option.value, new Animated.Value(0)])),
   ).current;
   const headerExpandedRef = useRef(true);
+  const headerAnimationInFlightRef = useRef(false);
+  const lastHeaderToggleAtRef = useRef(0);
+  const lastScrollHandledAtRef = useRef(0);
   const lastScrollY = useRef(0);
   const scrollDirectionRef = useRef<'up' | 'down' | null>(null);
   const scrollDistanceRef = useRef(0);
@@ -289,7 +328,934 @@ export default function ExploreScreen() {
   const suggestModalCloseTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const feedbackModalCloseTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const previousResultsTriggerRef = useRef<string | null>(null);
+  const previousIosResultsTriggerRef = useRef<string | null>(null);
   const webPushToastProgress = useRef(new Animated.Value(0)).current;
+  const querySyncTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const deferredQuery = useDeferredValue(draftQuery);
+  const iosResultsAnimationTrigger = `${activeTab}|${deferredQuery}|${serializeFilters(filters)}`;
+
+  useFocusEffect(
+    useCallback(() => {
+      if (!isIOSWeb) {
+        return;
+      }
+
+      topBarIntro.setValue(0);
+      feedIntro.setValue(0);
+
+      Animated.stagger(90, [
+        Animated.timing(topBarIntro, {
+          toValue: 1,
+          duration: 320,
+          useNativeDriver: true,
+        }),
+        Animated.timing(feedIntro, {
+          toValue: 1,
+          duration: 380,
+          useNativeDriver: true,
+        }),
+      ]).start();
+    }, [feedIntro, topBarIntro]),
+  );
+
+  useEffect(() => {
+    if (!isIOSWeb) {
+      return;
+    }
+
+    if (previousIosResultsTriggerRef.current === null) {
+      previousIosResultsTriggerRef.current = iosResultsAnimationTrigger;
+      return;
+    }
+
+    if (previousIosResultsTriggerRef.current === iosResultsAnimationTrigger) {
+      return;
+    }
+
+    previousIosResultsTriggerRef.current = iosResultsAnimationTrigger;
+    feedIntro.setValue(0);
+    Animated.timing(feedIntro, {
+      toValue: 1,
+      duration: 320,
+      useNativeDriver: true,
+    }).start();
+  }, [feedIntro, iosResultsAnimationTrigger]);
+
+  if (isIOSWeb) {
+    const iosActiveData = getSpotsByTypeFromList(spots, activeTab === 'places' ? 'place' : 'event');
+    const iosFilteredData = iosActiveData.filter((spot) =>
+      matchesSpotToFilters(spot, filters, deferredQuery, userLocation),
+    );
+    const iosBaseData =
+      deferredQuery.trim().length === 0 && !isFiltersActive(filters) && iosFilteredData.length === 0 && iosActiveData.length > 0
+        ? iosActiveData
+        : iosFilteredData;
+    const iosGroupedData =
+      activeTab === 'places'
+        ? aggregatePlaceSpotsFromList(iosBaseData)
+        : iosBaseData;
+    const iosSortedData = sortSpots(iosGroupedData, filters.sortBy, getLikesCount);
+    const previewSpots = iosSortedData.slice(0, 16);
+    const iosMappableData = iosSortedData.filter(
+      (spot) => typeof spot.latitude === 'number' && typeof spot.longitude === 'number',
+    );
+    return (
+      <View style={[styles.screen, { backgroundColor: '#f5f5f7' }]}>
+        {webPushToast ? (
+          <Animated.View
+            pointerEvents="none"
+            style={[
+              styles.webPushToastWrap,
+              {
+                paddingTop: Math.max(insets.top, 16),
+                opacity: webPushToastProgress,
+                transform: [
+                  {
+                    translateY: webPushToastProgress.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [-18, 0],
+                    }),
+                  },
+                  {
+                    scale: webPushToastProgress.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [0.96, 1],
+                    }),
+                  },
+                ],
+              },
+            ]}
+          >
+            <View
+              style={[
+                styles.webPushToast,
+                webPushToast.tone === 'success'
+                  ? styles.webPushToastSuccess
+                  : webPushToast.tone === 'error'
+                    ? styles.webPushToastError
+                    : styles.webPushToastDefault,
+              ]}
+            >
+              <Text style={styles.webPushToastTitle}>{webPushToast.title}</Text>
+              <Text style={styles.webPushToastMessage}>{webPushToast.message}</Text>
+            </View>
+          </Animated.View>
+        ) : null}
+
+        {newPlaceBanner ? (
+          <Animated.View
+            style={[
+              styles.newPlaceBannerWrap,
+              {
+                top: Math.max(insets.top, 16) + 112,
+                opacity: newPlaceBannerProgress,
+                transform: [
+                  {
+                    translateY: newPlaceBannerProgress.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [-14, 0],
+                    }),
+                  },
+                  {
+                    scale: newPlaceBannerProgress.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [0.98, 1],
+                    }),
+                  },
+                ],
+              },
+            ]}
+          >
+            <Pressable
+              style={styles.newPlaceBanner}
+              onPress={() => {
+                const nextId = newPlaceBanner.id;
+                Animated.timing(newPlaceBannerProgress, {
+                  toValue: 0,
+                  duration: 160,
+                  useNativeDriver: true,
+                }).start(() => {
+                  setNewPlaceBanner(null);
+                  router.push(`/spot/${nextId}`);
+                });
+              }}
+            >
+              <Image source={{ uri: newPlaceBanner.image }} style={styles.newPlaceBannerImage} />
+              <View style={styles.newPlaceBannerBody}>
+                <Text style={[styles.newPlaceBannerEyebrow, { color: '#EF3857' }]}>Nuevo en Spots</Text>
+                <Text numberOfLines={1} style={styles.newPlaceBannerTitle}>
+                  {newPlaceBanner.title}
+                </Text>
+                <Text numberOfLines={1} style={styles.newPlaceBannerSubtitle}>
+                  {newPlaceBanner.subtitle}
+                </Text>
+              </View>
+              <Ionicons name="arrow-forward" size={18} color="#fff7fb" />
+            </Pressable>
+          </Animated.View>
+        ) : null}
+
+        <Animated.ScrollView
+          style={[styles.screen, { backgroundColor: '#f5f5f7' }]}
+          contentContainerStyle={{
+            paddingBottom: insets.bottom + 32,
+            paddingHorizontal: 16,
+            gap: 0,
+          }}
+          stickyHeaderIndices={[0]}
+          showsVerticalScrollIndicator={false}
+          scrollEventThrottle={16}
+        >
+          <Animated.View
+            style={{
+              backgroundColor: '#f5f5f7',
+              paddingTop: Math.max(insets.top, 12) + 18,
+              borderRadius: 28,
+              paddingHorizontal: 0,
+              paddingBottom: 6,
+              marginBottom: 4,
+              opacity: topBarIntro,
+              transform: [
+                {
+                  translateY: topBarIntro.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [20, 0],
+                  }),
+                },
+              ],
+            }}
+          >
+          <View
+            style={[styles.topRow, { marginBottom: 14 }]}
+            onLayout={(event) => {
+              const nextHeight = event.nativeEvent.layout.height;
+              if (nextHeight !== topBarHeight) {
+                setTopBarHeight(nextHeight);
+              }
+            }}
+          >
+            <View style={styles.profileWrap}>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel="Ir a mi cuenta"
+                hitSlop={10}
+                onPress={() => router.push('/(tabs)/account')}
+              >
+                <AppAvatar uri={avatarUrl} size={48} />
+              </Pressable>
+              <View style={styles.titleWrap}>
+                <Text style={[styles.topGreeting, { color: '#141417' }]}>Hola, {fullName.trim() ? fullName.trim().split(' ')[0] : 'Mateo'}</Text>
+                <Text style={[styles.topSubtitle, { color: '#5f5f67' }]}>
+                  Buen día para descubrir algo nuevo
+                </Text>
+              </View>
+            </View>
+            <View style={styles.topActions}>
+              <AppIconButton
+                name={webPushSnapshot.subscribed ? 'notifications' : 'notifications-outline'}
+                tone="light"
+                onPress={() => {}}
+              />
+            </View>
+          </View>
+
+          <View style={styles.searchRow}>
+            <View style={styles.searchFieldWrap}>
+              <SearchField
+                value={draftQuery}
+                onChangeText={setDraftQuery}
+                showClearButton={draftQuery.trim().length > 0}
+                placeholder="Busca un lugar o escribe lo que quieres hacer"
+                variant="light"
+              />
+            </View>
+          </View>
+
+          <View
+            onLayout={(event) => {
+              const nextHeight = event.nativeEvent.layout.height;
+              if (nextHeight !== categoriesHeight) {
+                setCategoriesHeight(nextHeight);
+              }
+            }}
+          >
+            <Animated.ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.quickCategories}
+              style={{ marginTop: 14 }}
+            >
+              {categoryOptions.map((option) => {
+                const active = filters.interests.includes(option.value);
+                const accent = getCategoryAccent(option.value as Spot['category']);
+                const progress = quickCategoryProgress.get(option.value) ?? new Animated.Value(0);
+
+                return (
+                  <Pressable
+                    key={option.value}
+                    style={styles.quickCategory}
+                    onPress={() => {
+                      const nextInterests = filters.interests.includes(option.value) ? [] : [option.value];
+                      router.replace({
+                        pathname: '/(tabs)/explore',
+                        params: {
+                          ...serializeFilters({
+                            ...filters,
+                            interests: nextInterests,
+                          }),
+                          tab: activeTab,
+                          query: draftQuery,
+                        },
+                      });
+                    }}
+                  >
+                    <Animated.View
+                      style={[
+                        option.image ? styles.quickCategoryImageWrap : styles.quickCategoryIcon,
+                        {
+                          transform: [
+                            {
+                              scale: progress.interpolate({
+                                inputRange: [0, 1],
+                                outputRange: [1, 1.08],
+                              }),
+                            },
+                          ],
+                        },
+                        !active && !option.image && {
+                          backgroundColor: '#ffffff',
+                          borderColor: 'transparent',
+                        },
+                        active &&
+                          !option.image && {
+                            backgroundColor: accent,
+                          },
+                      ]}
+                    >
+                      <Animated.View
+                        pointerEvents="none"
+                        style={[
+                          styles.quickCategoryBlurBlob,
+                          {
+                            backgroundColor: accent,
+                            opacity: progress.interpolate({
+                              inputRange: [0, 1],
+                              outputRange: [0, 0.26],
+                            }),
+                            transform: [
+                              {
+                                scale: progress.interpolate({
+                                  inputRange: [0, 1],
+                                  outputRange: [0.72, 1.18],
+                                }),
+                              },
+                            ],
+                          },
+                        ]}
+                      />
+                      {option.image ? (
+                        <Animated.Image
+                          source={option.image}
+                          style={[
+                            styles.quickCategoryImage,
+                            {
+                              transform: [
+                                {
+                                  scale: progress.interpolate({
+                                    inputRange: [0, 1],
+                                    outputRange: [1.04, 1.14],
+                                  }),
+                                },
+                              ],
+                            },
+                          ]}
+                          resizeMode="contain"
+                        />
+                      ) : (
+                        <Ionicons
+                          name={option.icon}
+                          size={22}
+                          color={active ? '#141417' : '#5f5f67'}
+                        />
+                      )}
+                    </Animated.View>
+                  </Pressable>
+                );
+              })}
+            </Animated.ScrollView>
+
+            <View
+              onLayout={(event) => {
+                const nextHeight = event.nativeEvent.layout.height;
+                if (nextHeight !== headerChromeHeight) {
+                  setHeaderChromeHeight(nextHeight);
+                }
+              }}
+              style={{ marginTop: 14 }}
+            >
+              <AppSegmentedTabs
+                value={activeTab}
+                onChange={(nextTab) => {
+                  setDraftQuery('');
+                  router.replace({
+                    pathname: '/(tabs)/explore',
+                    params: {
+                      ...serializeFilters(DEFAULT_FILTERS),
+                      tab: nextTab,
+                      query: '',
+                    },
+                  });
+                }}
+                options={[
+                  { key: 'places', label: 'Lugares' },
+                  { key: 'now', label: 'Parches' },
+                ]}
+              />
+            </View>
+          </View>
+
+          <View
+            onLayout={(event) => {
+              const nextHeight = event.nativeEvent.layout.height;
+              if (nextHeight !== resultsBarHeight) {
+                setResultsBarHeight(nextHeight);
+              }
+            }}
+            style={{ marginTop: 8, marginBottom: 10 }}
+          >
+            <View
+              onLayout={(event) => {
+                const nextHeight = event.nativeEvent.layout.height;
+                if (nextHeight !== resultsBarHeight) {
+                  setResultsBarHeight(nextHeight);
+                }
+              }}
+            >
+              <View style={styles.resultsBar}>
+                <View style={styles.resultsInfo}>
+                  <Text style={[styles.resultsText, { color: '#141417' }]}>
+                    {iosSortedData.length} resultados
+                  </Text>
+                  {deferredQuery.trim().length > 0 || isFiltersActive(filters) ? (
+                    <Pressable
+                      style={[styles.resultsFilterPill, { backgroundColor: 'rgba(239,56,87,0.12)' }]}
+                      onPress={() => {
+                        setIosFeedAnimationNonce((current) => current + 1);
+                        setDraftQuery('');
+                        router.replace({
+                          pathname: '/(tabs)/explore',
+                          params: {
+                            ...serializeFilters(DEFAULT_FILTERS),
+                            tab: activeTab,
+                            query: '',
+                          },
+                        });
+                      }}
+                    >
+                      <Text style={[styles.resultsFilterPillText, { color: '#EF3857' }]}>
+                        Limpiar filtros
+                      </Text>
+                      <Ionicons name="close" size={14} color="#EF3857" />
+                    </Pressable>
+                  ) : (
+                    <Text style={[styles.resultsHint, { color: '#5f5f67' }]}>
+                      Sin filtros
+                    </Text>
+                  )}
+                </View>
+                <Pressable
+                  style={[
+                    styles.filterButton,
+                    { backgroundColor: '#ffffff', borderColor: 'transparent' },
+                  ]}
+                  onPress={() => setFiltersOpen(true)}
+                >
+                  <Ionicons name="options-outline" size={20} color="#2e2e34" />
+                </Pressable>
+              </View>
+            </View>
+          </View>
+          </Animated.View>
+
+          <ResultsAppear key={`${iosResultsAnimationTrigger}|${iosFeedAnimationNonce}`}>
+          <Animated.View
+            style={{
+              opacity: feedIntro,
+              transform: [
+                {
+                  translateY: feedIntro.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [14, 0],
+                  }),
+                },
+              ],
+            }}
+          >
+            {activeTab === 'now' ? (
+              <View style={styles.emptyState}>
+                <View style={[styles.emptyBadge, { backgroundColor: 'rgba(239,56,87,0.12)' }]}>
+                  <Ionicons name="sparkles-outline" size={14} color="#EF3857" />
+                  <Text style={[styles.emptyBadgeText, { color: '#EF3857' }]}>Muy pronto</Text>
+                </View>
+                <Text style={[styles.emptyTitle, { color: '#141417' }]}>
+                  Los parches llegan pronto a Spots
+                </Text>
+                <Text style={[styles.emptyCopy, { color: '#5f5f67' }]}>
+                  Estamos afinando esta pestaña para que encuentres planes, movidas y cosas que
+                  pasan en la ciudad sin tener que rebuscarlas por fuera.
+                </Text>
+              </View>
+            ) : (
+              <>
+                {previewSpots.map((spot) => (
+                  <Pressable
+                    key={spot.id}
+                    onPress={() => router.push(`/spot/${spot.id}`)}
+                    style={styles.card}
+                  >
+                    <ImageBackground
+                      source={{ uri: spot.image }}
+                      style={styles.cardImage}
+                      imageStyle={styles.cardImageStyle}
+                    >
+                      <View style={styles.cardOverlay} />
+                      <View style={styles.cardImageMeta}>
+                        <View style={styles.cardHeaderActions}>
+                          <View style={styles.cardHeaderLeading}>
+                            <View style={styles.categoryChip}>
+                              {getCategoryImage(spot.category) ? (
+                                <Image source={getCategoryImage(spot.category)} style={styles.categoryChipImage} />
+                              ) : (
+                                <Ionicons
+                                  name={getCategoryIcon(spot.category)}
+                                  size={14}
+                                  color={getCategoryAccent(spot.category)}
+                                />
+                              )}
+                            </View>
+                            {isNewSpot(spot) ? (
+                              <View style={styles.newBadge}>
+                                <Text style={styles.newBadgeText}>Recién añadido</Text>
+                              </View>
+                            ) : null}
+                          </View>
+                          {spot.type === 'place' ? (
+                            <AppBookmarkButton
+                              bookmarked={isBookmarked(spot.likeTargetId)}
+                              onPress={(event) => {
+                                event?.stopPropagation?.();
+                                event?.preventDefault?.();
+                                void toggleBookmark(spot.likeTargetId);
+                              }}
+                              activeColor="#fff7fb"
+                            />
+                          ) : null}
+                        </View>
+                      </View>
+                    </ImageBackground>
+                    <View style={styles.cardBody}>
+                      <Text style={[styles.cardTitle, { color: '#141417' }]}>
+                        {spot.type === 'event' ? spot.name : spot.brandName}
+                      </Text>
+                      <View style={styles.cardFooterRow}>
+                        <View style={styles.feedMetaInline}>
+                          <View style={styles.feedMetaGroup}>
+                            <Ionicons name="location-outline" size={12} color="#5f5f67" />
+                            <Text
+                              numberOfLines={1}
+                              ellipsizeMode="tail"
+                              style={[styles.feedMetaText, styles.feedLocationText, { color: '#5f5f67' }]}
+                            >
+                              {getSpotFeedSubtitle(spot)}
+                            </Text>
+                          </View>
+                          <View style={styles.feedPriceInline}>
+                            <Ionicons name="cash-outline" size={12} color="#5f5f67" />
+                            <Text style={[styles.feedMetaText, { color: '#5f5f67' }]}>
+                              {getFeedMinPriceLabel(spot)}
+                            </Text>
+                          </View>
+                          <Text
+                            style={[
+                              styles.feedMetaText,
+                              {
+                                color: isLiked(spot.likeTargetId) ? '#EF3857' : '#8b8b94',
+                              },
+                            ]}
+                          >
+                            {isLiked(spot.likeTargetId) ? '♥' : '♡'} {formatLikesCount(getLikesCount(spot.likeTargetId))}
+                          </Text>
+                        </View>
+                      </View>
+                    </View>
+                  </Pressable>
+                ))}
+                {previewSpots.length === 0 ? (
+                  <View style={styles.emptyState}>
+                    <Text style={[styles.emptyTitle, { color: '#141417' }]}>
+                      No se encontraron lugares
+                    </Text>
+                    <Text style={[styles.emptyCopy, { color: '#5f5f67' }]}>
+                      Prueba con otra búsqueda o ajusta los filtros para ver más opciones.
+                    </Text>
+                  </View>
+                ) : null}
+
+                {iosMappableData.length ? (
+                  <View style={{ marginTop: 10 }}>
+                    <Text style={{ color: spotsUi.textSecondary, fontSize: 13, marginBottom: 8 }}>
+                      Mapa
+                    </Text>
+                    <ExploreMap
+                      spots={iosMappableData}
+                      onOpenSpot={(spotId) => {
+                        router.push(`/spot/${spotId}`);
+                      }}
+                    />
+                  </View>
+                ) : null}
+              </>
+            )}
+          </Animated.View>
+          </ResultsAppear>
+        </Animated.ScrollView>
+
+        {filtersOpen ? (
+          <FiltersSheet
+            activeTab={activeTab}
+            initialFilters={filters}
+            query={deferredQuery}
+            onApply={(nextFilters) => {
+              setIosFeedAnimationNonce((current) => current + 1);
+              router.replace({
+                pathname: '/(tabs)/explore',
+                params: {
+                  ...serializeFilters(nextFilters),
+                  tab: activeTab,
+                  query: draftQuery,
+                },
+              });
+            }}
+            onClearQuery={() => {
+              setIosFeedAnimationNonce((current) => current + 1);
+              setDraftQuery('');
+              router.replace({
+                pathname: '/(tabs)/explore',
+                params: {
+                  ...serializeFilters(filters),
+                  tab: activeTab,
+                  query: '',
+                },
+              });
+            }}
+            onClose={() => setFiltersOpen(false)}
+          />
+        ) : null}
+
+        <View
+          style={[
+            styles.feedbackFabStack,
+            {
+              bottom: Math.max(insets.bottom, 8) + 24,
+            },
+          ]}
+        >
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Añadir feedback"
+            onPress={openFeedback}
+            style={[styles.suggestFab, styles.feedbackFabSecondary]}
+          >
+            <Ionicons name="chatbubble-ellipses-outline" size={20} color={spotsUi.textPrimary} />
+            <Text style={[styles.suggestFabText, styles.feedbackFabSecondaryText]}>Añadir feedback</Text>
+          </Pressable>
+
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Sugerir lugares"
+            onPress={openSuggestPlaces}
+            style={styles.suggestFab}
+          >
+            <Ionicons name="add-circle-outline" size={20} color="#fff7fb" />
+            <Text style={styles.suggestFabText}>Sugerir lugares</Text>
+          </Pressable>
+        </View>
+
+        <Modal
+          visible={suggestPlacesVisible}
+          transparent
+          animationType="none"
+          onRequestClose={handleSuggestPlacesRequestClose}
+        >
+          <View style={styles.suggestModalRoot}>
+            <Animated.View
+              pointerEvents="none"
+              style={[
+                styles.suggestModalBackdrop,
+                {
+                  opacity: suggestModalProgress.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0, 1],
+                  }),
+                },
+              ]}
+            />
+            <Pressable style={StyleSheet.absoluteFillObject} onPress={handleSuggestPlacesRequestClose} />
+            <KeyboardAvoidingView
+              behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+              style={styles.suggestModalKeyboard}
+            >
+              <Animated.View
+                style={[
+                  styles.suggestModalCard,
+                  {
+                    paddingBottom: 18 + Math.max(insets.bottom, 12),
+                    maxHeight: '84%',
+                  },
+                  {
+                    opacity: suggestModalProgress,
+                    transform: [
+                      {
+                        translateY: suggestModalProgress.interpolate({
+                          inputRange: [0, 1],
+                          outputRange: [56, 0],
+                        }),
+                      },
+                      {
+                        scale: suggestModalProgress.interpolate({
+                          inputRange: [0, 1],
+                          outputRange: [0.98, 1],
+                        }),
+                      },
+                    ],
+                  },
+                ]}
+              >
+                <View style={styles.suggestModalHeader}>
+                  <View style={styles.suggestModalTitleWrap}>
+                    <Text style={styles.suggestModalTitle}>Sugerir lugares</Text>
+                    <Text style={styles.suggestModalCopy}>
+                      Escribe uno o varios lugares para revisarlos luego por fecha de sugerencia.
+                    </Text>
+                  </View>
+                  <Pressable
+                    accessibilityRole="button"
+                    accessibilityLabel="Cerrar sugerencias"
+                    onPress={handleSuggestPlacesRequestClose}
+                    style={styles.suggestModalClose}
+                  >
+                    <Ionicons name="close" size={20} color={spotsUi.textPrimary} />
+                  </Pressable>
+                </View>
+
+                <View style={styles.suggestFieldsWrap}>
+                  <ScrollView
+                    style={styles.suggestFieldsScroll}
+                    contentContainerStyle={styles.suggestFields}
+                    showsVerticalScrollIndicator={false}
+                    keyboardShouldPersistTaps="handled"
+                  >
+                    {suggestedPlacesDraft.map((value, index) => (
+                      <View key={`suggest-place-${index}`} style={styles.suggestFieldRow}>
+                        <View style={styles.suggestInputWrap}>
+                          <TextInput
+                            value={value}
+                            onChangeText={(nextValue) => updateSuggestedPlace(index, nextValue)}
+                            placeholder={`Lugar ${index + 1}`}
+                            placeholderTextColor="rgba(255,255,255,0.36)"
+                            style={[
+                              styles.suggestInput,
+                              Platform.OS === 'web'
+                                ? ({
+                                    outlineWidth: 0,
+                                    outlineStyle: 'none',
+                                    outlineColor: 'transparent',
+                                  } as never)
+                                : null,
+                            ]}
+                          />
+                        </View>
+
+                        {suggestedPlacesDraft.length > 1 ? (
+                          <Pressable
+                            accessibilityRole="button"
+                            accessibilityLabel={`Eliminar lugar ${index + 1}`}
+                            onPress={() => removeSuggestedPlaceField(index)}
+                            style={styles.suggestFieldAction}
+                          >
+                            <Ionicons name="remove" size={20} color="#fff7fb" />
+                          </Pressable>
+                        ) : null}
+
+                        {index === suggestedPlacesDraft.length - 1 ? (
+                          <Pressable
+                            accessibilityRole="button"
+                            accessibilityLabel="Agregar otro lugar"
+                            onPress={addSuggestedPlaceField}
+                            style={styles.suggestFieldAction}
+                          >
+                            <Ionicons name="add" size={20} color="#fff7fb" />
+                          </Pressable>
+                        ) : null}
+                      </View>
+                    ))}
+                  </ScrollView>
+                </View>
+
+                <View style={styles.suggestModalFooter}>
+                  <AppPrimaryButton
+                    label={suggestionSubmitting ? 'Enviando...' : 'Enviar sugerencia'}
+                    loading={suggestionSubmitting}
+                    onPress={handleSubmitSuggestion}
+                    fullWidth
+                  />
+                </View>
+              </Animated.View>
+            </KeyboardAvoidingView>
+          </View>
+        </Modal>
+
+        <Modal
+          visible={feedbackVisible}
+          transparent
+          animationType="none"
+          onRequestClose={handleFeedbackRequestClose}
+        >
+          <View style={styles.suggestModalRoot}>
+            <Animated.View
+              pointerEvents="none"
+              style={[
+                styles.suggestModalBackdrop,
+                {
+                  opacity: feedbackModalProgress.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0, 1],
+                  }),
+                },
+              ]}
+            />
+            <Pressable style={StyleSheet.absoluteFillObject} onPress={handleFeedbackRequestClose} />
+            <KeyboardAvoidingView
+              behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+              style={styles.suggestModalKeyboard}
+            >
+              <Animated.View
+                style={[
+                  styles.suggestModalCard,
+                  {
+                    paddingBottom: 18 + Math.max(insets.bottom, 12),
+                    maxHeight: '78%',
+                  },
+                  {
+                    opacity: feedbackModalProgress,
+                    transform: [
+                      {
+                        translateY: feedbackModalProgress.interpolate({
+                          inputRange: [0, 1],
+                          outputRange: [56, 0],
+                        }),
+                      },
+                      {
+                        scale: feedbackModalProgress.interpolate({
+                          inputRange: [0, 1],
+                          outputRange: [0.98, 1],
+                        }),
+                      },
+                    ],
+                  },
+                ]}
+              >
+                <View style={styles.suggestModalHeader}>
+                  <View style={styles.suggestModalTitleWrap}>
+                    <Text style={styles.suggestModalTitle}>Añadir feedback</Text>
+                    <Text style={styles.suggestModalCopy}>
+                      Deja ideas, problemas o mejoras que quieras que revisemos e implementemos después.
+                    </Text>
+                  </View>
+                  <Pressable
+                    accessibilityRole="button"
+                    accessibilityLabel="Cerrar feedback"
+                    onPress={handleFeedbackRequestClose}
+                    style={styles.suggestModalClose}
+                  >
+                    <Ionicons name="close" size={20} color={spotsUi.textPrimary} />
+                  </Pressable>
+                </View>
+
+                <View style={styles.feedbackTextAreaWrap}>
+                  <TextInput
+                    value={feedbackDraft}
+                    onChangeText={setFeedbackDraft}
+                    placeholder="Escribe aquí todo lo que notaste, ideas nuevas, bugs o mejoras que quieras guardar..."
+                    placeholderTextColor="rgba(255,255,255,0.36)"
+                    multiline
+                    textAlignVertical="top"
+                    style={[
+                      styles.feedbackTextArea,
+                      Platform.OS === 'web'
+                        ? ({
+                            outlineWidth: 0,
+                            outlineStyle: 'none',
+                            outlineColor: 'transparent',
+                          } as never)
+                        : null,
+                    ]}
+                  />
+                </View>
+
+                <View style={styles.suggestModalFooter}>
+                  <AppPrimaryButton
+                    label={feedbackSubmitting ? 'Guardando...' : 'Guardar feedback'}
+                    loading={feedbackSubmitting}
+                    onPress={handleSubmitFeedback}
+                    fullWidth
+                  />
+                </View>
+              </Animated.View>
+            </KeyboardAvoidingView>
+          </View>
+        </Modal>
+      </View>
+    );
+  }
+
+  useEffect(() => {
+    setDraftQuery(query);
+  }, [query]);
+
+  useEffect(() => {
+    if (draftQuery === query) {
+      if (querySyncTimeoutRef.current) {
+        clearTimeout(querySyncTimeoutRef.current);
+        querySyncTimeoutRef.current = null;
+      }
+      return;
+    }
+
+    if (querySyncTimeoutRef.current) {
+      clearTimeout(querySyncTimeoutRef.current);
+    }
+
+    querySyncTimeoutRef.current = setTimeout(() => {
+      startTransition(() => {
+        router.replace({
+          pathname: '/(tabs)/explore',
+          params: {
+            ...serializeFilters(filters),
+            tab: activeTab,
+            query: draftQuery,
+          },
+        });
+      });
+    }, 180);
+
+    return () => {
+      if (querySyncTimeoutRef.current) {
+        clearTimeout(querySyncTimeoutRef.current);
+        querySyncTimeoutRef.current = null;
+      }
+    };
+  }, [activeTab, draftQuery, filters, query, router]);
 
   const greetingName = useMemo(() => {
     if (fullName.trim()) {
@@ -324,7 +1290,7 @@ export default function ExploreScreen() {
   }, [filters.interests, quickCategoryProgress]);
 
   const refreshWebPushSnapshot = useCallback(async () => {
-    if (Platform.OS !== 'web') {
+    if (Platform.OS !== 'web' || isIOSWeb) {
       setWebPushSnapshot(defaultWebPushSnapshot);
       return defaultWebPushSnapshot;
     }
@@ -368,7 +1334,8 @@ export default function ExploreScreen() {
   );
 
   useEffect(() => {
-    if (Platform.OS !== 'web') {
+    if (Platform.OS !== 'web' || isIOSWeb) {
+      setWebPushSnapshot(defaultWebPushSnapshot);
       return;
     }
 
@@ -396,6 +1363,7 @@ export default function ExploreScreen() {
       if (webPushToastTimeoutRef.current) {
         clearTimeout(webPushToastTimeoutRef.current);
       }
+      
     };
   }, []);
 
@@ -404,10 +1372,10 @@ export default function ExploreScreen() {
       return;
     }
 
-    if (Platform.OS !== 'web') {
+    if (Platform.OS !== 'web' || isIOSWeb) {
       showWebPushToast({
-        message: 'Esta primera version de push quedo montada para la web instalada en pantalla de inicio.',
-        title: 'Disponible en la PWA',
+        message: 'Estamos manteniendo las notificaciones desactivadas temporalmente en iPhone mientras estabilizamos la PWA.',
+        title: 'Notificaciones pausadas',
         tone: 'default',
       });
       return;
@@ -502,7 +1470,7 @@ export default function ExploreScreen() {
   }, [newPlaceBannerProgress]);
 
   useEffect(() => {
-    if (!backendEnabled || !supabase) {
+    if (isIOSWeb || !backendEnabled || !supabase) {
       return;
     }
 
@@ -558,11 +1526,11 @@ export default function ExploreScreen() {
   const filteredData = useMemo(
     () =>
       activeData.filter((spot) =>
-        matchesSpotToFilters(spot, filters, query, userLocation),
+        matchesSpotToFilters(spot, filters, deferredQuery, userLocation),
       ),
-    [activeData, filters, query, userLocation],
+    [activeData, deferredQuery, filters, userLocation],
   );
-  const hasActiveFilters = query.trim().length > 0 || isFiltersActive(filters);
+  const hasActiveFilters = deferredQuery.trim().length > 0 || isFiltersActive(filters);
   const visibleBaseData =
     !hasActiveFilters && filteredData.length === 0 && activeData.length > 0
       ? activeData
@@ -584,8 +1552,9 @@ export default function ExploreScreen() {
     }
   }, [layoutMode]);
   const activeFiltersCount = getActiveFiltersCount(filters);
-  const activeCriteriaCount = activeFiltersCount + (query.trim().length > 0 ? 1 : 0);
-  const resultsAnimationTrigger = `${activeTab}|${query}|${serializeFilters(filters)}`;
+  const activeCriteriaCount = activeFiltersCount + (deferredQuery.trim().length > 0 ? 1 : 0);
+  const resultsAnimationTrigger = `${activeTab}|${deferredQuery}|${serializeFilters(filters)}`;
+  const disableFeedBounce = layoutMode !== 'map' && visibleData.length <= 2;
 
   function getSpotHref(spot: Spot) {
     const preferredBranchId = getPreferredDetailBranchId(spot, userLocation);
@@ -596,6 +1565,8 @@ export default function ExploreScreen() {
 
     return `/spot/${preferredBranchId}`;
   }
+
+  
 
   function resetSuggestionDraft() {
     setSuggestedPlacesDraft(['']);
@@ -798,12 +1769,18 @@ export default function ExploreScreen() {
 
     previousResultsTriggerRef.current = resultsAnimationTrigger;
     resultsRefresh.setValue(0);
+    feedIntro.setValue(0);
     Animated.timing(resultsRefresh, {
       toValue: 1,
       duration: 240,
       useNativeDriver: true,
     }).start();
-  }, [resultsAnimationTrigger, resultsRefresh]);
+    Animated.timing(feedIntro, {
+      toValue: 1,
+      duration: 320,
+      useNativeDriver: true,
+    }).start();
+  }, [feedIntro, resultsAnimationTrigger, resultsRefresh]);
 
   useEffect(() => {
     if (suggestPlacesOpen) {
@@ -906,6 +1883,7 @@ export default function ExploreScreen() {
   }, []);
 
   function changeTab(nextTab: ExploreTab) {
+    setDraftQuery('');
     router.replace({
       pathname: '/(tabs)/explore',
       params: {
@@ -917,14 +1895,7 @@ export default function ExploreScreen() {
   }
 
   function updateQuery(nextQuery: string) {
-    router.replace({
-      pathname: '/(tabs)/explore',
-      params: {
-        ...serializeFilters(filters),
-        tab: activeTab,
-        query: nextQuery,
-      },
-    });
+    setDraftQuery(nextQuery);
   }
 
   function applyFilters(nextFilters: typeof filters) {
@@ -933,7 +1904,7 @@ export default function ExploreScreen() {
       params: {
         ...serializeFilters(nextFilters),
         tab: activeTab,
-        query,
+        query: draftQuery,
       },
     });
   }
@@ -948,6 +1919,7 @@ export default function ExploreScreen() {
   }
 
   function clearAppliedFilters() {
+    setDraftQuery('');
     router.replace({
       pathname: '/(tabs)/explore',
       params: {
@@ -959,6 +1931,7 @@ export default function ExploreScreen() {
   }
 
   function clearQueryOnly() {
+    setDraftQuery('');
     router.replace({
       pathname: '/(tabs)/explore',
       params: {
@@ -969,15 +1942,31 @@ export default function ExploreScreen() {
     });
   }
 
-  function animateHeader(expanded: boolean) {
+  function animateHeader(expanded: boolean, options?: { force?: boolean }) {
     if (headerExpandedRef.current === expanded) return;
+    const now = Date.now();
+
+    if (!options?.force) {
+      if (headerAnimationInFlightRef.current) {
+        return;
+      }
+
+      if (now - lastHeaderToggleAtRef.current < 180) {
+        return;
+      }
+    }
+
     headerExpandedRef.current = expanded;
+    headerAnimationInFlightRef.current = true;
+    lastHeaderToggleAtRef.current = now;
     Animated.timing(headerChromeProgress, {
       toValue: expanded ? 1 : 0,
       duration: 220,
       easing: expanded ? undefined : undefined,
       useNativeDriver: false,
-    }).start();
+    }).start(() => {
+      headerAnimationInFlightRef.current = false;
+    });
   }
 
   function handleScroll(event: {
@@ -987,36 +1976,60 @@ export default function ExploreScreen() {
       layoutMeasurement: { height: number };
     };
   }) {
+    const now = Date.now();
+    if (now - lastScrollHandledAtRef.current < 32) {
+      return;
+    }
+    lastScrollHandledAtRef.current = now;
+
     const nextY = Math.max(0, event.nativeEvent.contentOffset.y);
     const maxScrollY = Math.max(
       0,
       event.nativeEvent.contentSize.height - event.nativeEvent.layoutMeasurement.height,
     );
-    const delta = nextY - lastScrollY.current;
-    const isNearBottom = nextY >= Math.max(0, maxScrollY - 24);
-
-    if (nextY <= 8) {
+    const compactScrollRange = maxScrollY <= Math.max(96, headerChromeHeight + resultsBarHeight + 24);
+    if (maxScrollY <= 56) {
       scrollDirectionRef.current = null;
       scrollDistanceRef.current = 0;
-      animateHeader(true);
+      lastScrollY.current = 0;
+      animateHeader(true, { force: true });
+      return;
+    }
+    const delta = nextY - lastScrollY.current;
+    if (Math.abs(delta) < 6) {
+      lastScrollY.current = nextY;
+      return;
+    }
+    const isNearBottom = nextY >= Math.max(0, maxScrollY - 24);
+
+    if (nextY <= 24) {
+      scrollDirectionRef.current = null;
+      scrollDistanceRef.current = 0;
+      animateHeader(true, { force: true });
     } else if (Math.abs(delta) > 2) {
       const direction = delta > 0 ? 'down' : 'up';
 
       if (scrollDirectionRef.current !== direction) {
         scrollDirectionRef.current = direction;
-        scrollDistanceRef.current = 0;
+        scrollDistanceRef.current = Math.min(Math.abs(delta), 4);
       }
 
       scrollDistanceRef.current += Math.abs(delta);
 
-      if (direction === 'down' && nextY > 48 && scrollDistanceRef.current > 28) {
+      if (
+        direction === 'down' &&
+        (
+          (compactScrollRange && nextY > 18 && scrollDistanceRef.current > 18) ||
+          (!compactScrollRange && nextY > 56 && scrollDistanceRef.current > 34)
+        )
+      ) {
         animateHeader(false);
         scrollDistanceRef.current = 0;
       }
 
       if (direction === 'up' && isNearBottom) {
         scrollDistanceRef.current = 0;
-      } else if (direction === 'up' && scrollDistanceRef.current > 18) {
+      } else if (direction === 'up' && scrollDistanceRef.current > 42) {
         animateHeader(true);
         scrollDistanceRef.current = 0;
       }
@@ -1048,15 +2061,15 @@ export default function ExploreScreen() {
   });
   const topBarShadowOpacity = headerChromeProgress.interpolate({
     inputRange: [0, 1],
-    outputRange: [0.08, 0],
+    outputRange: [0.12, 0],
   });
   const topBarShadowRadius = headerChromeProgress.interpolate({
     inputRange: [0, 1],
-    outputRange: [18, 0],
+    outputRange: [24, 0],
   });
   const topBarShadowOffsetY = headerChromeProgress.interpolate({
     inputRange: [0, 1],
-    outputRange: [10, 0],
+    outputRange: [12, 0],
   });
   const headerChromePaddingBottom = headerChromeProgress.interpolate({
     inputRange: [0, 1],
@@ -1179,14 +2192,106 @@ export default function ExploreScreen() {
               />
             </View>
           </View>
+
+          <Animated.ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.quickCategories}
+            style={{ marginTop: 14 }}
+          >
+            {categoryOptions.map((option) => {
+              const active = filters.interests.includes(option.value);
+              const accent = getCategoryAccent(option.value as Spot['category']);
+              const progress = quickCategoryProgress.get(option.value) ?? new Animated.Value(0);
+
+              return (
+                <Pressable
+                  key={option.value}
+                  style={styles.quickCategory}
+                  onPress={() => toggleQuickCategory(option.value)}
+                >
+                  <Animated.View
+                    style={[
+                      option.image ? styles.quickCategoryImageWrap : styles.quickCategoryIcon,
+                      {
+                        transform: [
+                          {
+                            scale: progress.interpolate({
+                              inputRange: [0, 1],
+                              outputRange: [1, 1.08],
+                            }),
+                          },
+                        ],
+                      },
+                      !active && !option.image && {
+                        backgroundColor: '#ffffff',
+                        borderColor: 'transparent',
+                      },
+                      active &&
+                        !option.image && {
+                          backgroundColor: accent,
+                        },
+                    ]}
+                  >
+                    <Animated.View
+                      pointerEvents="none"
+                      style={[
+                        styles.quickCategoryBlurBlob,
+                        {
+                          backgroundColor: accent,
+                          opacity: progress.interpolate({
+                            inputRange: [0, 1],
+                            outputRange: [0, 0.26],
+                          }),
+                          transform: [
+                            {
+                              scale: progress.interpolate({
+                                inputRange: [0, 1],
+                                outputRange: [0.72, 1.18],
+                              }),
+                            },
+                          ],
+                        },
+                      ]}
+                    />
+                    {option.image ? (
+                      <Animated.Image
+                        source={option.image}
+                        style={[
+                          styles.quickCategoryImage,
+                          {
+                            transform: [
+                              {
+                                scale: progress.interpolate({
+                                  inputRange: [0, 1],
+                                  outputRange: [1.04, 1.14],
+                                }),
+                              },
+                            ],
+                          },
+                        ]}
+                        resizeMode="contain"
+                      />
+                    ) : (
+                      <Ionicons
+                        name={option.icon}
+                        size={22}
+                        color={active ? '#141417' : '#5f5f67'}
+                      />
+                    )}
+                  </Animated.View>
+                </Pressable>
+              );
+            })}
+          </Animated.ScrollView>
         </Animated.View>
 
         <View style={styles.searchRow}>
           <View style={styles.searchFieldWrap}>
             <SearchField
-              value={query}
+              value={draftQuery}
               onChangeText={updateQuery}
-              showClearButton={query.trim().length > 0}
+              showClearButton={draftQuery.trim().length > 0}
               placeholder="Busca un lugar o escribe lo que quieres hacer"
               variant="light"
             />
@@ -1229,8 +2334,8 @@ export default function ExploreScreen() {
                     setCategoriesHeight(nextHeight);
                   }
                 }}
-              >
-                <Animated.ScrollView
+      >
+        <Animated.ScrollView
                   horizontal
                   showsHorizontalScrollIndicator={false}
                   contentContainerStyle={styles.quickCategories}
@@ -1315,16 +2420,6 @@ export default function ExploreScreen() {
                             />
                           )}
                         </Animated.View>
-                        <Text
-                          style={[
-                            styles.quickCategoryLabel,
-                            {
-                              color: active ? theme.textPrimary : theme.textSecondary,
-                            },
-                          ]}
-                        >
-                          {option.label}
-                        </Text>
                       </Pressable>
                     );
                   })}
@@ -1379,7 +2474,7 @@ export default function ExploreScreen() {
                 </Pressable>
               ) : (
                 <Text style={[styles.resultsHint, { color: theme.textSecondary }]}>
-                  {query.trim().length > 0 ? 'Búsqueda activa' : 'Sin filtros'}
+                  {deferredQuery.trim().length > 0 ? 'Búsqueda activa' : 'Sin filtros'}
                 </Text>
               )}
             </View>
@@ -1473,6 +2568,8 @@ export default function ExploreScreen() {
             flexGrow: 1,
           },
         ]}
+        bounces={!disableFeedBounce}
+        alwaysBounceVertical={!disableFeedBounce}
         showsVerticalScrollIndicator={false}
         onScroll={handleScroll}
         scrollEventThrottle={16}
@@ -1522,9 +2619,18 @@ export default function ExploreScreen() {
                 {mapVisibleData.length ? (
                   <View style={styles.listWrap}>
                     {mapVisibleData.map((spot) => (
-                      <Link key={spot.id} href={getSpotHref(spot)} asChild>
-                        <Pressable style={styles.listCard}>
-                          <Image source={{ uri: spot.image }} style={styles.listCardImage} />
+                        <Link key={spot.id} href={getSpotHref(spot)} asChild>
+                          <Pressable style={styles.listCard}>
+                          <View style={styles.listCardImageWrap}>
+                            <Image source={{ uri: spot.image }} style={styles.listCardImage} />
+                            {isNewSpot(spot) ? (
+                              <View style={styles.newBadgeWrap}>
+                                <View style={styles.newBadge}>
+                                  <Text style={styles.newBadgeText}>Recién añadido</Text>
+                                </View>
+                              </View>
+                            ) : null}
+                          </View>
                           <View style={styles.listCardBody}>
                             <View style={styles.listCardHeader}>
                               <Text
@@ -1533,12 +2639,36 @@ export default function ExploreScreen() {
                               >
                                 {spot.type === 'event' ? spot.name : spot.brandName}
                               </Text>
-                              <View style={styles.categoryChip}>
-                                <Ionicons
-                                  name={getCategoryIcon(spot.category)}
-                                  size={14}
-                                  color={getCategoryAccent(spot.category)}
-                                />
+                              <View style={styles.cardHeaderActions}>
+                                <View style={styles.cardHeaderLeading}>
+                                  <View style={styles.categoryChip}>
+                                    {getCategoryImage(spot.category) ? (
+                                      <Image source={getCategoryImage(spot.category)} style={styles.categoryChipImage} />
+                                    ) : (
+                                      <Ionicons
+                                        name={getCategoryIcon(spot.category)}
+                                        size={14}
+                                        color={getCategoryAccent(spot.category)}
+                                      />
+                                    )}
+                                  </View>
+                                  {isNewSpot(spot) ? (
+                                    <View style={styles.newBadge}>
+                                      <Text style={styles.newBadgeText}>Recién añadido</Text>
+                                    </View>
+                                  ) : null}
+                                </View>
+                                {spot.type === 'place' ? (
+                                  <AppBookmarkButton
+                                    bookmarked={isBookmarked(spot.likeTargetId)}
+                                    onPress={(event) => {
+                                      event?.stopPropagation?.();
+                                      event?.preventDefault?.();
+                                      void toggleBookmark(spot.likeTargetId);
+                                    }}
+                                    activeColor={theme.textPrimary}
+                                  />
+                                ) : null}
                               </View>
                             </View>
                             <View style={styles.listCardFooter}>
@@ -1575,7 +2705,7 @@ export default function ExploreScreen() {
                             </View>
                           </View>
                         </Pressable>
-                      </Link>
+                        </Link>
                     ))}
                   </View>
                 ) : (
@@ -1590,8 +2720,8 @@ export default function ExploreScreen() {
           ) : layoutMode === 'grid' ? (
             <View style={styles.gridWrap}>
               {visibleData.map((spot) => (
-                <Link key={spot.id} href={getSpotHref(spot)} asChild>
-                  <Pressable style={styles.gridCard}>
+                  <Link key={spot.id} href={getSpotHref(spot)} asChild>
+                    <Pressable style={styles.gridCard}>
                     <ImageBackground
                       source={{ uri: spot.image }}
                       style={styles.gridCardImage}
@@ -1599,12 +2729,36 @@ export default function ExploreScreen() {
                     >
                       <View style={styles.cardOverlay} />
                       <View style={styles.gridCardMeta}>
-                        <View style={styles.categoryChip}>
-                          <Ionicons
-                            name={getCategoryIcon(spot.category)}
-                            size={14}
-                            color={getCategoryAccent(spot.category)}
-                          />
+                        <View style={styles.cardHeaderActions}>
+                          <View style={styles.cardHeaderLeading}>
+                            <View style={styles.categoryChip}>
+                              {getCategoryImage(spot.category) ? (
+                                <Image source={getCategoryImage(spot.category)} style={styles.categoryChipImage} />
+                              ) : (
+                                <Ionicons
+                                  name={getCategoryIcon(spot.category)}
+                                  size={14}
+                                  color={getCategoryAccent(spot.category)}
+                                />
+                              )}
+                            </View>
+                            {isNewSpot(spot) ? (
+                              <View style={styles.newBadge}>
+                                <Text style={styles.newBadgeText}>Recién añadido</Text>
+                              </View>
+                            ) : null}
+                          </View>
+                          {spot.type === 'place' ? (
+                            <AppBookmarkButton
+                              bookmarked={isBookmarked(spot.likeTargetId)}
+                              onPress={(event) => {
+                                event?.stopPropagation?.();
+                                event?.preventDefault?.();
+                                void toggleBookmark(spot.likeTargetId);
+                              }}
+                              activeColor={theme.textPrimary}
+                            />
+                          ) : null}
                         </View>
                       </View>
                     </ImageBackground>
@@ -1642,14 +2796,14 @@ export default function ExploreScreen() {
                       </View>
                     </View>
                   </Pressable>
-                </Link>
+                  </Link>
               ))}
             </View>
           ) : layoutMode === 'list' ? (
             <View style={styles.listWrap}>
               {visibleData.map((spot) => (
-                <Link key={spot.id} href={getSpotHref(spot)} asChild>
-                  <Pressable style={styles.listCard}>
+                  <Link key={spot.id} href={getSpotHref(spot)} asChild>
+                    <Pressable style={styles.listCard}>
                     <ImageBackground
                       source={{ uri: spot.image }}
                       style={styles.listCardImage}
@@ -1657,12 +2811,36 @@ export default function ExploreScreen() {
                     >
                       <View style={styles.cardOverlay} />
                       <View style={styles.listCardImageMeta}>
-                        <View style={styles.categoryChip}>
-                          <Ionicons
-                            name={getCategoryIcon(spot.category)}
-                            size={14}
-                            color={getCategoryAccent(spot.category)}
-                          />
+                        <View style={styles.cardHeaderActions}>
+                          <View style={styles.cardHeaderLeading}>
+                            <View style={styles.categoryChip}>
+                              {getCategoryImage(spot.category) ? (
+                                <Image source={getCategoryImage(spot.category)} style={styles.categoryChipImage} />
+                              ) : (
+                                <Ionicons
+                                  name={getCategoryIcon(spot.category)}
+                                  size={14}
+                                  color={getCategoryAccent(spot.category)}
+                                />
+                              )}
+                            </View>
+                            {isNewSpot(spot) ? (
+                              <View style={styles.newBadge}>
+                                <Text style={styles.newBadgeText}>Recién añadido</Text>
+                              </View>
+                            ) : null}
+                          </View>
+                          {spot.type === 'place' ? (
+                            <AppBookmarkButton
+                              bookmarked={isBookmarked(spot.likeTargetId)}
+                              onPress={(event) => {
+                                event?.stopPropagation?.();
+                                event?.preventDefault?.();
+                                void toggleBookmark(spot.likeTargetId);
+                              }}
+                              activeColor={theme.textPrimary}
+                            />
+                          ) : null}
                         </View>
                       </View>
                     </ImageBackground>
@@ -1705,13 +2883,13 @@ export default function ExploreScreen() {
                       </View>
                     </View>
                   </Pressable>
-                </Link>
+                  </Link>
               ))}
             </View>
           ) : (
             visibleData.map((spot) => (
-              <Link key={spot.id} href={getSpotHref(spot)} asChild>
-                <Pressable style={styles.card}>
+                <Link key={spot.id} href={getSpotHref(spot)} asChild>
+                  <Pressable style={styles.card}>
                   <ImageBackground
                     source={{ uri: spot.image }}
                     style={styles.cardImage}
@@ -1719,12 +2897,36 @@ export default function ExploreScreen() {
                   >
                     <View style={styles.cardOverlay} />
                     <View style={styles.cardImageMeta}>
-                      <View style={styles.categoryChip}>
-                        <Ionicons
-                          name={getCategoryIcon(spot.category)}
-                          size={14}
-                          color={getCategoryAccent(spot.category)}
+                      <View style={styles.cardHeaderActions}>
+                        <View style={styles.cardHeaderLeading}>
+                          <View style={styles.categoryChip}>
+                            {getCategoryImage(spot.category) ? (
+                              <Image source={getCategoryImage(spot.category)} style={styles.categoryChipImage} />
+                            ) : (
+                              <Ionicons
+                                name={getCategoryIcon(spot.category)}
+                                size={14}
+                                color={getCategoryAccent(spot.category)}
+                              />
+                            )}
+                          </View>
+                          {isNewSpot(spot) ? (
+                            <View style={styles.newBadge}>
+                              <Text style={styles.newBadgeText}>Recién añadido</Text>
+                            </View>
+                          ) : null}
+                        </View>
+                        {spot.type === 'place' ? (
+                        <AppBookmarkButton
+                          bookmarked={isBookmarked(spot.likeTargetId)}
+                          onPress={(event) => {
+                            event?.stopPropagation?.();
+                            event?.preventDefault?.();
+                            void toggleBookmark(spot.likeTargetId);
+                          }}
+                          activeColor={theme.textPrimary}
                         />
+                        ) : null}
                       </View>
                     </View>
                   </ImageBackground>
@@ -1764,17 +2966,35 @@ export default function ExploreScreen() {
                     </View>
                   </View>
                 </Pressable>
-              </Link>
+                </Link>
             ))
           )
         ) : (
           <View style={styles.emptyState}>
-            <Text style={[styles.emptyTitle, { color: theme.textPrimary }]}>No hay resultados</Text>
-            <Text style={[styles.emptyCopy, { color: theme.textSecondary }]}>
-              {layoutMode === 'map'
-                ? 'Completa coordenadas o cambia filtros para ver lugares en el mapa.'
-                : 'Ajusta filtros o cambia la busqueda para encontrar algo mejor.'}
-            </Text>
+            {activeTab === 'now' ? (
+              <>
+                <View style={[styles.emptyBadge, { backgroundColor: theme.accentSoft }]}>
+                  <Ionicons name="sparkles-outline" size={14} color={theme.accent} />
+                  <Text style={[styles.emptyBadgeText, { color: theme.accent }]}>Muy pronto</Text>
+                </View>
+                <Text style={[styles.emptyTitle, { color: theme.textPrimary }]}>
+                  Los parches llegan pronto a Spots
+                </Text>
+                <Text style={[styles.emptyCopy, { color: theme.textSecondary }]}>
+                  Estamos armando esta pestaña para que encuentres planes, movidas y cosas que
+                  pasan en la ciudad sin tener que rebuscarlas por fuera.
+                </Text>
+              </>
+            ) : (
+              <>
+                <Text style={[styles.emptyTitle, { color: theme.textPrimary }]}>No hay resultados</Text>
+                <Text style={[styles.emptyCopy, { color: theme.textSecondary }]}>
+                  {layoutMode === 'map'
+                    ? 'Completa coordenadas o cambia filtros para ver lugares en el mapa.'
+                    : 'Ajusta filtros o cambia la busqueda para encontrar algo mejor.'}
+                </Text>
+              </>
+            )}
           </View>
         )}
         </Animated.View>
@@ -2049,7 +3269,7 @@ export default function ExploreScreen() {
         <FiltersSheet
           activeTab={activeTab}
           initialFilters={filters}
-          query={query}
+          query={deferredQuery}
           onApply={applyFilters}
           onClearQuery={clearQueryOnly}
           onClose={() => setFiltersOpen(false)}
@@ -2491,10 +3711,9 @@ const styles = StyleSheet.create({
   },
   quickCategory: {
     width: 78,
-    minHeight: 80,
+    minHeight: 78,
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 6,
   },
   quickCategoryIcon: {
     width: 54,
@@ -2524,12 +3743,6 @@ const styles = StyleSheet.create({
   quickCategoryImage: {
     width: 76,
     height: 76,
-  },
-  quickCategoryLabel: {
-    fontSize: 12,
-    lineHeight: 14,
-    fontWeight: '600',
-    textAlign: 'center',
   },
   resultsBar: {
     marginTop: 0,
@@ -2591,6 +3804,7 @@ const styles = StyleSheet.create({
   },
   card: {
     gap: 12,
+    marginBottom: 28,
   },
   cardImage: {
     height: 188,
@@ -2612,6 +3826,20 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 14,
     paddingVertical: 14,
+  },
+  cardHeaderActions: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    minWidth: 0,
+  },
+  cardHeaderLeading: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    minWidth: 0,
+    flexShrink: 1,
   },
   cardBody: {
     gap: 8,
@@ -2668,15 +3896,46 @@ const styles = StyleSheet.create({
     flexShrink: 1,
     minWidth: 0,
   },
+  newBadgeWrap: {
+    position: 'absolute',
+    top: 10,
+    left: 10,
+  },
+  newBadge: {
+    minHeight: 28,
+    borderRadius: 999,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    backgroundColor: 'rgba(255,255,255,0.96)',
+    borderWidth: 1,
+    borderColor: 'rgba(20,20,23,0.08)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000000',
+    shadowOpacity: 0.08,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 2,
+  },
+  newBadgeText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#141417',
+  },
   categoryChip: {
     width: 30,
     height: 30,
     borderRadius: 8,
-    backgroundColor: spotsUi.glassBg,
+    backgroundColor: '#FFFFFF',
     borderWidth: 1,
-    borderColor: spotsUi.glassBorder,
+    borderColor: 'rgba(20,20,23,0.08)',
     alignItems: 'center',
     justifyContent: 'center',
+    overflow: 'hidden',
+  },
+  categoryChipImage: {
+    width: 24,
+    height: 24,
   },
   cardSupportText: {
     fontSize: 13,
@@ -2717,7 +3976,9 @@ const styles = StyleSheet.create({
   gridCardMeta: {
     paddingHorizontal: 12,
     paddingVertical: 12,
-    alignItems: 'flex-start',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   gridCardBody: {
     gap: 8,
@@ -2752,6 +4013,10 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: spotsUi.borderSubtle,
   },
+  listCardImageWrap: {
+    width: 96,
+    height: 96,
+  },
   listCardImage: {
     width: 96,
     height: 96,
@@ -2767,7 +4032,9 @@ const styles = StyleSheet.create({
   listCardImageMeta: {
     paddingHorizontal: 10,
     paddingVertical: 10,
-    alignItems: 'flex-start',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   listCardBody: {
     flex: 1,
@@ -2829,10 +4096,25 @@ const styles = StyleSheet.create({
     gap: 10,
     alignItems: 'center',
   },
+  emptyBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 999,
+  },
+  emptyBadgeText: {
+    fontSize: 12,
+    fontWeight: '700',
+    letterSpacing: 0.2,
+    textTransform: 'uppercase',
+  },
   emptyTitle: {
     fontSize: 22,
     fontWeight: '700',
     color: spotsUi.textPrimary,
+    textAlign: 'center',
   },
   emptyCopy: {
     textAlign: 'center',

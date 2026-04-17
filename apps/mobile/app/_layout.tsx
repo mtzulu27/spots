@@ -4,7 +4,9 @@ import { StatusBar } from 'expo-status-bar';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { AppState, Platform, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { AuthStoreProvider } from '@/lib/auth-store';
+import { BookmarksStoreProvider } from '@/lib/bookmarks-store';
 import { LikesStoreProvider } from '@/lib/likes-store';
 import { LocationStoreProvider } from '@/lib/location-store';
 import { emitRelayout } from '@/lib/relayout';
@@ -22,7 +24,8 @@ const VIEWPORT_STABILITY_TOLERANCE = 2;
 const VIEWPORT_RECOVERY_DELAYS = [120, 260, 420, 700];
 const VIEWPORT_RECOVERY_FAILSAFE_DELAY = 1400;
 const HARD_RECOVERY_SESSION_KEY = 'spots-hard-recovery';
-const ENABLE_WEB_VIEWPORT_RECOVERY = process.env.NODE_ENV === 'production';
+const PRE_RESUMPTION_HEIGHT_KEY = 'spots-pre-resumption-height';
+const ENABLE_WEB_VIEWPORT_RECOVERY = false;
 
 function isKeyboardFocusActive() {
   if (Platform.OS !== 'web' || typeof document === 'undefined') {
@@ -74,10 +77,30 @@ export default function RootLayout() {
       return null;
     }
 
-    const roundedHeight = readViewportHeight();
+    let roundedHeight = readViewportHeight();
 
     if (!roundedHeight) {
       return null;
+    }
+
+    // iOS PWA: visualViewport.height can report a wrong (smaller) value after
+    // OAuth return or app resume in the same browsing context. Reloading does not
+    // fix it because the context is reused. Instead, if we are in standalone
+    // portrait mode and the measured height is more than 30px below screen.height,
+    // use screen.height directly so the wrong value is never committed.
+    if (
+      typeof navigator !== 'undefined' &&
+      (navigator as Navigator & { standalone?: boolean }).standalone === true &&
+      window.screen?.height
+    ) {
+      const screenH = window.screen.height;
+      const orientation =
+        window.screen?.orientation?.angle ??
+        (window as Window & { orientation?: number }).orientation ??
+        0;
+      if (orientation % 180 === 0 && screenH - roundedHeight > 30) {
+        roundedHeight = screenH;
+      }
     }
 
     const stableHeight = stableHeightRef.current;
@@ -164,11 +187,41 @@ export default function RootLayout() {
     const mismatch = snapshot.mismatch;
 
     if (Platform.OS === 'web' && typeof window !== 'undefined') {
+      const alreadyTriedHardRecovery = window.sessionStorage.getItem(HARD_RECOVERY_SESSION_KEY) === '1';
+      const shouldAllowHardRecovery = process.env.NODE_ENV === 'production';
+
+      // Check measured height against the height saved just before this resumption cycle
+      // began (pageshow/visibilitychange/focus). On iOS PWA after OAuth, the browser can
+      // report a stable but incorrect viewport height, making mismatch detection blind.
+      // The saved reference is the last confirmed-correct height on the same orientation.
+      const savedRaw = window.sessionStorage.getItem(PRE_RESUMPTION_HEIGHT_KEY);
+      if (savedRaw && shouldAllowHardRecovery && !alreadyTriedHardRecovery) {
+        window.sessionStorage.removeItem(PRE_RESUMPTION_HEIGHT_KEY);
+        try {
+          const saved = JSON.parse(savedRaw) as { height: number; orientation: number };
+          const currentOrientation =
+            window.screen?.orientation?.angle ??
+            (window as Window & { orientation?: number }).orientation ??
+            0;
+          if (
+            saved.orientation === currentOrientation &&
+            saved.height > 0 &&
+            snapshot.targetHeight > 0 &&
+            Math.abs(saved.height - snapshot.targetHeight) > VIEWPORT_STABILITY_TOLERANCE
+          ) {
+            window.sessionStorage.setItem(HARD_RECOVERY_SESSION_KEY, '1');
+          }
+        } catch {
+          // ignore malformed saved data
+        }
+      } else if (savedRaw) {
+        window.sessionStorage.removeItem(PRE_RESUMPTION_HEIGHT_KEY);
+      }
+
       if (!mismatch) {
         window.sessionStorage.removeItem(HARD_RECOVERY_SESSION_KEY);
       } else {
-        const alreadyTriedHardRecovery = window.sessionStorage.getItem(HARD_RECOVERY_SESSION_KEY) === '1';
-        if (!alreadyTriedHardRecovery && recoveryState.epoch > 0) {
+        if (shouldAllowHardRecovery && !alreadyTriedHardRecovery && recoveryState.epoch > 0) {
           window.sessionStorage.setItem(HARD_RECOVERY_SESSION_KEY, '1');
         }
       }
@@ -317,6 +370,21 @@ export default function RootLayout() {
   }, [fontsLoaded]);
 
   useEffect(() => {
+    if (Platform.OS !== 'web' || typeof window === 'undefined') {
+      return;
+    }
+
+    const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
+      console.error('[unhandledrejection]', event.reason);
+    };
+
+    window.addEventListener('unhandledrejection', handleUnhandledRejection);
+    return () => {
+      window.removeEventListener('unhandledrejection', handleUnhandledRejection);
+    };
+  }, []);
+
+  useEffect(() => {
     if (!fontsLoaded) {
       return;
     }
@@ -346,7 +414,34 @@ export default function RootLayout() {
 
     const appStateSubscription = AppState.addEventListener('change', (state) => {
       if (state === 'active') {
-        startViewportRecovery('app-active');
+        // If the height is already correct, avoid a resume recovery cycle.
+        if (stableHeightRef.current > 0) {
+          let measuredHeight = readViewportHeight() ?? 0;
+          if (
+            measuredHeight > 0 &&
+            typeof navigator !== 'undefined' &&
+            (navigator as Navigator & { standalone?: boolean }).standalone === true &&
+            window.screen?.height
+          ) {
+            const screenH = window.screen.height;
+            const orient =
+              window.screen?.orientation?.angle ??
+              (window as Window & { orientation?: number }).orientation ??
+              0;
+            if (orient % 180 === 0 && screenH - measuredHeight > 30) {
+              measuredHeight = screenH;
+            }
+          }
+          if (
+            measuredHeight > 0 &&
+            Math.abs(measuredHeight - stableHeightRef.current) <= VIEWPORT_STABILITY_TOLERANCE
+          ) {
+            return;
+          }
+        }
+        window.setTimeout(() => {
+          startViewportRecovery('app-active');
+        }, 180);
       }
     });
 
@@ -356,18 +451,64 @@ export default function RootLayout() {
       };
     }
 
+    const forceResumeRecovery = (source: string) => {
+      // If the viewport height is already correct, avoid a heavier recovery path.
+      if (stableHeightRef.current > 0) {
+        let measuredHeight = readViewportHeight() ?? 0;
+        if (
+          measuredHeight > 0 &&
+          typeof navigator !== 'undefined' &&
+          (navigator as Navigator & { standalone?: boolean }).standalone === true &&
+          window.screen?.height
+        ) {
+          const screenH = window.screen.height;
+          const orient =
+            window.screen?.orientation?.angle ??
+            (window as Window & { orientation?: number }).orientation ??
+            0;
+          if (orient % 180 === 0 && screenH - measuredHeight > 30) {
+            measuredHeight = screenH;
+          }
+        }
+        if (
+          measuredHeight > 0 &&
+          Math.abs(measuredHeight - stableHeightRef.current) <= VIEWPORT_STABILITY_TOLERANCE
+        ) {
+          triggerRelayout(true, `${source}:light`);
+          return;
+        }
+      }
+
+      if (stableHeightRef.current > 0 && typeof window !== 'undefined') {
+        if (!window.sessionStorage.getItem(PRE_RESUMPTION_HEIGHT_KEY)) {
+          const orientation =
+            window.screen?.orientation?.angle ??
+            (window as Window & { orientation?: number }).orientation ??
+            0;
+          window.sessionStorage.setItem(
+            PRE_RESUMPTION_HEIGHT_KEY,
+            JSON.stringify({ height: stableHeightRef.current, orientation }),
+          );
+        }
+      }
+
+      window.setTimeout(() => {
+        startViewportRecovery(source);
+      }, 180);
+    };
+
+    const effectStartTime = Date.now();
+
     const handleVisibility = () => {
       if (document.visibilityState === 'visible') {
-        stableHeightRef.current = 0;
-        pendingShrinkRef.current = null;
-        setTimeout(() => startViewportRecovery('visible'), 600);
+        if (Date.now() - effectStartTime < 3000) return;
+        forceResumeRecovery('visible');
       }
     };
 
     const handleFocus = () => {
-      stableHeightRef.current = 0;
-      pendingShrinkRef.current = null;
-      setTimeout(() => startViewportRecovery('focus'), 600);
+      if (Date.now() - effectStartTime < 3000) return;
+      forceResumeRecovery('focus');
     };
 
     const handleResize = () => {
@@ -384,10 +525,9 @@ export default function RootLayout() {
       }, 80);
     };
 
-    const handlePageShow = () => {
-      stableHeightRef.current = 0;
-      pendingShrinkRef.current = null;
-      setTimeout(() => startViewportRecovery('pageshow'), 600);
+    const handlePageShow = (event: PageTransitionEvent) => {
+      if (!event.persisted) return;
+      forceResumeRecovery('pageshow');
     };
 
     window.addEventListener('resize', handleResize);
@@ -419,55 +559,70 @@ export default function RootLayout() {
     };
   }, [fontsLoaded, startViewportRecovery, syncViewportHeight, triggerRelayout]);
 
+  useEffect(() => {
+  if (!fontsLoaded || typeof window === 'undefined') {
+    return;
+  }
+
+  const fix = () => {
+    window.scrollTo(0, 0);
+    window.dispatchEvent(new Event('resize'));
+  };
+
+  setTimeout(fix, 200);
+  setTimeout(fix, 600);
+  setTimeout(fix, 1200);
+}, [fontsLoaded]);
+
   if (!fontsLoaded) {
     return null;
   }
 
+  
+
   return (
-    <AuthStoreProvider>
-      <SpotsStoreProvider>
-        <LocationStoreProvider>
-          <LikesStoreProvider>
-            <View
-              style={{
-                flex: 1,
-                height: viewportHeight ?? undefined,
-                minHeight: viewportHeight ?? undefined,
-                overflow: 'hidden',
-                backgroundColor: '#050305',
-              }}
-            >
-              {ENABLE_WEB_VIEWPORT_RECOVERY && recoveryState.recovering && recoveryState.ready ? (
+    <ErrorBoundary>
+      <AuthStoreProvider>
+        <SpotsStoreProvider>
+          <LocationStoreProvider>
+            <LikesStoreProvider>
+              <BookmarksStoreProvider>
                 <View
-                  pointerEvents="none"
                   style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    zIndex: 9999,
+                    flex: 1,
                     backgroundColor: '#050305',
                   }}
-                />
-              ) : null}
-              <SafeAreaProvider key={`safe-area-${recoveryState.epoch}`}>
-                <StatusBar style="light" translucent backgroundColor="transparent" />
-                <Stack
-                  key={`viewport-stack-${recoveryState.epoch}`}
-                  screenOptions={{
-                    headerShown: false,
-                    contentStyle: {
-                      backgroundColor: '#050305',
-                      flex: 1,
-                    },
-                  }}
-                />
-              </SafeAreaProvider>
-            </View>
-          </LikesStoreProvider>
-        </LocationStoreProvider>
-      </SpotsStoreProvider>
-    </AuthStoreProvider>
+                >
+                  {ENABLE_WEB_VIEWPORT_RECOVERY && recoveryState.recovering && recoveryState.ready ? (
+                    <View
+                      pointerEvents="none"
+                      style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        zIndex: 9999,
+                        backgroundColor: '#050305',
+                      }}
+                    />
+                  ) : null}
+                  <StatusBar style="light" translucent backgroundColor="transparent" />
+                  <Stack
+                    screenOptions={{
+                      headerShown: false,
+                      contentStyle: {
+                        backgroundColor: '#050305',
+                        flex: 1,
+                      },
+                    }}
+                  />
+                </View>
+              </BookmarksStoreProvider>
+            </LikesStoreProvider>
+          </LocationStoreProvider>
+        </SpotsStoreProvider>
+      </AuthStoreProvider>
+    </ErrorBoundary>
   );
 }

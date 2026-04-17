@@ -463,6 +463,22 @@ export default function FiltersScreen() {
 
           <Divider />
 
+          <Section title="Disponibilidad">
+            <View style={styles.toggleRow}>
+              <View style={styles.toggleCopy}>
+                <Text style={styles.toggleTitle}>Solo lugares abiertos</Text>
+              </View>
+              <Pressable
+                onPress={() => setOpenNowOnly((current) => !current)}
+                style={[styles.toggleControl, openNowOnly && styles.toggleControlActive]}
+              >
+                <View style={[styles.toggleThumb, openNowOnly && styles.toggleThumbActive]} />
+              </Pressable>
+            </View>
+          </Section>
+
+          <Divider />
+
           <Section title="Ideal para">
             <View style={styles.daysRow}>
               {idealForOptions.map((option) => {
@@ -583,22 +599,6 @@ export default function FiltersScreen() {
                   </Text>
                 </Pressable>
               ))}
-            </View>
-          </Section>
-
-          <Divider />
-
-          <Section title="Disponibilidad">
-            <View style={styles.toggleRow}>
-              <View style={styles.toggleCopy}>
-                <Text style={styles.toggleTitle}>Solo lugares abiertos</Text>
-              </View>
-              <Pressable
-                onPress={() => setOpenNowOnly((current) => !current)}
-                style={[styles.toggleControl, openNowOnly && styles.toggleControlActive]}
-              >
-                <View style={[styles.toggleThumb, openNowOnly && styles.toggleThumbActive]} />
-              </Pressable>
             </View>
           </Section>
 

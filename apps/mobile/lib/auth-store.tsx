@@ -283,15 +283,32 @@ export function AuthStoreProvider({ children }: { children: ReactNode }) {
 
     async function bootstrapSession() {
       try {
-        const [{ data: sessionData }, { data: userData }] = await Promise.all([
-          client.auth.getSession(),
-          client.auth.getUser(),
-        ]);
+        const { data: sessionData } = await client.auth.getSession();
+        let userData: Awaited<ReturnType<typeof client.auth.getUser>>['data'] | null = null;
+
+        try {
+          const result = await client.auth.getUser();
+          userData = result.data;
+        } catch (error) {
+          // iPhone PWA can be more fragile after resume/deploy; keep booting with
+          // session data even if the explicit user fetch fails transiently.
+          console.error('[auth-store] getUser failed during bootstrap', error);
+        }
+
         if (active) {
-          const resolvedUser = mergeSupabaseUsers(userData.user ?? null, null);
+          const resolvedUser = mergeSupabaseUsers(
+            userData?.user ?? sessionData.session?.user ?? null,
+            null,
+          );
           const resolvedSession = sessionData.session && resolvedUser ? sessionData.session : null;
           setSession(resolvedSession);
           setUser(resolvedSession ? resolvedUser : null);
+        }
+      } catch (error) {
+        console.error('[auth-store] bootstrapSession failed', error);
+        if (active) {
+          setSession(null);
+          setUser(null);
         }
       } finally {
         if (active) {
@@ -306,13 +323,17 @@ export function AuthStoreProvider({ children }: { children: ReactNode }) {
     const {
       data: { subscription },
     } = client.auth.onAuthStateChange((_event, nextSession) => {
-      if (!active) {
-        return;
-      }
+      try {
+        if (!active) {
+          return;
+        }
 
-      setSession(nextSession);
-      setUser(nextSession?.user ?? null);
-      setLoading(false);
+        setSession(nextSession);
+        setUser(nextSession?.user ?? null);
+        setLoading(false);
+      } catch (error) {
+        console.error('[auth-store] onAuthStateChange failed', error);
+      }
     });
 
     return () => {
@@ -511,18 +532,22 @@ export function AuthStoreProvider({ children }: { children: ReactNode }) {
         setUser(null);
 
         if (Platform.OS === 'web' && typeof window !== 'undefined') {
-          const storages = [window.localStorage, window.sessionStorage];
-          for (const storage of storages) {
-            const keysToRemove: string[] = [];
-            for (let index = 0; index < storage.length; index += 1) {
-              const key = storage.key(index);
-              if (!key) continue;
-              if (key.startsWith('sb-') || key.includes('supabase') || key.includes('auth-token')) {
-                keysToRemove.push(key);
+          try {
+            const storages = [window.localStorage, window.sessionStorage];
+            for (const storage of storages) {
+              const keysToRemove: string[] = [];
+              for (let index = 0; index < storage.length; index += 1) {
+                const key = storage.key(index);
+                if (!key) continue;
+                if (key.startsWith('sb-') || key.includes('supabase') || key.includes('auth-token')) {
+                  keysToRemove.push(key);
+                }
               }
-            }
 
-            keysToRemove.forEach((key) => storage.removeItem(key));
+              keysToRemove.forEach((key) => storage.removeItem(key));
+            }
+          } catch (storageError) {
+            console.error('[auth-store] storage cleanup failed during signOut', storageError);
           }
         }
 

@@ -2,8 +2,9 @@ self.addEventListener('install', (event) => {
   event.waitUntil(self.skipWaiting());
 });
 
-self.addEventListener('activate', (event) => {
-  event.waitUntil(self.clients.claim());
+self.addEventListener('activate', () => {
+  // clients.claim() removed: not needed for a push-only SW and can
+  // cause page reloads in iOS Safari PWA on second open.
 });
 
 self.addEventListener('push', (event) => {

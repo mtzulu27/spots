@@ -37,6 +37,7 @@ export default function RootHtml({ children }: PropsWithChildren) {
                 var rootReady = false;
                 var resumeTimer = null;
                 var skipHeightUpdate = false;
+
                 function isEditableElement(element) {
                   if (!element || !element.tagName) {
                     return false;
@@ -92,6 +93,22 @@ export default function RootHtml({ children }: PropsWithChildren) {
                   var nextHeight = readAppHeight();
                   var allowShrink = options && options.allowShrink && !isKeyboardFocusActive();
 
+                  if (
+                    window.navigator &&
+                    window.navigator.standalone &&
+                    window.screen &&
+                    window.screen.height
+                  ) {
+                    var screenH = window.screen.height;
+                    var orient =
+                      (window.screen.orientation && window.screen.orientation.angle) ||
+                      window.orientation ||
+                      0;
+                    if (orient % 180 === 0 && screenH - nextHeight > 30) {
+                      nextHeight = screenH;
+                    }
+                  }
+
                   if (!nextHeight) {
                     return;
                   }
@@ -139,6 +156,7 @@ export default function RootHtml({ children }: PropsWithChildren) {
 
                 function bootstrapAppHeight() {
                   setAppHeight({ allowShrink: true });
+                  revealBody();
                   afterFrames(function () {
                     setAppHeight({ allowShrink: true });
                     revealBody();
@@ -164,7 +182,6 @@ export default function RootHtml({ children }: PropsWithChildren) {
                 window.__spotsUpdateAppHeight = scheduleAppHeightSync;
 
                 bootstrapAppHeight();
-
                 window.addEventListener('resize', function () {
                   scheduleAppHeightSync({ allowShrink: true });
                 });
@@ -179,8 +196,10 @@ export default function RootHtml({ children }: PropsWithChildren) {
                     scheduleAppHeightSync({ allowShrink: true });
                   }, 80);
                 });
-                window.addEventListener('pageshow', function () {
-                  scheduleAppHeightSyncAfterResume();
+                window.addEventListener('pageshow', function (event) {
+                  if (event.persisted) {
+                    scheduleAppHeightSyncAfterResume();
+                  }
                 });
                 document.addEventListener('visibilitychange', function () {
                   if (document.visibilityState === 'visible') {

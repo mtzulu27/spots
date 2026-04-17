@@ -1,4 +1,4 @@
-import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { copyFileSync, cpSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -14,6 +14,9 @@ const webPushSwSourcePath = join(publicDir, 'web-push-sw.js');
 const webPushSwDistPath = join(distDir, 'web-push-sw.js');
 const catalogSourcePath = join(publicDir, 'spots-catalog.json');
 const catalogDistPath = join(distDir, 'spots-catalog.json');
+const htaccessSourcePath = join(publicDir, '.htaccess');
+const placeMediaSourcePath = join(publicDir, 'place-media');
+const placeMediaDistPath = join(distDir, 'place-media');
 
 if (!existsSync(distDir)) {
   throw new Error('No existe dist. Corre el export antes de parchear.');
@@ -31,10 +34,18 @@ if (!existsSync(catalogSourcePath)) {
   throw new Error('No existe spots-catalog.json en public. Genera el catálogo antes del export.');
 }
 
+if (!existsSync(htaccessSourcePath)) {
+  throw new Error('No existe .htaccess en public. Déjalo versionado para el export web.');
+}
+
 mkdirSync(distDir, { recursive: true });
 copyFileSync(iconSourcePath, iconDistPath);
 copyFileSync(webPushSwSourcePath, webPushSwDistPath);
 copyFileSync(catalogSourcePath, catalogDistPath);
+copyFileSync(htaccessSourcePath, join(distDir, '.htaccess'));
+if (existsSync(placeMediaSourcePath)) {
+  cpSync(placeMediaSourcePath, placeMediaDistPath, { recursive: true });
+}
 
 const headInjection = `
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover" />
@@ -54,6 +65,7 @@ const viewportScript = `(function () {
   var rootReady = false;
   var resumeTimer = null;
   var skipHeightUpdate = false;
+
   function readAppHeight() {
     return (
       (window.visualViewport && window.visualViewport.height) ||
@@ -88,9 +100,30 @@ const viewportScript = `(function () {
     }, 600);
   }
 
+  function isEditableElement(element) {
+    if (!element || !element.tagName) return false;
+    var tagName = element.tagName.toLowerCase();
+    if (tagName === 'input' || tagName === 'textarea' || tagName === 'select') return true;
+    return !!element.isContentEditable;
+  }
+
+  function isKeyboardFocusActive() {
+    return isEditableElement(document.activeElement);
+  }
+
   function setAppHeight(options) {
     var nextHeight = readAppHeight();
-    var allowShrink = options && options.allowShrink;
+    var allowShrink = options && options.allowShrink && !isKeyboardFocusActive();
+
+    // iOS PWA: visualViewport.height can report a wrong smaller value after
+    // OAuth return. Use screen.height if the gap is suspiciously large in portrait.
+    if (window.navigator && window.navigator.standalone && window.screen && window.screen.height) {
+      var screenH = window.screen.height;
+      var orient = (window.screen.orientation && window.screen.orientation.angle) || window.orientation || 0;
+      if (orient % 180 === 0 && screenH - nextHeight > 30) {
+        nextHeight = screenH;
+      }
+    }
 
     if (!nextHeight) {
       return;
@@ -139,6 +172,7 @@ const viewportScript = `(function () {
 
   function bootstrapAppHeight() {
     setAppHeight({ allowShrink: true });
+    revealBody();
     afterFrames(function () {
       setAppHeight({ allowShrink: true });
       revealBody();
@@ -164,15 +198,24 @@ const viewportScript = `(function () {
   window.__spotsUpdateAppHeight = scheduleAppHeightSync;
 
   bootstrapAppHeight();
-
   window.addEventListener('resize', function () {
     scheduleAppHeightSync({ allowShrink: true });
   });
   window.addEventListener('focus', function () {
     scheduleAppHeightSyncAfterResume();
   });
-  window.addEventListener('pageshow', function () {
-    scheduleAppHeightSyncAfterResume();
+  document.addEventListener('focusin', function () {
+    scheduleAppHeightSync({ allowShrink: false });
+  });
+  document.addEventListener('focusout', function () {
+    window.setTimeout(function () {
+      scheduleAppHeightSync({ allowShrink: true });
+    }, 80);
+  });
+  window.addEventListener('pageshow', function (event) {
+    if (event.persisted) {
+      scheduleAppHeightSyncAfterResume();
+    }
   });
   document.addEventListener('visibilitychange', function () {
     if (document.visibilityState === 'visible') {
@@ -200,9 +243,17 @@ html, body, #root {
   width: 100%;
   height: var(--app-height);
   min-height: var(--app-height);
-  background: #f7f3f7;
+  background: #050305;
+  font-family: 'Montserrat', 'Segoe UI', sans-serif;
   -webkit-text-size-adjust: 100%;
   overflow: hidden;
+}
+
+input,
+textarea,
+select {
+  font-size: 16px !important;
+  line-height: 1.25 !important;
 }
 
 body {
@@ -248,6 +299,13 @@ indexHtml = indexHtml.replace(/<script id="spots-app-height">[\s\S]*?<\/script>/
 indexHtml = indexHtml.replace(
   '</head>',
   `    <script id="spots-app-height">${viewportScript}</script>\n  </head>`,
+);
+
+// Add cache-buster timestamp to the JS entry bundle so browsers always load the latest version
+const cacheBuster = `?v=${Date.now()}`;
+indexHtml = indexHtml.replace(
+  /(<script\s[^>]*src="(\/_expo\/static\/js\/web\/entry-[^"]+\.js))"(\s[^>]*)?(><\/script>|defer>)/,
+  (match, p1, p2, p3, p4) => `<script src="${p2}${cacheBuster}"${p3 || ''}${p4}`,
 );
 
 writeFileSync(distIndexPath, indexHtml, 'utf8');
