@@ -200,7 +200,7 @@ const isIOSWeb =
   typeof navigator !== 'undefined' &&
   /iphone|ipad|ipod/i.test(navigator.userAgent);
 const useLegacyIOSWebExplorePath = false;
-const debugGeneralRenderLimit = 112;
+const debugGeneralRenderLimit = 12;
 
 const categoryOptions: Array<{
   label: string;
@@ -1347,10 +1347,10 @@ export default function ExploreScreen() {
 
       Animated.stagger(90, [
         Animated.timing(topBarIntro, {
-        toValue: 1,
-        duration: 320,
-        useNativeDriver: true,
-      }),
+          toValue: 1,
+          duration: 320,
+          useNativeDriver: true,
+        }),
         Animated.timing(feedIntro, {
           toValue: 1,
           duration: 380,
@@ -2800,17 +2800,6 @@ export default function ExploreScreen() {
                             </View>
                           ) : null}
                         </View>
-                        {spot.type === 'place' ? (
-                        <AppBookmarkButton
-                          bookmarked={isBookmarked(spot.likeTargetId)}
-                          onPress={(event) => {
-                            event?.stopPropagation?.();
-                            event?.preventDefault?.();
-                            void toggleBookmark(spot.likeTargetId);
-                          }}
-                          activeColor={theme.textPrimary}
-                        />
-                        ) : null}
                       </View>
                     </View>
                   </ImageBackground>
@@ -2836,16 +2825,6 @@ export default function ExploreScreen() {
                             {getFeedMinPriceLabel(spot)}
                           </Text>
                         </View>
-                        <Text
-                          style={[
-                            styles.feedMetaText,
-                            {
-                              color: isLiked(spot.likeTargetId) ? theme.accent : theme.textTertiary,
-                            },
-                          ]}
-                        >
-                          {isLiked(spot.likeTargetId) ? '♥' : '♡'} {formatLikesCount(getLikesCount(spot.likeTargetId))}
-                        </Text>
                       </View>
                     </View>
                   </View>
