@@ -201,6 +201,7 @@ const isIOSWeb =
   /iphone|ipad|ipod/i.test(navigator.userAgent);
 const useLegacyIOSWebExplorePath = false;
 const debugGeneralRenderLimit = 12;
+const generalRenderBatchStep = 12;
 
 const categoryOptions: Array<{
   label: string;
@@ -291,6 +292,7 @@ export default function ExploreScreen() {
   const [feedbackDraft, setFeedbackDraft] = useState('');
   const [feedbackSubmitting, setFeedbackSubmitting] = useState(false);
   const [layoutMode, setLayoutMode] = useState<ExploreLayoutMode>('editorial');
+  const [generalRenderLimit, setGeneralRenderLimit] = useState(debugGeneralRenderLimit);
   const [topBarTotalHeight, setTopBarTotalHeight] = useState(220);
   const [headerChromeHeight, setHeaderChromeHeight] = useState(0);
   const [categoriesHeight, setCategoriesHeight] = useState(0);
@@ -1139,6 +1141,14 @@ export default function ExploreScreen() {
   const resultsAnimationTrigger = `${activeTab}|${deferredQuery}|${serializeFilters(filters)}`;
   const disableFeedBounce = layoutMode !== 'map' && visibleData.length <= 2;
 
+  useEffect(() => {
+    if (useLegacyIOSWebExplorePath) {
+      return;
+    }
+
+    setGeneralRenderLimit(debugGeneralRenderLimit);
+  }, [resultsAnimationTrigger]);
+
   function getSpotHref(spot: Spot) {
     const preferredBranchId = getPreferredDetailBranchId(spot, userLocation);
 
@@ -1308,22 +1318,22 @@ export default function ExploreScreen() {
     () =>
       useLegacyIOSWebExplorePath
         ? visibleData
-        : visibleData.slice(0, debugGeneralRenderLimit),
-    [visibleData],
+        : visibleData.slice(0, generalRenderLimit),
+    [generalRenderLimit, visibleData],
   );
   const renderedMappableData = useMemo(
     () =>
       useLegacyIOSWebExplorePath
         ? mappableData
-        : mappableData.slice(0, debugGeneralRenderLimit),
-    [mappableData],
+        : mappableData.slice(0, generalRenderLimit),
+    [generalRenderLimit, mappableData],
   );
   const renderedMapVisibleData = useMemo(
     () =>
       useLegacyIOSWebExplorePath
         ? mapVisibleData
-        : mapVisibleData.slice(0, debugGeneralRenderLimit),
-    [mapVisibleData],
+        : mapVisibleData.slice(0, generalRenderLimit),
+    [generalRenderLimit, mapVisibleData],
   );
   const theme = {
     background: '#f5f5f7',
@@ -2098,6 +2108,17 @@ export default function ExploreScreen() {
       0,
       event.nativeEvent.contentSize.height - event.nativeEvent.layoutMeasurement.height,
     );
+    const shouldExpandRenderWindow =
+      !useLegacyIOSWebExplorePath &&
+      generalRenderLimit < visibleData.length &&
+      nextY >= Math.max(0, maxScrollY - 320);
+
+    if (shouldExpandRenderWindow) {
+      setGeneralRenderLimit((current) =>
+        Math.min(current + generalRenderBatchStep, visibleData.length),
+      );
+    }
+
     const compactScrollRange = maxScrollY <= Math.max(96, headerChromeHeight + resultsBarHeight + 24);
     if (maxScrollY <= 56) {
       scrollDirectionRef.current = null;
