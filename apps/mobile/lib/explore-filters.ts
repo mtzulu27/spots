@@ -126,6 +126,44 @@ const semanticStopWords = new Set([
   'ver',
   'y',
 ]);
+const spotInterestSignalsCache = new WeakMap<Spot, Set<string>>();
+const structuredInterestGroups = [
+  {
+    primary: 'Arte y cultura',
+    aliases: ['Arte y cultura'],
+    subcategories: ['Museos', 'Teatro', 'Cine alternativo', 'Pintar', 'Cerámica', 'Manualidades', 'Tertulias', 'Monumentos', 'Estatuas'],
+  },
+  {
+    primary: 'Tomar algo',
+    aliases: ['Tomar algo', 'Bares y noche'],
+    subcategories: ['Cocteles', 'Vino', 'Cerveza', 'Rooftop', 'Terraza', 'Tardear', 'After office'],
+  },
+  {
+    primary: 'Vida nocturna',
+    aliases: ['Vida nocturna', 'Bares y noche'],
+    subcategories: ['Rumba', 'Discotecas', 'Bailar', 'DJ set', 'Salsa', 'Reggaetón'],
+  },
+  {
+    primary: 'Comida',
+    aliases: ['Comida', 'Restaurantes y cafés'],
+    subcategories: ['Desayuno', 'Brunch', 'Almuerzo', 'Cena', 'Café', 'Postres', 'Nikkei', 'Pizza', 'Pasta', 'Hamburguesas', 'Sushi', 'Rooftop'],
+  },
+  {
+    primary: 'Bienestar',
+    aliases: ['Bienestar', 'Deporte y bienestar'],
+    subcategories: ['Yoga', 'Pilates', 'Spa', 'Masajes', 'Running', 'Hiking', 'Escalada', 'Gym'],
+  },
+  {
+    primary: 'Familiar',
+    aliases: ['Familiar'],
+    subcategories: ['Pintar', 'Cerámica', 'Juegos infantiles', 'Manualidades', 'Parques infantiles', 'Plan familiar'],
+  },
+  {
+    primary: 'Al aire libre',
+    aliases: ['Al aire libre', 'Naturaleza y aire libre'],
+    subcategories: ['Miradores', 'Caminatas', 'Parques', 'Montañas', 'Hiking', 'Running'],
+  },
+] as const;
 
 export const DEFAULT_FILTERS: ExploreFilters = {
   interests: [],
@@ -249,17 +287,8 @@ export function matchesSpotToFilters(
     normalizedQuery,
     queryIntentFilters.requiredTerms,
   );
-  const matchesInterests =
-    mergedFilters.interests.length === 0 ||
-    mergedFilters.interests.some((interest) => {
-      const normalizedInterest = normalizeSearchText(interest);
-      return (
-        spot.interests.includes(interest) ||
-        normalizeSearchText(spot.category) === normalizedInterest ||
-        spot.tags.some((tag) => normalizeSearchText(tag) === normalizedInterest) ||
-        spot.moods.some((mood) => normalizeSearchText(mood) === normalizedInterest)
-      );
-    });
+  const spotInterestSignals = getSpotInterestSignals(spot);
+  const matchesInterests = matchesStructuredInterestFilters(mergedFilters.interests, spotInterestSignals);
   const matchesPeople = mergedFilters.people === 0 || spot.maxPeople >= mergedFilters.people;
   const matchesHubName = matchesSpotLocationFilters(spot, mergedFilters.hubName);
   const activeDayFilters = mergedFilters.days.length > 0 ? mergedFilters.days : ['Any'];
@@ -302,6 +331,64 @@ export function matchesSpotToFilters(
     matchesBudget &&
     matchesOpenNow &&
     matchesManualAdjusted
+  );
+}
+
+function matchesStructuredInterestFilters(selectedInterests: string[], spotInterestSignals: Set<string>) {
+  if (selectedInterests.length === 0) {
+    return true;
+  }
+
+  const normalizedSelections = selectedInterests
+    .map((interest) => normalizeSearchText(interest))
+    .filter(Boolean);
+
+  if (normalizedSelections.length === 0) {
+    return true;
+  }
+
+  const remainingSelections = new Set(normalizedSelections);
+
+  for (const group of structuredInterestGroups) {
+    const primarySelected = remainingSelections.has(normalizeSearchText(group.primary));
+    const selectedSubcategories = group.subcategories
+      .map((subcategory) => normalizeSearchText(subcategory))
+      .filter((subcategory) => remainingSelections.has(subcategory));
+
+    if (!primarySelected && selectedSubcategories.length === 0) {
+      continue;
+    }
+
+    remainingSelections.delete(normalizeSearchText(group.primary));
+    group.aliases.forEach((alias) => remainingSelections.delete(normalizeSearchText(alias)));
+    selectedSubcategories.forEach((subcategory) => remainingSelections.delete(subcategory));
+
+    if (primarySelected) {
+      const primaryMatches = group.aliases
+        .flatMap((alias) => getInterestMatchTerms(alias))
+        .some((term) => spotInterestSignals.has(term));
+
+      if (!primaryMatches) {
+        return false;
+      }
+    }
+
+    if (
+      selectedSubcategories.length > 0 &&
+      !selectedSubcategories.some((subcategory) =>
+        getInterestMatchTerms(subcategory).some((term) => spotInterestSignals.has(term)),
+      )
+    ) {
+      return false;
+    }
+  }
+
+  if (remainingSelections.size === 0) {
+    return true;
+  }
+
+  return Array.from(remainingSelections).some((interest) =>
+    getInterestMatchTerms(interest).some((term) => spotInterestSignals.has(term)),
   );
 }
 
@@ -441,7 +528,7 @@ function parseQueryIntent(query: string) {
       /\bcomer\b|\bcomida\b|\balmorz(?:ar|o)\b|\bcen(?:ar|a)\b|\bdesayun(?:ar|o)\b|\bbrunch\b|\brestaurante?s?\b/g,
     )
   ) {
-    interests.add('Restaurantes y cafés');
+    interests.add('Comida');
     semanticHints.add('comer');
     semanticHints.add('comida');
     semanticHints.add('restaurante');
@@ -452,6 +539,7 @@ function parseQueryIntent(query: string) {
       /\btomar\b|\btrago\b|\btragos\b|\bcerveza\b|\bcervezas\b|\bpola\b|\bpolas\b|\bcoctel(?:es)?\b|\bcocktail(?:s)?\b|\bbar(?:es)?\b|\brumba\b|\bbailar\b|\bvino\b/g,
     )
   ) {
+    interests.add('Tomar algo');
     interests.add('Bares y noche');
     semanticHints.add('tomar algo');
     semanticHints.add('bar');
@@ -486,6 +574,7 @@ function parseQueryIntent(query: string) {
       /\bhiking\b|\bsenderismo\b|\btrekking\b|\bcaminar\b|\bmirador(?:es)?\b|\bplantas\b|\bjardin(?:es)?\b|\bjard[ií]n(?:es)?\b|\bbotanico\b|\bbot[aá]nico\b|\bnaturaleza\b|\baire libre\b|\bparque\b/g,
     )
   ) {
+    interests.add('Al aire libre');
     interests.add('Naturaleza y aire libre');
     semanticHints.add('naturaleza');
     semanticHints.add('aire libre');
@@ -503,6 +592,7 @@ function parseQueryIntent(query: string) {
       /\bdar bala\b|\bpaintball\b|\bairsoft\b|\bgotcha\b|\bdisparar\b|\btirotear\b/g,
     )
   ) {
+    interests.add('Bienestar');
     interests.add('Deporte y bienestar');
     semanticHints.add('paintball');
     semanticHints.add('airsoft');
@@ -826,10 +916,68 @@ function matchesSemanticQuery(
   return queryGroups.every((group) => group.some((term) => haystack.includes(term)));
 }
 
+function getInterestMatchTerms(interest: string) {
+  const normalizedInterest = normalizeSearchText(interest);
+
+  switch (normalizedInterest) {
+    case 'comida':
+    case 'restaurantes y cafes':
+      return ['comida', 'restaurantes y cafes', 'restaurantes', 'cafe', 'desayuno', 'brunch'];
+    case 'tomar algo':
+      return ['tomar algo', 'bares y noche', 'bar', 'cocteles', 'vino', 'cerveza', 'rooftop', 'terraza'];
+    case 'vida nocturna':
+      return ['vida nocturna', 'bares y noche', 'rumba', 'bailar', 'discotecas', 'dj set', 'salsa', 'reggaeton'];
+    case 'bienestar':
+      return ['bienestar', 'deporte y bienestar', 'yoga', 'pilates', 'spa', 'masajes', 'running', 'hiking', 'escalada', 'gym'];
+    case 'al aire libre':
+      return ['al aire libre', 'naturaleza y aire libre', 'naturaleza', 'miradores', 'caminatas', 'parques', 'montanas', 'hiking', 'running'];
+    default:
+      return [normalizedInterest];
+  }
+}
+
+function getSpotInterestSignals(spot: Spot) {
+  const cached = spotInterestSignalsCache.get(spot);
+  if (cached) {
+    return cached;
+  }
+
+  const signals = new Set<string>();
+
+  spot.interests.forEach((value) => {
+    const normalized = normalizeSearchText(value);
+    if (normalized) signals.add(normalized);
+  });
+
+  const normalizedCategory = normalizeSearchText(spot.category);
+  if (normalizedCategory) {
+    signals.add(normalizedCategory);
+  }
+
+  spot.tags.forEach((value) => {
+    const normalized = normalizeSearchText(value);
+    if (normalized) signals.add(normalized);
+  });
+
+  spot.moods.forEach((value) => {
+    const normalized = normalizeSearchText(value);
+    if (normalized) signals.add(normalized);
+  });
+
+  getSpotSearchAliases(spot).forEach((value) => {
+    const normalized = normalizeSearchText(value);
+    if (normalized) signals.add(normalized);
+  });
+
+  spotInterestSignalsCache.set(spot, signals);
+  return signals;
+}
+
 function getSpotSearchAliases(spot: Spot) {
   const aliases = new Set<string>();
 
   switch (spot.category) {
+    case 'Comida':
     case 'Restaurantes y cafés':
     case 'Restaurantes':
       ['comer', 'comida', 'almuerzo', 'cena', 'restaurante', 'restaurantes', 'algo rico'].forEach((value) =>
@@ -837,7 +985,7 @@ function getSpotSearchAliases(spot: Spot) {
       );
       break;
     case 'Bares y noche':
-      ['bar', 'cocteles', 'cocktails', 'cerveza', 'trago', 'tomar algo', 'rumba'].forEach((value) =>
+      ['bar', 'cocteles', 'cocktails', 'cerveza', 'trago', 'tomar algo', 'rumba', 'vida nocturna', 'discoteca', 'bailar'].forEach((value) =>
         aliases.add(value),
       );
       break;
@@ -845,7 +993,7 @@ function getSpotSearchAliases(spot: Spot) {
       ['familia', 'familiar', 'ninos', 'plan familiar'].forEach((value) => aliases.add(value));
       break;
     case 'Naturaleza y aire libre':
-      ['aire libre', 'naturaleza', 'caminar', 'parque', 'mirador'].forEach((value) =>
+      ['aire libre', 'al aire libre', 'naturaleza', 'caminar', 'parque', 'mirador'].forEach((value) =>
         aliases.add(value),
       );
       break;
@@ -861,7 +1009,7 @@ function getSpotSearchAliases(spot: Spot) {
       ['cine', 'peliculas', 'pelicula', 'arte y cultura', 'cultura'].forEach((value) => aliases.add(value));
       break;
     case 'Deporte y bienestar':
-      ['deporte', 'bienestar', 'entrenar', 'mover el cuerpo'].forEach((value) => aliases.add(value));
+      ['deporte', 'bienestar', 'entrenar', 'mover el cuerpo', 'yoga', 'pilates', 'spa', 'masajes', 'gym'].forEach((value) => aliases.add(value));
       break;
   }
 

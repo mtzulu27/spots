@@ -8,7 +8,7 @@ import {
 } from 'react';
 import { Platform } from 'react-native';
 import type { Spot } from '@/lib/mock-spots';
-import { normalizeCommercialCenterLabel } from '@/lib/mock-spots';
+import { normalizeCommercialCenterLabel, normalizeSpotCategory } from '@/lib/mock-spots';
 import { backendEnabled } from '@/lib/supabase';
 
 const spotsCacheKey = 'spots-cache-v12';
@@ -142,7 +142,16 @@ function readCachedSpots() {
     }
 
     const parsed = JSON.parse(raw) as Spot[];
-    return Array.isArray(parsed) ? parsed : null;
+    return Array.isArray(parsed)
+      ? parsed.map((spot) => ({
+          ...spot,
+          category: normalizeSpotCategory(spot.category),
+          branches: spot.branches?.map((branch) => ({
+            ...branch,
+            category: normalizeSpotCategory(branch.category),
+          })),
+        }))
+      : null;
   } catch {
     return null;
   }
@@ -211,6 +220,7 @@ function mapRowsToSpots(spotRows: SpotRow[], branchRows: BranchRow[], branchHour
   const flattened: Spot[] = [];
 
   activeSpots.forEach((spot) => {
+    const canonicalCategory = normalizeSpotCategory(spot.category);
     const enrichedTags = enrichSpotTaxonomy(spot.slug, spot.tags ?? [], 'tags');
     const enrichedMoods = enrichSpotTaxonomy(spot.slug, spot.moods ?? [], 'moods');
     const branches = (branchesBySpot.get(spot.id) ?? []).sort(
@@ -240,7 +250,7 @@ function mapRowsToSpots(spotRows: SpotRow[], branchRows: BranchRow[], branchHour
         branchName: '',
         neighborhood: '',
         hubName: '',
-        category: spot.category,
+        category: canonicalCategory,
         city: spot.city,
         likes: spot.likes,
         image: getPrimarySpotImage(spot.cover_image_url, spot.gallery_urls),
@@ -304,7 +314,7 @@ function mapRowsToSpots(spotRows: SpotRow[], branchRows: BranchRow[], branchHour
         branchName: normalizedNeighborhood,
         neighborhood: normalizedNeighborhood,
         hubName: normalizedMall,
-        category: spot.category,
+        category: canonicalCategory,
         city: spot.city,
         likes: spot.likes,
         image: getPrimarySpotImage(spot.cover_image_url, spot.gallery_urls),

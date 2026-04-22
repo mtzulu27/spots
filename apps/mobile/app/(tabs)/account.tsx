@@ -24,6 +24,7 @@ import {
   aggregatePlaceSpotsFromList,
   getBranchLocationLabel,
   getSpotFeedSubtitle,
+  normalizeSpotCategory,
   type Spot,
 } from '@/lib/mock-spots';
 import { useRelayoutSubscription } from '@/lib/relayout';
@@ -42,14 +43,14 @@ const exploreEventsIcon = require('../../assets/explore_events_icon.png');
 const exploreNatureIcon = require('../../assets/explore_nature_icon.png');
 
 function getCategoryImage(category: Spot['category']) {
-  switch (category) {
+  switch (normalizeSpotCategory(category)) {
     case 'Arte y cultura':
       return exploreArtIcon;
     case 'Bares y noche':
       return exploreNightlifeIcon;
     case 'Cine':
       return exploreCinemaIcon;
-    case 'Restaurantes y cafés':
+    case 'Comida':
     case 'Restaurantes':
       return exploreFoodIcon;
     case 'Eventos':
@@ -77,14 +78,14 @@ const layoutModes: Array<{
 ];
 
 function getCategoryIcon(category: Spot['category']): keyof typeof Ionicons.glyphMap {
-  switch (category) {
+  switch (normalizeSpotCategory(category)) {
     case 'Arte y cultura':
       return 'color-palette-outline';
     case 'Bares y noche':
       return 'wine-outline';
     case 'Cine':
       return 'film-outline';
-    case 'Restaurantes y cafés':
+    case 'Comida':
     case 'Restaurantes':
       return 'restaurant-outline';
     case 'Eventos':
@@ -103,14 +104,14 @@ function getCategoryIcon(category: Spot['category']): keyof typeof Ionicons.glyp
 }
 
 function getCategoryAccent(category: Spot['category']) {
-  switch (category) {
+  switch (normalizeSpotCategory(category)) {
     case 'Arte y cultura':
       return '#6B1D4A';
     case 'Bares y noche':
       return '#FF2D55';
     case 'Cine':
       return '#1B1464';
-    case 'Restaurantes y cafés':
+    case 'Comida':
     case 'Restaurantes':
       return '#F5C400';
     case 'Eventos':

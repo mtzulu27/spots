@@ -42,6 +42,7 @@ import {
   getSpotByIdFromList,
   getSpotFeedSubtitle,
   normalizeCommercialCenterLabel,
+  normalizeSpotCategory,
   type Spot,
 } from '@/lib/mock-spots'
 import { useSpotsStore } from '@/lib/spots-store'
@@ -78,7 +79,7 @@ const emptySpotForActions: Spot = {
   branchName: '',
   neighborhood: '',
   hubName: '',
-  category: 'Restaurantes y cafés',
+  category: 'Comida',
   city: 'Cali',
   likes: '0',
   image: '',
@@ -117,7 +118,8 @@ function getPriceLabel(spot: Spot) {
 }
 
 function getMenuActionLabel(category: Spot['category']) {
-  return category === 'Restaurantes y cafés' || category === 'Restaurantes' || category === 'Bares y noche'
+  const normalizedCategory = normalizeSpotCategory(category)
+  return normalizedCategory === 'Comida' || normalizedCategory === 'Restaurantes' || normalizedCategory === 'Bares y noche'
     ? 'Menu'
     : 'Website'
 }
@@ -545,7 +547,7 @@ export default function SpotDetailScreen() {
     hasInstagram,
     spot: resolvedContextSpot ?? spot ?? emptySpotForActions,
   })
-  const categoryIcon = getCategoryIcon(detailSpot?.category ?? 'Restaurantes y cafés')
+  const categoryIcon = getCategoryIcon(detailSpot?.category ?? 'Comida')
   const baseHeroHeight = 382
   const heroPanelOverlap = 28
   const sheetMaxOffset = clamp(windowHeight * 0.34, 160, 300)
@@ -1212,7 +1214,7 @@ export default function SpotDetailScreen() {
                             <BranchActionButton
                               icon="logo-whatsapp"
                               label={
-                                resolvedContextSpot.category === 'Restaurantes y cafés' ||
+                                normalizeSpotCategory(resolvedContextSpot.category) === 'Comida' ||
                                 resolvedContextSpot.category === 'Restaurantes'
                                   ? 'Escribir'
                                   : 'Contactar'
@@ -1608,14 +1610,14 @@ function getPrimaryAction({
 }
 
 function getCategoryIcon(category: Spot['category']): keyof typeof Ionicons.glyphMap {
-  switch (category) {
+  switch (normalizeSpotCategory(category)) {
     case 'Arte y cultura':
       return 'color-palette-outline'
     case 'Bares y noche':
       return 'wine-outline'
     case 'Cine':
       return 'film-outline'
-    case 'Restaurantes y cafés':
+    case 'Comida':
     case 'Restaurantes':
       return 'restaurant-outline'
     case 'Eventos':
@@ -1634,14 +1636,14 @@ function getCategoryIcon(category: Spot['category']): keyof typeof Ionicons.glyp
 }
 
 function getCategoryImage(category: Spot['category']) {
-  switch (category) {
+  switch (normalizeSpotCategory(category)) {
     case 'Arte y cultura':
       return exploreArtIcon
     case 'Bares y noche':
       return exploreNightlifeIcon
     case 'Cine':
       return exploreCinemaIcon
-    case 'Restaurantes y cafés':
+    case 'Comida':
     case 'Restaurantes':
       return exploreFoodIcon
     case 'Eventos':

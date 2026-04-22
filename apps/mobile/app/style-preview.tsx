@@ -90,6 +90,7 @@ function getCategoryIcon(category: Spot['category']): keyof typeof Ionicons.glyp
       return 'wine-outline';
     case 'Cine':
       return 'film-outline';
+    case 'Comida':
     case 'Restaurantes y cafés':
     case 'Restaurantes':
       return 'restaurant-outline';

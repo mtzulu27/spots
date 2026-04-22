@@ -12,7 +12,7 @@
         "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/fiel/cover/fiel-cover-1-1776018671712.jpg",
         "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/fiel/gallery/fiel-gallery-2-1776018672755.jpg"
       ],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -47,7 +47,7 @@
         "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/sorsi/gallery/sorsi-gallery-3-1776117143394.jpg",
         "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/sorsi/gallery/sorsi-gallery-4-1776117144374.jpg"
       ],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -88,7 +88,7 @@
         "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/baltazar-y-siete-lunas/gallery/baltazar-gallery-8-1776117028261.jpg",
         "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/baltazar-y-siete-lunas/gallery/baltazar-gallery-9-1776117028807.jpg"
       ],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -105,7 +105,7 @@
         "con amigos",
         "plan tranqui"
       ],
-      "is_active": true,
+      "is_active": false,
       "is_featured": false,
       "created_at": "2026-04-08T09:15:00.000000+00:00",
       "updated_at": "2026-04-13T21:50:29.202Z",
@@ -125,7 +125,7 @@
         "/place-media/ve-de-bistro/gallery-4.jpg",
         "/place-media/ve-de-bistro/gallery-5.jpg"
       ],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -161,7 +161,7 @@
         "/place-media/mo-sushi/gallery-6.jpg",
         "/place-media/mo-sushi/gallery-7.jpg"
       ],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -195,7 +195,13 @@
         "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/de-pita-madre/gallery/de-pita-madre-gallery-3-1776122943105.jpg",
         "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/de-pita-madre/gallery/de-pita-madre-gallery-4-1776122943439.jpg"
       ],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
+      "subcategories": [
+        "pitas",
+        "griega",
+        "mexicana",
+        "bowls"
+      ],
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -237,7 +243,7 @@
         "/place-media/selvah-rooftop/gallery-9.jpg",
         "/place-media/selvah-rooftop/gallery-10.jpg"
       ],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -267,7 +273,7 @@
       "short_description": "Una opción de comida más ligera dentro de Lago Verde, ideal para resolver algo fresco y casual. Entra con ficha mínima para no dejarla fuera mientras completamos más datos.",
       "cover_image_url": "",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -298,7 +304,11 @@
         "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/lumina/gallery/lumina-gallery-1-1776124195618.jpg",
         "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/lumina/gallery/lumina-gallery-2-1776124196133.jpg"
       ],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
+      "subcategories": [
+        "cena",
+        "cocteles"
+      ],
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -337,7 +347,7 @@
         "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/santa-fusion/gallery/santa-fusion-gallery-7-1776124840305.jpg",
         "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/santa-fusion/gallery/santa-fusion-gallery-8-1776124840894.jpg"
       ],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -368,7 +378,7 @@
       "short_description": "El Gran Langostino en Cali se siente más de compra confiable y producto fresco que de salida larga a comer. Entre camarones, pescados y mariscos para llevar o abastecerse, funciona bien para quienes buscan resolver compras del mar con varias sedes en la ciudad, incluida Pance.",
       "cover_image_url": "",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -402,7 +412,7 @@
         "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/memorial/cover/memorial-cover-1-1776031952382.jpg",
         "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/memorial/gallery/memorial-gallery-2-1776033104781.jpg"
       ],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -443,7 +453,7 @@
         "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/montolivo/gallery/montolivo-gallery-7-1776126064730.jpg",
         "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/montolivo/gallery/montolivo-gallery-8-1776126065245.jpg"
       ],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -478,7 +488,7 @@
         "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/brunch-house/gallery/brunch-house-gallery-7-1776127065375.jpg",
         "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/brunch-house/gallery/brunch-house-gallery-8-1776127066095.jpg"
       ],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -515,7 +525,7 @@
         "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/capriatto/gallery/cappriato-gallery-7-1776127747368.jpg",
         "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/capriatto/gallery/cappriato-gallery-8-1776127747853.jpg"
       ],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -557,7 +567,7 @@
         "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/parisina/gallery/parisina-gallery-9-1776127934697.jpg",
         "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/parisina/gallery/parisina-gallery-10-1776127935312.jpg"
       ],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -588,7 +598,7 @@
       "short_description": "Un lugar de postre y antojo dulce que ya hacía parte del backlog real. Lo subo con nombre limpio y ficha corta, listo para completar mejor luego si hace falta.",
       "cover_image_url": "",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -629,7 +639,7 @@
         "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/fusion-wok/gallery/fusion-wok-gallery-11-1776128879921.jpg",
         "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/fusion-wok/gallery/fusion-wok-gallery-12-1776128880196.jpg"
       ],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -667,7 +677,7 @@
         "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/baoku/gallery/baoku-gallery-6-1776133322190.jpg",
         "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/baoku/gallery/baoku-gallery-7-1776133322613.jpg"
       ],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -710,7 +720,7 @@
         "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/natal-coffee/gallery/natal-coffee-gallery-11-1776134184014.jpg",
         "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/natal-coffee/gallery/natal-coffee-gallery-12-1776134185123.jpg"
       ],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -744,7 +754,7 @@
         "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/namaste/gallery/namaste-gallery-4-1776136185941.jpg",
         "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/namaste/gallery/namaste-gallery-5-1776136186439.jpg"
       ],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -783,7 +793,7 @@
         "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/sabor-gourmet/gallery/sabor-gourmet-gallery-7-1776136750199.jpg",
         "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/sabor-gourmet/gallery/sabor-gourmet-gallery-8-1776136750667.jpg"
       ],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -846,7 +856,7 @@
       "short_description": "Spot casual de hamburguesas y comida rápida en Cali, cargado desde su Instagram oficial mientras cerramos la ficha fina.",
       "cover_image_url": "",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -912,7 +922,7 @@
         "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/prote-and-co/gallery/prote-and-co-gallery-8-1776137718221.jpg",
         "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/prote-and-co/gallery/prote-and-co-gallery-9-1776137718550.jpg"
       ],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -956,7 +966,7 @@
       "slug": "hamburgo",
       "name": "Hamburgo",
       "short_description": "Parrilla, hamburguesas y platos fuertes para plan casual entre Palmas Mall y Jamundí.",
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "tags": [
         "hamburguesas",
         "parrilla",
@@ -995,7 +1005,7 @@
       "slug": "don-samuel",
       "name": "Don Samuel Bakery",
       "short_description": "Healthy bakery sin gluten y sin azúcar añadida para postres, brownies y antojo dulce en Lago Verde.",
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "tags": [
         "healthy bakery",
         "sin gluten",
@@ -1026,7 +1036,7 @@
         "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/simons/gallery/simons-gallery-5-1776184250356.jpg",
         "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/simons/gallery/simons-gallery-6-1776184250843.jpg"
       ],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -1089,7 +1099,7 @@
         "/place-media/fit-bar/gallery-3.jpg",
         "/place-media/fit-bar/gallery-4.jpg"
       ],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -1128,7 +1138,7 @@
         "/place-media/carpaneto/gallery-4.jpg",
         "/place-media/carpaneto/gallery-5.webp"
       ],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -1166,7 +1176,7 @@
         "/place-media/joes/gallery-5.jpg",
         "/place-media/joes/gallery-6.jpg"
       ],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -1185,10 +1195,10 @@
         "plan tranqui",
         "con amigos"
       ],
-      "is_active": true,
+      "is_active": false,
       "is_featured": false,
       "created_at": "2026-04-08T08:05:00.000000+00:00",
-      "updated_at": "2026-04-15T17:30:00.000000+00:00",
+      "updated_at": "2026-04-21T05:20:00.000000+00:00",
       "editorial_badge": "Recién añadido"
     },
     {
@@ -1210,7 +1220,7 @@
         "/place-media/dolka/gallery-9.jpg",
         "/place-media/dolka/gallery-10.jpg"
       ],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -1228,7 +1238,7 @@
         "antojo",
         "familiar"
       ],
-      "is_active": true,
+      "is_active": false,
       "is_featured": false,
       "created_at": "2026-04-08T08:05:00.000000+00:00",
       "updated_at": "2026-04-15T18:05:00.000000+00:00",
@@ -1245,7 +1255,7 @@
         "/place-media/chelita-go-mex/gallery-1.jpg",
         "/place-media/chelita-go-mex/gallery-2.jpg"
       ],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -1272,22 +1282,6 @@
       "type": "place",
       "city": "Cali",
       "likes": "0",
-      "cover_image_url": "/place-media/ve-de-bistro/cover.jpg",
-      "gallery_urls": [
-        "/place-media/ve-de-bistro/gallery-1.jpg",
-        "/place-media/ve-de-bistro/gallery-2.jpg",
-        "/place-media/ve-de-bistro/gallery-3.jpg",
-        "/place-media/ve-de-bistro/gallery-4.jpg",
-        "/place-media/ve-de-bistro/gallery-5.jpg"
-      ],
-      "is_active": false,
-      "is_featured": false,
-      "created_at": "2026-04-08T07:35:00.000000+00:00",
-      "updated_at": "2026-04-15T18:30:00.000000+00:00",
-      "editorial_badge": "Recién añadido",
-      "slug": "casa-latte",
-      "name": "Casa Latte",
-      "short_description": "Un café restaurante de aire elegante en Granada para brunch, platos suaves, postres y una salida bonita de día entre café, lunch y sobremesa tranquila.",
       "cover_image_url": "/place-media/casa-latte/cover.jpg",
       "gallery_urls": [
         "/place-media/casa-latte/gallery-1.jpg",
@@ -1299,7 +1293,15 @@
         "/place-media/casa-latte/gallery-7.jpg",
         "/place-media/casa-latte/gallery-8.jpg"
       ],
-      "category": "Restaurantes y cafés",
+      "is_active": false,
+      "is_featured": false,
+      "created_at": "2026-04-08T07:35:00.000000+00:00",
+      "updated_at": "2026-04-15T18:30:00.000000+00:00",
+      "editorial_badge": "Recién añadido",
+      "slug": "casa-latte",
+      "name": "Casa Latte",
+      "short_description": "Un café restaurante de aire elegante en Granada para brunch, platos suaves, postres y una salida bonita de día entre café, lunch y sobremesa tranquila.",
+      "category": "Comida",
       "tags": [
         "cafe",
         "brunch",
@@ -1321,17 +1323,17 @@
       ]
     },
     {
-  "id": 3641,
-  "type": "place",
-  "city": "Cali",
-  "likes": "0",
-  "cover_image_url": "/place-media/la-churreria-antigua/cover.jpg",
-  "gallery_urls": [
-    "/place-media/la-churreria-antigua/gallery-1.jpg",
-    "/place-media/la-churreria-antigua/gallery-2.jpg",
-    "/place-media/la-churreria-antigua/gallery-3.jpg",
-    "/place-media/la-churreria-antigua/gallery-4.jpg"
-  ],
+      "id": 3641,
+      "type": "place",
+      "city": "Cali",
+      "likes": "0",
+      "cover_image_url": "/place-media/la-churreria-antigua/cover.jpg",
+      "gallery_urls": [
+        "/place-media/la-churreria-antigua/gallery-1.jpg",
+        "/place-media/la-churreria-antigua/gallery-2.jpg",
+        "/place-media/la-churreria-antigua/gallery-3.jpg",
+        "/place-media/la-churreria-antigua/gallery-4.jpg"
+      ],
       "is_active": true,
       "is_featured": false,
       "created_at": "2026-04-08T07:35:00.000000+00:00",
@@ -1339,20 +1341,20 @@
       "editorial_badge": "Recién añadido",
       "slug": "la-churreria-antigua",
       "name": "La Churrería Antigua",
-  "short_description": "Una marca de churros para antojo dulce, salsas y postre compartible que funciona muy bien como parada corta, salida familiar o remate rico después de comer.",
-      "category": "Restaurantes y cafés",
+      "short_description": "Una marca de churros para antojo dulce, salsas y postre compartible que funciona muy bien como parada corta, salida familiar o remate rico después de comer.",
+      "category": "Comida",
       "tags": [
         "churros",
         "postres",
         "cafe",
-    "dulce",
-    "antojo",
-    "familiar",
-    "tardear",
-    "chipichape",
-    "unicentro",
-    "lago verde",
-    "jamundi"
+        "dulce",
+        "antojo",
+        "familiar",
+        "tardear",
+        "chipichape",
+        "unicentro",
+        "lago verde",
+        "jamundi"
       ],
       "moods": [
         "dulce",
@@ -1383,7 +1385,7 @@
       "slug": "entre-costas",
       "name": "Entre Costas",
       "short_description": "Un restaurante de cocina peruana y fusión en Palmas Mall para una comida especial, cocteles y una mesa larga con sabores del Pacífico. Se siente más de salida rica y bien montada que de parche casual rápido, y funciona muy bien para pareja o plan con amigos.",
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "tags": [
         "peruano",
         "fusion",
@@ -1409,22 +1411,6 @@
       "type": "place",
       "city": "Cali",
       "likes": "0",
-      "cover_image_url": "/place-media/ve-de-bistro/cover.jpg",
-      "gallery_urls": [
-        "/place-media/ve-de-bistro/gallery-1.jpg",
-        "/place-media/ve-de-bistro/gallery-2.jpg",
-        "/place-media/ve-de-bistro/gallery-3.jpg",
-        "/place-media/ve-de-bistro/gallery-4.jpg",
-        "/place-media/ve-de-bistro/gallery-5.jpg"
-      ],
-      "is_active": false,
-      "is_featured": false,
-      "created_at": "2026-04-08T07:05:00.000000+00:00",
-      "updated_at": "2026-04-15T19:20:00.000000+00:00",
-      "editorial_badge": "Recién añadido",
-      "slug": "mi-sol-radiante",
-      "name": "Mi Sol Radiante",
-      "short_description": "Un rooftop en San Antonio para ir por cocteles, cocina con alma y una vista panorámica que hace que la tarde y la noche se sientan más especiales.",
       "cover_image_url": "/place-media/mi-sol-radiante/cover.jpg",
       "gallery_urls": [
         "/place-media/mi-sol-radiante/gallery-1.jpg",
@@ -1435,6 +1421,14 @@
         "/place-media/mi-sol-radiante/gallery-6.jpg",
         "/place-media/mi-sol-radiante/gallery-7.jpg"
       ],
+      "is_active": false,
+      "is_featured": false,
+      "created_at": "2026-04-08T07:05:00.000000+00:00",
+      "updated_at": "2026-04-15T19:20:00.000000+00:00",
+      "editorial_badge": "Recién añadido",
+      "slug": "mi-sol-radiante",
+      "name": "Mi Sol Radiante",
+      "short_description": "Un rooftop en San Antonio para ir por cocteles, cocina con alma y una vista panorámica que hace que la tarde y la noche se sientan más especiales.",
       "category": "Bares y noche",
       "tags": [
         "rooftop",
@@ -1470,7 +1464,7 @@
       "slug": "brunch-duquesa",
       "name": "Brunch Duquesa",
       "short_description": "Un spot de brunch y café para desayunos tardíos, platos suaves y una salida tranquila de día. Lo subo con ficha mínima porque la marca sí aparece como activa, aunque todavía falta aterrizar mejor la sede exacta.",
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "tags": [
         "brunch",
         "cafe",
@@ -1507,7 +1501,7 @@
       "slug": "ve-de-bistro",
       "name": "Vé de Bistro",
       "short_description": "Un bistró de mar y vino en Puerto 125 para ir por platos para compartir, cocina más foodie y una mesa que se siente especial sin ser rígida. Encaja muy bien para una salida en pareja, una comida distinta o una tarde larga con vino.",
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "tags": [
         "bistro",
         "mariscos",
@@ -1547,7 +1541,7 @@
       "slug": "king-papa",
       "name": "King Papa",
       "short_description": "Un spot de salchipapas y desvare poderoso para ir con hambre, pedir sin culpa y resolver ese antojo callejero que funciona perfecto con amigos y de noche.",
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "tags": [
         "salchipapas",
         "fast food",
@@ -1587,7 +1581,7 @@
       "slug": "mo-sushi",
       "name": "Mo Sushi",
       "short_description": "Bocados de sushi para el alma con varias sedes en Cali para resolver rolls, makis y antojo japonés en plan casual. Funciona muy bien para almuerzo, cena, parche con amigos o una salida suave en pareja.",
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "tags": [
         "sushi",
         "japones",
@@ -1637,7 +1631,7 @@
       "slug": "buleria",
       "name": "Bulería",
       "short_description": "Tapas españolas para compartir el ritmo dentro del InterContinental Cali, con una mesa pensada para tapeo, vino y sobremesa larga. Funciona muy bien para una salida especial, plan en pareja o comida para compartir entre amigos.",
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "tags": [
         "tapas",
         "tapeo",
@@ -1668,7 +1662,7 @@
       "short_description": "Un lugar para ir por chicharrón, cortes y comida llanera en Lago Verde, con plan más de antojo poderoso y mesa informal que de cena delicada. Funciona bien para ir con hambre, compartir y resolver una comida contundente al sur.",
       "cover_image_url": "",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -1710,7 +1704,7 @@
         "/place-media/madelo-lago-verde/gallery-7.jpg",
         "/place-media/madelo-lago-verde/gallery-8.jpg"
       ],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -1745,7 +1739,7 @@
       "short_description": "Un restaurante japonés para almuerzo, cena y cocteles dentro del Intercontinental, con sushi bien resuelto y plan más elegante que casual. Va muy bien para una salida especial, una cena en pareja o una comida tranquila con amigos.",
       "cover_image_url": "",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -1787,7 +1781,7 @@
         "/place-media/domingo/gallery-4.jpg",
         "/place-media/domingo/gallery-5.jpg"
       ],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -1831,7 +1825,7 @@
         "/place-media/new-anchor-caffe/gallery-6.jpg",
         "/place-media/new-anchor-caffe/gallery-7.jpg"
       ],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -1874,7 +1868,7 @@
         "/place-media/la-puerta-bakery/gallery-5.jpg",
         "/place-media/la-puerta-bakery/gallery-6.jpg"
       ],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -1922,7 +1916,7 @@
         "/place-media/kumo-sushi-bar/gallery-8.jpg",
         "/place-media/kumo-sushi-bar/gallery-9.jpg"
       ],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -2015,7 +2009,7 @@
         "/place-media/el-correo-y-amada/gallery-6.jpg",
         "/place-media/el-correo-y-amada/gallery-7.jpg"
       ],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -2050,12 +2044,12 @@
       "slug": "maranello",
       "name": "Maranello",
       "short_description": "Pasta casual con sedes en Parque del Perro y Jardin Plaza para antojo italiano y comida rica en Cali.",
-  "cover_image_url": "/place-media/maranello/gallery-1.jpg",
-  "gallery_urls": [
-    "/place-media/maranello/cover.jpg",
-    "/place-media/maranello/gallery-2.jpg"
-  ],
-      "category": "Restaurantes y cafés",
+      "cover_image_url": "/place-media/maranello/gallery-1.jpg",
+      "gallery_urls": [
+        "/place-media/maranello/cover.jpg",
+        "/place-media/maranello/gallery-2.jpg"
+      ],
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -2087,7 +2081,7 @@
       "is_active": true,
       "is_featured": false,
       "created_at": "2026-04-03T04:04:33.457704+00:00",
-  "updated_at": "2026-04-18T02:40:00.000000+00:00"
+      "updated_at": "2026-04-18T02:40:00.000000+00:00"
     },
     {
       "id": 3558,
@@ -2137,7 +2131,7 @@
         "/place-media/busca-por-dentro/gallery-6.webp",
         "/place-media/busca-por-dentro/gallery-7.webp"
       ],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -2169,7 +2163,7 @@
         "/place-media/yonkers-grill-and-drinks/gallery-2.jpg",
         "/place-media/yonkers-grill-and-drinks/gallery-3.jpg"
       ],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -2345,7 +2339,7 @@
       "gallery_urls": [
         "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/donde-leon-cocina-dulce/cover/donde-leon-user-cover-1775264938047.png"
       ],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -2380,7 +2374,7 @@
         "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/tierradentro-cafe-co/gallery/tierradentro-gallery-2-1775266884016.png",
         "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/tierradentro-cafe-co/gallery/tierradentro-gallery-3-1775266885232.png"
       ],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -2414,7 +2408,7 @@
         "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/la-chocolatada/gallery/la-chocolatada-gallery-2-1775267704567.png",
         "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/la-chocolatada/gallery/la-chocolatada-gallery-3-1775267705336.png"
       ],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -2450,7 +2444,7 @@
         "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/patti-gelateria/gallery/patti-gallery-2-1775268370631.jpg",
         "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/patti-gelateria/gallery/patti-gallery-3-1775268371316.jpg"
       ],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -2486,7 +2480,7 @@
         "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/la-querencia/gallery/la-querencia-gallery-4-1775269322862.jpg",
         "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/la-querencia/gallery/la-querencia-gallery-5-1775269324404.jpg"
       ],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -2518,7 +2512,7 @@
       "gallery_urls": [
         "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/alma/cover/alma-cover-1-1775271423430.jpg"
       ],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -2590,7 +2584,7 @@
         "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/odiseo/gallery/odiseo-gallery-3-1775328396814.jpg",
         "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/odiseo/gallery/odiseo-gallery-4-1775328397704.jpg"
       ],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -2623,7 +2617,7 @@
         "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/zur-cocina-de-autor/cover/zur-cover-1-1775328983205.jpg",
         "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/zur-cocina-de-autor/gallery/zur-gallery-2-1775328984293.jpg"
       ],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -2730,7 +2724,7 @@
         "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/winkle-waffle/gallery/winkle-gallery-4-1775331290735.jpg",
         "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/winkle-waffle/gallery/winkle-gallery-5-1775331291314.jpg"
       ],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -2806,7 +2800,7 @@
         "/place-media/bendito-cafe/gallery-3.jpg",
         "/place-media/bendito-cafe/gallery-4.jpg"
       ],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -2907,7 +2901,7 @@
         "/place-media/la-buena-vida/gallery-3.jpg",
         "/place-media/la-buena-vida/gallery-4.jpg"
       ],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -3070,7 +3064,7 @@
         "/place-media/cafe-san-camilo/gallery-7.jpg",
         "/place-media/cafe-san-camilo/gallery-8.jpg"
       ],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -3147,8 +3141,8 @@
       "id": 3529,
       "type": "place",
       "slug": "casa-d-cali",
-      "name": "Casa D Cali",
-      "short_description": "Bar de despecho y karaoke en Granada con horario nocturno y reserva activa.",
+      "name": "Casa D",
+      "short_description": "Bar de despecho en Granada para cantar, desahogarse y bailar hasta tarde en un plan más de noche, parche y drama compartido que de bar tranquilo. Funciona muy bien para salir con amigos, celebrar algo o entregarse completo al mood despecho.",
       "cover_image_url": "https://images.unsplash.com/photo-1518895949257-7621c3c786d7?auto=format&fit=crop&w=1600&q=80",
       "gallery_urls": [],
       "category": "Bares y noche",
@@ -3174,7 +3168,7 @@
       "is_active": true,
       "is_featured": false,
       "created_at": "2026-04-02T18:16:15.668072+00:00",
-      "updated_at": "2026-04-02T18:16:15.668072+00:00"
+      "updated_at": "2026-04-20T05:10:00.000000+00:00"
     },
     {
       "id": 3528,
@@ -3184,7 +3178,7 @@
       "short_description": "Gelateria artesanal en San Antonio con helados y postres italianos.",
       "cover_image_url": "https://images.unsplash.com/photo-1511497584788-876760111969?auto=format&fit=crop&w=1600&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -3224,7 +3218,7 @@
         "/place-media/zuly-arepas/gallery-3.jpg",
         "/place-media/zuly-arepas/gallery-4.jpg"
       ],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -3259,7 +3253,7 @@
       "short_description": "Hamburgueseria casual en Granada con horario de tarde y noche.",
       "cover_image_url": "https://images.unsplash.com/photo-1525059696034-4967a8e1dca2?auto=format&fit=crop&w=1600&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -3290,7 +3284,7 @@
       "short_description": "Pizzeria artesanal con operacion activa en el sur de Cali y menu visible en delivery.",
       "cover_image_url": "https://images.unsplash.com/photo-1520201163981-8cc95007dd2e?auto=format&fit=crop&w=1600&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -3324,7 +3318,7 @@
       "short_description": "Restaurante internacional con carnes, sushi y horario nocturno en el sur de Cali.",
       "cover_image_url": "https://images.unsplash.com/photo-1557872943-16a5ac26437e?auto=format&fit=crop&w=1600&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -3357,7 +3351,7 @@
       "short_description": "Restaurante italiano casual especializado en pastas con sede activa en el norte.",
       "cover_image_url": "https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?auto=format&fit=crop&w=1600&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -3387,7 +3381,7 @@
       "short_description": "Cafe bistro saludable en Santa Monica con brunch y opciones vegetarianas.",
       "cover_image_url": "https://images.unsplash.com/photo-1482049016688-2d3e1b311543?auto=format&fit=crop&w=1200&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -3421,7 +3415,7 @@
       "short_description": "Restaurante peruano en El Peñon con cocina de autor y horario extendido.",
       "cover_image_url": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=600&q=80';",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -3489,7 +3483,7 @@
       "short_description": "Panaderia y cocina de autor en San Antonio con desayuno, brunch y almuerzo.",
       "cover_image_url": "https://images.unsplash.com/photo-1447933601403-0c6688de566e?auto=format&fit=crop&w=1200&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -3525,7 +3519,7 @@
       "short_description": "Cafe restaurante en Pance con panaderia, brunch y oferta italiana informal.",
       "cover_image_url": "https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=1200&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -3562,7 +3556,7 @@
       "short_description": "Restaurante cafe en San Antonio con carta y operacion visible en web.",
       "cover_image_url": "https://images.unsplash.com/photo-1527477396000-e27163b481c2?auto=format&fit=crop&w=1600&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -3736,7 +3730,7 @@
       "short_description": "Restaurante de cocina colombiana en Mercadillo del Peñon con componente artistico.",
       "cover_image_url": "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1600&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -3798,7 +3792,7 @@
       "short_description": "Ramen bar activo en El Peñon con menu y horarios visibles en web.",
       "cover_image_url": "https://images.unsplash.com/photo-1453614512568-c4024d13c247?auto=format&fit=crop&w=1200&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -3877,7 +3871,7 @@
       "short_description": "Cadena de restaurantes y heladerias con multiples sedes activas en Cali.",
       "cover_image_url": "https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=1600&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -3913,7 +3907,7 @@
       "short_description": "Restaurante japones y sushi con presencia activa en Cali.",
       "cover_image_url": "https://images.unsplash.com/photo-1570197788417-0e82375c9371?auto=format&fit=crop&w=1600&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -3976,7 +3970,7 @@
       "short_description": "Restaurante de carnes y vino con operacion activa en el sur de Cali.",
       "cover_image_url": "https://images.unsplash.com/photo-1558030006-450675393462?auto=format&fit=crop&w=1600&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -4043,7 +4037,7 @@
       "short_description": "Cadena casual de comida mexicana con sedes activas en Cali.",
       "cover_image_url": "https://images.unsplash.com/photo-1615870216519-2f9fa575fa5c?auto=format&fit=crop&w=1600&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -4074,7 +4068,7 @@
       "short_description": "Heladeria y postres de autor con sabores colombianos y sedes activas en Cali.",
       "cover_image_url": "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?auto=format&fit=crop&w=1600&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -4107,7 +4101,7 @@
       "short_description": "Restaurante bar con ambiente social y dos puntos activos en el sur y norte de Cali.",
       "cover_image_url": "https://images.unsplash.com/photo-1538485399081-7c897e52f4c0?auto=format&fit=crop&w=1600&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -4235,7 +4229,7 @@
       "short_description": "Restaurante bar en el centro historico de Cali con horario de tarde y noche.",
       "cover_image_url": "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=1600&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -4302,7 +4296,7 @@
       "short_description": "Restaurante italiano con varias sedes activas en Cali y fuerte presencia en Granada.",
       "cover_image_url": "https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1600&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -4334,7 +4328,7 @@
       "short_description": "Pizzeria tradicional de Cali con varias sedes activas y servicio extendido.",
       "cover_image_url": "https://images.unsplash.com/photo-1511988617509-a57c8a288659?auto=format&fit=crop&w=1600&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -4365,7 +4359,7 @@
       "short_description": "Cadena de sport bar tipo americano con multiples sedes activas en Cali.",
       "cover_image_url": "https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&w=1600&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -4471,7 +4465,7 @@
       "short_description": "Pizzeria bar artesanal en Granada con carta propia y servicio de cena.",
       "cover_image_url": "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&w=1600&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -4541,7 +4535,7 @@
       "short_description": "Cadena de cafe colombiano con multiples sedes activas en Cali y oferta de cafe, reposteria y tienda.",
       "cover_image_url": "https://images.unsplash.com/photo-1516997121675-4c2d1684aa3e?auto=format&fit=crop&w=1200&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -4574,7 +4568,7 @@
       "short_description": "Restaurante de cocina contemporanea en el norte de Cali con carta propia y unica sede confirmada.",
       "cover_image_url": "https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=1600&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -4604,7 +4598,7 @@
       "short_description": "Bebidas a base de te y plan fresco para tardear en Cali.",
       "cover_image_url": "https://images.unsplash.com/photo-1515823064-d6e0c04616a7?auto=format&fit=crop&w=1200&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -4637,7 +4631,7 @@
       "short_description": "Bakery de galletas, brownies y antojos dulces en Lago Verde.",
       "cover_image_url": "https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=1200&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -4671,7 +4665,7 @@
       "short_description": "Postres y pavlovas para parche dulce en Lago Verde.",
       "cover_image_url": "https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&w=1200&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -4703,7 +4697,7 @@
       "short_description": "Panaderia y cafe para desayunos, hojaldres y bebidas en Lago Verde.",
       "cover_image_url": "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=1200&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -4740,7 +4734,7 @@
       "short_description": "Cafe de especialidad para brunch, bebidas y parche suave dentro de Lago Verde.",
       "cover_image_url": "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1200&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -4774,7 +4768,7 @@
       "short_description": "Panaderia y desayunos para cafe, antojo salado y parche suave en Lago Verde.",
       "cover_image_url": "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=1200&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -4811,7 +4805,7 @@
       "short_description": "Hamburgueseria para parche casual y noche ligera en Lago Verde.",
       "cover_image_url": "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=1200&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -4843,7 +4837,7 @@
       "short_description": "Taqueria mexicana para tacos, gringas y antojo casual en Cali.",
       "cover_image_url": "https://images.unsplash.com/photo-1552332386-f8dd00dc2f85?auto=format&fit=crop&w=1200&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -4884,7 +4878,7 @@
       "short_description": "Gelato italiano, tarta vasca, brownies y cafe para parche dulce en Lago Verde.",
       "cover_image_url": "https://images.unsplash.com/photo-1563805042-7684c019e1cb?auto=format&fit=crop&w=1200&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -4921,7 +4915,7 @@
       "short_description": "Cocina mexicana y cocteleria de autor en Lago Verde para tardeo o noche.",
       "cover_image_url": "https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&w=1200&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -4958,7 +4952,7 @@
       "short_description": "Restaurante casual en Marbella Plaza con bebidas, pandebonos, pizzas y rollos.",
       "cover_image_url": "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -5017,7 +5011,7 @@
       "short_description": "Hamburguesas artesanales de plan casual con varias sedes en Cali.",
       "cover_image_url": "https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=1600&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -5052,7 +5046,7 @@
       "short_description": "Sushi para plan casual de noche con sedes en Fusion Plaza y Lago Verde, Cali.",
       "cover_image_url": "https://images.unsplash.com/photo-1553621042-f6e147245754?auto=format&fit=crop&w=1600&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -5084,7 +5078,7 @@
       "short_description": "Cafe, pasteleria y brunch para parche suave y mesa larga.",
       "cover_image_url": "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1200&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -5121,7 +5115,7 @@
       "short_description": "Fresas con crema, helados y postres para parche dulce en Puerto 125.",
       "cover_image_url": "https://images.unsplash.com/photo-1560008581-09826d1de69e?auto=format&fit=crop&w=1200&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -5154,7 +5148,7 @@
       "short_description": "Carnes y platos fuertes con sedes en Puerto 125 y Granada para ir con hambre en Cali.",
       "cover_image_url": "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=1200&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -5186,7 +5180,7 @@
       "short_description": "Gelato y postres artesanales para tarde suave o plan dulce.",
       "cover_image_url": "https://images.unsplash.com/photo-1563805042-7684c019e1cb?auto=format&fit=crop&w=1200&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -5221,7 +5215,7 @@
       "short_description": "Cocina turca y bowls para comer distinto en varias zonas de Cali.",
       "cover_image_url": "https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1200&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -5255,7 +5249,7 @@
       "short_description": "Dulce y cafe para antojo rapido con sedes en Puerto 125 y Limonar.",
       "cover_image_url": "https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&w=1200&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -5290,7 +5284,7 @@
       "short_description": "Cafe, arte y postres para una pausa suave en distintas zonas de Cali.",
       "cover_image_url": "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1200&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -5331,7 +5325,7 @@
       "short_description": "Cocina asiatica casual con bowls y principales para comer en varias zonas de Cali.",
       "cover_image_url": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=1200&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -5376,7 +5370,7 @@
       "short_description": "Cocina rustica y platos fuertes con varias sedes para almuerzo o cena en Cali.",
       "cover_image_url": "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=1200&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -5423,7 +5417,7 @@
       "short_description": "Hamburguesas y comida casual con varias sedes para almuerzo o noche en Cali.",
       "cover_image_url": "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=1200&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -5495,7 +5489,7 @@
       "short_description": "Cocina mexicana casual con varias sedes para tacos y antojos en Cali.",
       "cover_image_url": "https://images.unsplash.com/photo-1552332386-f8dd00dc2f85?auto=format&fit=crop&w=1200&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -5538,7 +5532,7 @@
       "short_description": "Bubble tea, cafe y plan dulce con sedes en Pance y Miraflores.",
       "cover_image_url": "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1200&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -5574,7 +5568,7 @@
       "short_description": "Cafe para pausa suave y parche conversado en Pance.",
       "cover_image_url": "https://images.unsplash.com/photo-1445116572660-236099ec97a0?auto=format&fit=crop&w=1200&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -5609,7 +5603,7 @@
       "short_description": "Bar de plan social y drinks dentro del circuito de Lago Verde.",
       "cover_image_url": "https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&w=1200&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -5644,7 +5638,7 @@
       "short_description": "Cocteleria y comida para parche de tarde y noche en Pance.",
       "cover_image_url": "https://images.unsplash.com/photo-1470337458703-46ad1756a187?auto=format&fit=crop&w=1200&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -5678,7 +5672,7 @@
       "short_description": "Restaurante bar para comer y alargar la tarde en Lago Verde.",
       "cover_image_url": "https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=1200&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -5712,7 +5706,7 @@
       "short_description": "Bowls de acai y smoothies para plan fresco en Pance.",
       "cover_image_url": "https://images.unsplash.com/photo-1502741338009-cac2772e18bc?auto=format&fit=crop&w=1200&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -5743,7 +5737,7 @@
       "short_description": "Cocina ligera y bowls para plan saludable en Lago Verde.",
       "cover_image_url": "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=1200&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -5773,7 +5767,7 @@
       "short_description": "Hamburgueseria casual para antojo y plan relajado en Pance.",
       "cover_image_url": "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=1200&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -5805,7 +5799,7 @@
       "short_description": "Chicken tenders y combos para plan facil en Lago Verde.",
       "cover_image_url": "https://images.unsplash.com/photo-1562967916-eb82221dfb92?auto=format&fit=crop&w=1200&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -5836,7 +5830,7 @@
       "short_description": "Chuzos y comida rapida para parche casual en Pance.",
       "cover_image_url": "https://images.unsplash.com/photo-1529193591184-b1d58069ecdd?auto=format&fit=crop&w=1200&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -5867,7 +5861,7 @@
       "short_description": "Parada simple y conocida para jugos y comida rapida en la zona.",
       "cover_image_url": "https://images.unsplash.com/photo-1622597467836-f3285f2131b8?auto=format&fit=crop&w=1200&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -5907,7 +5901,7 @@
       "short_description": "Pizzeria de parche amplio y facil para grupos en el Parque del Perro.",
       "cover_image_url": "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=1200&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -5949,7 +5943,7 @@
       "short_description": "Sushi de plan casual para almuerzo o noche tranquila en el Parque del Perro.",
       "cover_image_url": "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?auto=format&fit=crop&w=1200&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -5988,7 +5982,7 @@
       "short_description": "Taqueria casual y rendidora para parche relajado en el Parque del Perro.",
       "cover_image_url": "https://images.unsplash.com/photo-1552332386-f8dd00dc2f85?auto=format&fit=crop&w=1200&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -6028,7 +6022,7 @@
       "short_description": "Cocina nikkei para plan de sushi y piqueo en el sur.",
       "cover_image_url": "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?auto=format&fit=crop&w=1200&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -6059,7 +6053,7 @@
       "short_description": "Parrilla y cocina carnivora para plan de almuerzo o cena en Granada.",
       "cover_image_url": "https://images.unsplash.com/photo-1558030006-450675393462?auto=format&fit=crop&w=1200&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -6089,7 +6083,7 @@
       "short_description": "Marca de sushi y cocina variada con sedes utiles en Pance y Ciudad Jardin.",
       "cover_image_url": "https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&w=1200&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -6130,7 +6124,7 @@
       "short_description": "Restaurante de ambiente vistoso para almuerzo largo o cena en Marbella.",
       "cover_image_url": "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1200&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -6160,7 +6154,7 @@
       "short_description": "Cafe de especialidad para parche suave y tarde tranquila en Pance.",
       "cover_image_url": "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1200&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -6196,7 +6190,7 @@
       "short_description": "Cocina vietnamita con ambiente cuidado y buen parche en Pance.",
       "cover_image_url": "https://images.unsplash.com/photo-1559847844-5315695dadae?auto=format&fit=crop&w=1200&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -6226,7 +6220,7 @@
       "short_description": "Cantina moderna en Marbella Plaza para compartir platos y tragos.",
       "cover_image_url": "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -6521,7 +6515,7 @@
       "short_description": "Restaurante coreano y asiatico en El Peñon.",
       "cover_image_url": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=1200&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -6545,7 +6539,7 @@
       "short_description": "Restaurante mexicano en Granada.",
       "cover_image_url": "https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&w=1200&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -6573,7 +6567,7 @@
       "short_description": "Bakery y brunch en Ciudad Jardin, Solaz Plaza.",
       "cover_image_url": "https://images.unsplash.com/photo-1517433670267-08bbd4be890f?auto=format&fit=crop&w=1200&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -6610,7 +6604,7 @@
       "short_description": "Cafe de especialidad y brunch en el norte de Cali.",
       "cover_image_url": "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1200&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -6639,7 +6633,7 @@
       "short_description": "Cafe, panaderia y restaurante en El Peñon.",
       "cover_image_url": "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=1200&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -6669,7 +6663,7 @@
       "short_description": "Restaurante japones y de sushi en Granada.",
       "cover_image_url": "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?auto=format&fit=crop&w=1200&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -6695,7 +6689,7 @@
       "short_description": "Un rincón en Granada que huele a mantequilla y masa recién horneada. Perfecto para darte un gusto, sentarte sin afán y dejar que un buen postre te arregle el día.",
       "cover_image_url": "https://images.unsplash.com/photo-1464306076886-da185f6a9d05?auto=format&fit=crop&w=1200&q=80",
       "gallery_urls": [],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -6736,7 +6730,7 @@
         "https://scontent.cdninstagram.com/v/t51.71878-15/623654923_1231931508865622_1980990372034898649_n.jpg?stp=cmp1_dst-jpg_e35_s640x640_tt6&_nc_cat=102&ccb=7-5&_nc_sid=18de74&efg=eyJlZmdfdGFnIjoiQ0FST1VTRUxfSVRFTS5iZXN0X2ltYWdlX3VybGdlbi5DMyJ9&_nc_ohc=oKA3SN4VZ0IQ7kNvwFzpdm6&_nc_oc=AdrIuMLu52_qxSmQSdrVHhLY2CayUYxKB-7LlPJlA_DcPz6rujHvP-qh0ovrnJbibjY&_nc_zt=23&_nc_ht=scontent.cdninstagram.com&_nc_gid=L_GQNH_1Rv-8Qsj8BKFEKQ&_nc_ss=7a30f&oh=00_Af2EP7zeyrzNCCwaLeWgelb1LY4RUKqNj33_XiUXKRe2Uw&oe=69D5E0C3",
         "https://scontent.cdninstagram.com/v/t39.30808-6/379284987_17916028004801840_2044567736595314098_n.jpg?stp=c288.0.864.864a_dst-jpg_e35_s640x640_tt6&_nc_cat=111&ccb=7-5&_nc_sid=18de74&efg=eyJlZmdfdGFnIjoiQ0FST1VTRUxfSVRFTS5iZXN0X2ltYWdlX3VybGdlbi5DMyJ9&_nc_ohc=hqmOjFlW5nMQ7kNvwEgnDxv&_nc_oc=AdrsafxFOjcguQiO5IDqz1Xh77jxAXNy6ahzHzLfgwFObyspD_NWpLgUjNKne49WCcU&_nc_zt=23&_nc_ht=scontent.cdninstagram.com&_nc_gid=EWnmXcHDCN_tmJfAPBlf_Q&_nc_ss=7a30f&oh=00_Af1rheCh9uGAqFRM27h7UjqkrrmdXXEdZJKMlI1tKPK72Q&oe=69D601C2"
       ],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -6784,7 +6778,13 @@
         "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/makibar/gallery/makibar-gallery-7-1776133029182.jpg",
         "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/makibar/gallery/makibar-gallery-8-1776133029756.jpg"
       ],
-      "category": "Restaurantes y cafés",
+      "category": "Comida",
+      "subcategories": [
+        "sushi",
+        "japonesa",
+        "cena",
+        "cocteles"
+      ],
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -6941,8 +6941,8 @@
       "whatsapp": "",
       "phone": "",
       "instagram": "",
-      "latitude": null,
-      "longitude": null,
+      "latitude": 3.4506111,
+      "longitude": -76.5427329,
       "is_active": true,
       "sort_order": 10,
       "created_at": "2026-03-30T03:18:14.162635+00:00",
@@ -8615,8 +8615,8 @@
       "whatsapp": "3207745257",
       "phone": "3174233636",
       "instagram": "@localburgercali",
-      "latitude": null,
-      "longitude": null,
+      "latitude": 3.4577777,
+      "longitude": -76.5354571,
       "is_active": true,
       "sort_order": 10,
       "created_at": "2026-04-01T18:32:34.385536+00:00",
@@ -8696,8 +8696,8 @@
       "whatsapp": "3207745257",
       "phone": "",
       "instagram": "@localburgercali",
-      "latitude": null,
-      "longitude": null,
+      "latitude": 3.4883225,
+      "longitude": -76.5222844,
       "is_active": true,
       "sort_order": 40,
       "created_at": "2026-04-01T18:32:41.194675+00:00",
@@ -9209,8 +9209,8 @@
       "whatsapp": "https://wa.me/573175165471",
       "phone": "",
       "instagram": "https://instagram.com/turkhousenyc",
-      "latitude": null,
-      "longitude": null,
+      "latitude": 3.4496475,
+      "longitude": -76.5410145,
       "is_active": true,
       "sort_order": 40,
       "created_at": "2026-04-02T01:17:04.95793+00:00",
@@ -9344,8 +9344,8 @@
       "whatsapp": "https://api.whatsapp.com/send?phone=573126598939&text=Hola!%20Me%20quiero%20comunicar%20con%20el%20servicio%20al%20cliente%20de%20la%20Aldea%20Asi%C3%A1tica%20%F0%9F%A4%97",
       "phone": "",
       "instagram": "https://instagram.com/uki.colombia/",
-      "latitude": null,
-      "longitude": null,
+      "latitude": 3.4605041,
+      "longitude": -76.534468,
       "is_active": true,
       "sort_order": 50,
       "created_at": "2026-04-02T01:50:15.309979+00:00",
@@ -9425,8 +9425,8 @@
       "whatsapp": "https://api.whatsapp.com/send/?phone=573155974543&text&type=phone_number&app_absent=0",
       "phone": "",
       "instagram": "https://instagram.com/cilindromunicipalco",
-      "latitude": null,
-      "longitude": null,
+      "latitude": 3.3647895,
+      "longitude": -76.5327026,
       "is_active": true,
       "sort_order": 20,
       "created_at": "2026-04-02T01:58:49.258121+00:00",
@@ -9587,8 +9587,8 @@
       "whatsapp": "",
       "phone": "",
       "instagram": "https://instagram.com/elpasohamburguesas/",
-      "latitude": null,
-      "longitude": null,
+      "latitude": 3.4234474,
+      "longitude": -76.5382115,
       "is_active": true,
       "sort_order": 20,
       "created_at": "2026-04-02T02:20:43.435997+00:00",
@@ -9641,8 +9641,8 @@
       "whatsapp": "",
       "phone": "",
       "instagram": "https://instagram.com/elpasohamburguesas/",
-      "latitude": null,
-      "longitude": null,
+      "latitude": 3.4859876,
+      "longitude": -76.5192212,
       "is_active": true,
       "sort_order": 40,
       "created_at": "2026-04-02T02:20:43.792016+00:00",
@@ -9695,8 +9695,8 @@
       "whatsapp": "https://api.whatsapp.com/send/?phone=573155974543&text&type=phone_number&app_absent=0",
       "phone": "",
       "instagram": "https://instagram.com/chacalacasco",
-      "latitude": null,
-      "longitude": null,
+      "latitude": 3.3647895,
+      "longitude": -76.5327026,
       "is_active": true,
       "sort_order": 30,
       "created_at": "2026-04-02T02:33:33.8026+00:00",
@@ -10046,8 +10046,8 @@
       "whatsapp": "https://wa.me/573235972646",
       "phone": "3235972646",
       "instagram": "https://instagram.com/latopatolondraoficial",
-      "latitude": null,
-      "longitude": null,
+      "latitude": 3.4442484,
+      "longitude": -76.5364998,
       "is_active": true,
       "sort_order": 10,
       "created_at": "2026-04-02T14:46:36.086199+00:00",
@@ -10073,8 +10073,8 @@
       "whatsapp": "",
       "phone": "3164466385",
       "instagram": "",
-      "latitude": null,
-      "longitude": null,
+      "latitude": 3.4601013,
+      "longitude": -76.5326812,
       "is_active": true,
       "sort_order": 10,
       "created_at": "2026-04-02T14:46:36.266996+00:00",
@@ -10235,8 +10235,8 @@
       "whatsapp": "https://wa.me/573174160346",
       "phone": "6023482651",
       "instagram": "",
-      "latitude": null,
-      "longitude": null,
+      "latitude": 3.3467039,
+      "longitude": -76.552194,
       "is_active": true,
       "sort_order": 20,
       "created_at": "2026-04-02T14:46:37.201263+00:00",
@@ -10262,8 +10262,8 @@
       "whatsapp": "https://wa.me/573506330619",
       "phone": "6023450609",
       "instagram": "",
-      "latitude": null,
-      "longitude": null,
+      "latitude": 3.3642395,
+      "longitude": -76.5338962,
       "is_active": true,
       "sort_order": 30,
       "created_at": "2026-04-02T14:46:37.410008+00:00",
@@ -10343,8 +10343,8 @@
       "whatsapp": "https://wa.me/573016764024",
       "phone": "6023450906",
       "instagram": "",
-      "latitude": null,
-      "longitude": null,
+      "latitude": 3.4234474,
+      "longitude": -76.5382115,
       "is_active": true,
       "sort_order": 60,
       "created_at": "2026-04-02T14:46:37.956552+00:00",
@@ -10370,8 +10370,8 @@
       "whatsapp": "https://wa.me/573013664141",
       "phone": "6024045658",
       "instagram": "",
-      "latitude": null,
-      "longitude": null,
+      "latitude": 3.4301333,
+      "longitude": -76.5403514,
       "is_active": true,
       "sort_order": 70,
       "created_at": "2026-04-02T14:46:38.146217+00:00",
@@ -10478,8 +10478,8 @@
       "whatsapp": "",
       "phone": "6025519130",
       "instagram": "",
-      "latitude": null,
-      "longitude": null,
+      "latitude": 3.4003095,
+      "longitude": -76.5442875,
       "is_active": true,
       "sort_order": 10,
       "created_at": "2026-04-02T14:46:38.84745+00:00",
@@ -10505,8 +10505,8 @@
       "whatsapp": "",
       "phone": "6025542730",
       "instagram": "",
-      "latitude": null,
-      "longitude": null,
+      "latitude": 3.4301333,
+      "longitude": -76.5403514,
       "is_active": true,
       "sort_order": 20,
       "created_at": "2026-04-02T14:46:39.023718+00:00",
@@ -10532,8 +10532,8 @@
       "whatsapp": "",
       "phone": "6026544230",
       "instagram": "",
-      "latitude": null,
-      "longitude": null,
+      "latitude": 3.469172,
+      "longitude": -76.5224733,
       "is_active": true,
       "sort_order": 30,
       "created_at": "2026-04-02T14:46:39.203109+00:00",
@@ -10640,8 +10640,8 @@
       "whatsapp": "",
       "phone": "3162675140",
       "instagram": "https://www.instagram.com/dose.skylounge/",
-      "latitude": null,
-      "longitude": null,
+      "latitude": 3.45307,
+      "longitude": -76.5328813,
       "is_active": true,
       "sort_order": 10,
       "created_at": "2026-04-02T14:46:39.822292+00:00",
@@ -10748,8 +10748,8 @@
       "whatsapp": "",
       "phone": "3187117755",
       "instagram": "",
-      "latitude": null,
-      "longitude": null,
+      "latitude": 3.4515,
+      "longitude": -76.5474451,
       "is_active": true,
       "sort_order": 10,
       "created_at": "2026-04-02T17:14:10.461514+00:00",
@@ -10856,8 +10856,8 @@
       "whatsapp": "",
       "phone": "4044626",
       "instagram": "",
-      "latitude": null,
-      "longitude": null,
+      "latitude": 3.3642395,
+      "longitude": -76.5338962,
       "is_active": true,
       "sort_order": 20,
       "created_at": "2026-04-02T17:14:11.400651+00:00",
@@ -10883,8 +10883,8 @@
       "whatsapp": "",
       "phone": "",
       "instagram": "",
-      "latitude": null,
-      "longitude": null,
+      "latitude": 3.4489158,
+      "longitude": -76.5338616,
       "is_active": true,
       "sort_order": 10,
       "created_at": "2026-04-02T17:14:11.631046+00:00",
@@ -11018,8 +11018,8 @@
       "whatsapp": "https://wa.me/573052852569",
       "phone": "3052852569",
       "instagram": "https://instagram.com/hunahunasocialclub",
-      "latitude": null,
-      "longitude": null,
+      "latitude": 3.4526026,
+      "longitude": -76.5278601,
       "is_active": true,
       "sort_order": 10,
       "created_at": "2026-04-02T17:14:12.492463+00:00",
@@ -11207,8 +11207,8 @@
       "whatsapp": "",
       "phone": "3009133447",
       "instagram": "",
-      "latitude": null,
-      "longitude": null,
+      "latitude": 3.3628324,
+      "longitude": -76.5316987,
       "is_active": true,
       "sort_order": 20,
       "created_at": "2026-04-02T17:14:13.651326+00:00",
@@ -11342,8 +11342,8 @@
       "whatsapp": "",
       "phone": "3117744899",
       "instagram": "https://instagram.com/sonidocentral",
-      "latitude": null,
-      "longitude": null,
+      "latitude": 3.4499591,
+      "longitude": -76.5314984,
       "is_active": true,
       "sort_order": 10,
       "created_at": "2026-04-02T17:14:14.535716+00:00",
@@ -11369,8 +11369,8 @@
       "whatsapp": "https://api.whatsapp.com/send/?phone=573113696667&text&type=phone_number&app_absent=0",
       "phone": "3113696667",
       "instagram": "https://instagram.com/labohemecali",
-      "latitude": null,
-      "longitude": null,
+      "latitude": 3.448226,
+      "longitude": -76.5411565,
       "is_active": true,
       "sort_order": 10,
       "created_at": "2026-04-02T17:14:14.689011+00:00",
@@ -11396,8 +11396,8 @@
       "whatsapp": "",
       "phone": "3173519642",
       "instagram": "",
-      "latitude": null,
-      "longitude": null,
+      "latitude": 3.4500005,
+      "longitude": -76.5410838,
       "is_active": true,
       "sort_order": 10,
       "created_at": "2026-04-02T17:14:14.884126+00:00",
@@ -11477,8 +11477,8 @@
       "whatsapp": "",
       "phone": "3023439748",
       "instagram": "",
-      "latitude": null,
-      "longitude": null,
+      "latitude": 3.4638593,
+      "longitude": -76.4972349,
       "is_active": true,
       "sort_order": 10,
       "created_at": "2026-04-02T17:28:53.853447+00:00",
@@ -11531,8 +11531,8 @@
       "whatsapp": "",
       "phone": "3028338809",
       "instagram": "https://instagram.com/sonomacuisine",
-      "latitude": null,
-      "longitude": null,
+      "latitude": 3.4494312,
+      "longitude": -76.5433009,
       "is_active": true,
       "sort_order": 10,
       "created_at": "2026-04-02T17:28:54.162008+00:00",
@@ -11612,8 +11612,8 @@
       "whatsapp": "",
       "phone": "",
       "instagram": "",
-      "latitude": null,
-      "longitude": null,
+      "latitude": 3.3996949,
+      "longitude": -76.513203,
       "is_active": true,
       "sort_order": 10,
       "created_at": "2026-04-02T17:28:54.704812+00:00",
@@ -11666,8 +11666,8 @@
       "whatsapp": "",
       "phone": "3175241951",
       "instagram": "https://instagram.com/ramiros.hamburguesas",
-      "latitude": null,
-      "longitude": null,
+      "latitude": 3.4603904,
+      "longitude": -76.5345607,
       "is_active": true,
       "sort_order": 10,
       "created_at": "2026-04-02T17:28:55.051198+00:00",
@@ -11747,8 +11747,8 @@
       "whatsapp": "",
       "phone": "3237953019",
       "instagram": "https://instagram.com/zulyarepas",
-      "latitude": null,
-      "longitude": null,
+      "latitude": 3.3624989,
+      "longitude": -76.5329157,
       "is_active": true,
       "sort_order": 30,
       "created_at": "2026-04-02T18:16:17.468602+00:00",
@@ -11814,7 +11814,7 @@
       "slug": "casa-d-cali-granada",
       "neighborhood": "Granada",
       "mall": "",
-      "hours": "Jue-Sab 19:00-04:00",
+      "hours": "Jue-Sáb y pre-festivo 19:00-04:00",
       "holiday_mode": "inherit",
       "holiday_open_time": null,
       "holiday_close_time": null,
@@ -11824,16 +11824,16 @@
       "min_budget": 40000,
       "max_budget": 0,
       "max_people": 8,
-      "menu_url": "https://casadespecho.com/casad_cali/",
+      "menu_url": "https://reservascali.casadespecho.com/reservas",
       "whatsapp": "",
       "phone": "3118417065",
-      "instagram": "https://instagram.com/casa.d_cali",
+      "instagram": "https://instagram.com/casa.d_cali/",
       "latitude": null,
       "longitude": null,
       "is_active": true,
       "sort_order": 10,
       "created_at": "2026-04-02T18:16:17.971281+00:00",
-      "updated_at": "2026-04-02T18:16:17.971281+00:00"
+      "updated_at": "2026-04-20T05:10:00.000000+00:00"
     },
     {
       "id": 4775,
@@ -11882,8 +11882,8 @@
       "whatsapp": "",
       "phone": "3154605970",
       "instagram": "https://www.instagram.com/cafesancamilo/",
-      "latitude": null,
-      "longitude": null,
+      "latitude": 3.4496141,
+      "longitude": -76.5428199,
       "is_active": true,
       "sort_order": 10,
       "created_at": "2026-04-02T18:16:18.504663+00:00",
@@ -12179,8 +12179,8 @@
       "whatsapp": "",
       "phone": "",
       "instagram": "https://instagram.com/papi.baramigo/",
-      "latitude": null,
-      "longitude": null,
+      "latitude": 3.4471487,
+      "longitude": -76.5404731,
       "is_active": true,
       "sort_order": 10,
       "created_at": "2026-04-02T18:35:50.712818+00:00",
@@ -12273,7 +12273,7 @@
       "slug": "maranello-parque-del-perro",
       "neighborhood": "San Fernando",
       "mall": "Parque del Perro",
-    "hours": "Dom-Jue 11:30-22:00 · Vie-Sáb 11:30-23:00",
+      "hours": "Dom-Jue 11:30-22:00 · Vie-Sáb 11:30-23:00",
       "holiday_mode": "inherit",
       "holiday_open_time": null,
       "holiday_close_time": null,
@@ -12292,7 +12292,7 @@
       "is_active": true,
       "sort_order": 10,
       "created_at": "2026-04-03T04:04:49.670293+00:00",
-    "updated_at": "2026-04-18T02:25:00.000000+00:00"
+      "updated_at": "2026-04-18T02:25:00.000000+00:00"
     },
     {
       "id": 4914,
@@ -12300,7 +12300,7 @@
       "slug": "maranello-jardin-plaza",
       "neighborhood": "Ciudad Jardín",
       "mall": "Jardín Plaza",
-    "hours": "Dom-Jue 11:30-21:30 · Vie-Sáb 11:30-22:30",
+      "hours": "Dom-Jue 11:30-21:30 · Vie-Sáb 11:30-22:30",
       "holiday_mode": "inherit",
       "holiday_open_time": null,
       "holiday_close_time": null,
@@ -12319,7 +12319,7 @@
       "is_active": true,
       "sort_order": 10,
       "created_at": "2026-04-03T04:04:49.821762+00:00",
-    "updated_at": "2026-04-18T02:25:00.000000+00:00"
+      "updated_at": "2026-04-18T02:25:00.000000+00:00"
     },
     {
       "id": 5033,
@@ -12395,8 +12395,8 @@
       "whatsapp": "https://wa.me/message/RCBIXK44PMZOG1",
       "phone": "3052380786",
       "instagram": "https://instagram.com/intrepid83club/",
-      "latitude": null,
-      "longitude": null,
+      "latitude": 3.3810889,
+      "longitude": -76.5355923,
       "is_active": true,
       "sort_order": 10,
       "created_at": "2026-04-04T00:25:57.701173+00:00",
@@ -12422,8 +12422,8 @@
       "whatsapp": "https://wa.me/573054445097",
       "phone": "6023820049",
       "instagram": "https://www.instagram.com/tierradentrocafe/",
-      "latitude": null,
-      "longitude": null,
+      "latitude": 3.445622,
+      "longitude": -76.5393758,
       "is_active": true,
       "sort_order": 10,
       "created_at": "2026-04-04T01:41:28.533783+00:00",
@@ -12503,8 +12503,8 @@
       "whatsapp": "",
       "phone": "",
       "instagram": "https://www.instagram.com/lachocolatadacali/",
-      "latitude": null,
-      "longitude": null,
+      "latitude": 3.3628324,
+      "longitude": -76.5316987,
       "is_active": true,
       "sort_order": 20,
       "created_at": "2026-04-04T01:55:09.492703+00:00",
@@ -12530,8 +12530,8 @@
       "whatsapp": "",
       "phone": "3174580568",
       "instagram": "https://www.instagram.com/pattigelateria/",
-      "latitude": null,
-      "longitude": null,
+      "latitude": 3.4497488,
+      "longitude": -76.5403947,
       "is_active": true,
       "sort_order": 10,
       "created_at": "2026-04-04T02:06:15.794374+00:00",
@@ -12557,8 +12557,8 @@
       "whatsapp": "",
       "phone": "3174580568",
       "instagram": "https://www.instagram.com/pattigelateria/",
-      "latitude": null,
-      "longitude": null,
+      "latitude": 3.4476693,
+      "longitude": -76.5400064,
       "is_active": true,
       "sort_order": 20,
       "created_at": "2026-04-04T02:06:15.794374+00:00",
@@ -12584,8 +12584,8 @@
       "whatsapp": "",
       "phone": "3174580568",
       "instagram": "https://www.instagram.com/pattigelateria/",
-      "latitude": null,
-      "longitude": null,
+      "latitude": 3.3642912,
+      "longitude": -76.5341899,
       "is_active": true,
       "sort_order": 30,
       "created_at": "2026-04-04T02:06:15.794374+00:00",
@@ -12638,8 +12638,8 @@
       "whatsapp": "",
       "phone": "3174580568",
       "instagram": "https://www.instagram.com/pattigelateria/",
-      "latitude": null,
-      "longitude": null,
+      "latitude": 3.3467039,
+      "longitude": -76.552194,
       "is_active": true,
       "sort_order": 50,
       "created_at": "2026-04-04T02:06:15.794374+00:00",
@@ -12746,8 +12746,8 @@
       "whatsapp": "https://wa.me/573105570048",
       "phone": "3105570048",
       "instagram": "https://www.instagram.com/alma.restaurante_cali/",
-      "latitude": null,
-      "longitude": null,
+      "latitude": 3.4381324,
+      "longitude": -76.5545417,
       "is_active": true,
       "sort_order": 10,
       "created_at": "2026-04-04T02:57:07.843711+00:00",
@@ -12827,8 +12827,8 @@
       "whatsapp": "https://wa.link/zdj52u",
       "phone": "",
       "instagram": "https://www.instagram.com/zurcocinadeautor/",
-      "latitude": null,
-      "longitude": null,
+      "latitude": 3.3297497,
+      "longitude": -76.5354544,
       "is_active": true,
       "sort_order": 10,
       "created_at": "2026-04-04T18:57:23.488Z",
@@ -12854,8 +12854,8 @@
       "whatsapp": "",
       "phone": "3187125692",
       "instagram": "https://www.instagram.com/antano_ca/",
-      "latitude": null,
-      "longitude": null,
+      "latitude": 3.3974444,
+      "longitude": -76.5278243,
       "is_active": true,
       "sort_order": 10,
       "created_at": "2026-04-04T19:17:31.833Z",
@@ -13124,8 +13124,8 @@
       "whatsapp": "",
       "phone": "3136571731",
       "instagram": "",
-      "latitude": null,
-      "longitude": null,
+      "latitude": 3.4588034,
+      "longitude": -76.5295192,
       "is_active": true,
       "sort_order": 10,
       "created_at": "2026-04-08T04:40:00.000000+00:00",
@@ -13151,8 +13151,8 @@
       "whatsapp": "https://api.whatsapp.com/send?phone=573108158800",
       "phone": "3108158800",
       "instagram": "https://www.instagram.com/domingorestauranteco/",
-      "latitude": null,
-      "longitude": null,
+      "latitude": 3.4481069,
+      "longitude": -76.5392346,
       "is_active": true,
       "sort_order": 10,
       "created_at": "2026-04-08T05:00:00.000000+00:00",
@@ -13485,8 +13485,8 @@
     {
       "id": 5209,
       "spot_id": 3636,
-      "latitude": null,
-      "longitude": null,
+      "latitude": 3.3744854,
+      "longitude": -76.5188783,
       "created_at": "2026-04-15T20:20:00.000000+00:00",
       "updated_at": "2026-04-15T20:20:00.000000+00:00",
       "slug": "king-papa-valle-del-lili",
@@ -13512,8 +13512,8 @@
     {
       "id": 5210,
       "spot_id": 3636,
-      "latitude": null,
-      "longitude": null,
+      "latitude": 3.4360539,
+      "longitude": -76.5001511,
       "created_at": "2026-04-15T20:20:00.000000+00:00",
       "updated_at": "2026-04-15T20:20:00.000000+00:00",
       "slug": "king-papa-nueva-floresta",
@@ -13566,8 +13566,8 @@
     {
       "id": 5212,
       "spot_id": 3636,
-      "latitude": null,
-      "longitude": null,
+      "latitude": 3.3779571,
+      "longitude": -76.5420611,
       "created_at": "2026-04-15T20:20:00.000000+00:00",
       "updated_at": "2026-04-15T20:20:00.000000+00:00",
       "slug": "king-papa-cc-unicentro",
@@ -13728,8 +13728,8 @@
     {
       "id": 5125,
       "spot_id": 3639,
-      "latitude": null,
-      "longitude": null,
+      "latitude": 3.4455297,
+      "longitude": -76.5388913,
       "created_at": "2026-04-08T07:05:00.000000+00:00",
       "updated_at": "2026-04-15T19:20:00.000000+00:00",
       "slug": "mi-sol-radiante-san-antonio",
@@ -13920,7 +13920,7 @@
       "latitude": null,
       "longitude": null,
       "created_at": "2026-04-08T07:35:00.000000+00:00",
-      "updated_at": "2026-04-08T07:35:00.000000+00:00",
+      "updated_at": "2026-04-15T18:30:00.000000+00:00",
       "slug": "casa-latte-cali",
       "address": "Calle 15 Norte #9N-50, Granada, Cali",
       "neighborhood": "Granada",
@@ -13938,7 +13938,6 @@
       "min_budget": 32000,
       "max_budget": 59000,
       "instagram": "https://www.instagram.com/casalatte.lte/",
-      "updated_at": "2026-04-15T18:30:00.000000+00:00",
       "is_active": true,
       "sort_order": 10
     },
@@ -14010,7 +14009,7 @@
       "latitude": null,
       "longitude": null,
       "created_at": "2026-04-08T08:05:00.000000+00:00",
-      "updated_at": "2026-04-15T17:30:00.000000+00:00",
+      "updated_at": "2026-04-21T05:20:00.000000+00:00",
       "hours": "Lun-Dom 08:00-15:00",
       "holiday_mode": "inherit",
       "holiday_open_time": null,
@@ -14020,7 +14019,7 @@
       "min_budget": 27000,
       "max_budget": 49900,
       "instagram": "https://www.instagram.com/joesretrodiner/",
-      "is_active": true,
+      "is_active": false,
       "sort_order": 10
     },
     {
@@ -14061,8 +14060,8 @@
       "phone": "",
       "whatsapp": "",
       "menu_url": "https://menupp.co/fitbar",
-      "latitude": null,
-      "longitude": null,
+      "latitude": 3.3452963,
+      "longitude": -76.5307671,
       "created_at": "2026-04-08T08:05:00.000000+00:00",
       "updated_at": "2026-04-15T16:55:00.000000+00:00",
       "hours": "Lun-Vie 08:30-19:00 · Sáb 08:30-17:00 · Dom 09:00-13:00",

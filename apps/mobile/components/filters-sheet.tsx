@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { startTransition, useDeferredValue, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import {
   Animated,
   Dimensions,
@@ -38,11 +38,12 @@ import { useLocationStore } from '@/lib/location-store';
 import { useRelayoutSubscription } from '@/lib/relayout';
 import { useSpotsStore } from '@/lib/spots-store';
 
-const exploreFoodIcon = require('../assets/explore_food_icon.png');
+const exploreFoodIcon = require('../assets/explore_food_chef_hat_icon.png');
 const exploreCinemaIcon = require('../assets/explore_cinema_icon.png');
 const exploreArtIcon = require('../assets/explore_art_icon.png');
-const exploreNightlifeIcon = require('../assets/explore_nightlife_icon.png');
-const exploreSportsIcon = require('../assets/explore_sports_icon.png');
+const exploreDrinksIcon = require('../assets/explore_nightlife_icon.png');
+const exploreNightlifeIcon = require('../assets/explore_nightlife_disco_ball_icon.png');
+const exploreSportsIcon = require('../assets/explore_wellness_dumbbell_icon.png');
 const exploreFamilyIcon = require('../assets/explore_family_icon.png');
 const exploreEventsIcon = require('../assets/explore_events_icon.png');
 const exploreNatureIcon = require('../assets/explore_nature_icon.png');
@@ -83,18 +84,175 @@ const dayOptions = [
   { label: 'Festivos', shortLabel: 'Festivos', value: 'Festivos' },
 ];
 
-const categoryOptions: Array<{
+type CategorySuboption = {
   label: string;
   value: string;
+};
+
+type CategoryOption = {
+  key: string;
+  label: string;
+  legacyValue: string;
   image: any;
-}> = [
-  { label: 'Arte y cultura', value: 'Arte y cultura', image: exploreArtIcon },
-  { label: 'Bares y noche', value: 'Bares y noche', image: exploreNightlifeIcon },
-  { label: 'Restaurantes y cafés', value: 'Restaurantes y cafés', image: exploreFoodIcon },
-  { label: 'Deporte', value: 'Deporte y bienestar', image: exploreSportsIcon },
-  { label: 'Familiar', value: 'Familiar', image: exploreFamilyIcon },
-  { label: 'Naturaleza', value: 'Naturaleza y aire libre', image: exploreNatureIcon },
+  filterTokens: string[];
+  subcategories: CategorySuboption[];
+};
+
+const categoryOptions: CategoryOption[] = [
+  {
+    key: 'arte-cultura',
+    label: 'Arte y cultura',
+    legacyValue: 'Arte y cultura',
+    image: exploreArtIcon,
+    filterTokens: ['Arte y cultura'],
+    subcategories: [
+      { label: 'Museos', value: 'Museos' },
+      { label: 'Teatro', value: 'Teatro' },
+      { label: 'Cine alternativo', value: 'Cine alternativo' },
+      { label: 'Pintar', value: 'Pintar' },
+      { label: 'Cerámica', value: 'Cerámica' },
+      { label: 'Manualidades', value: 'Manualidades' },
+      { label: 'Tertulias', value: 'Tertulias' },
+      { label: 'Monumentos', value: 'Monumentos' },
+      { label: 'Estatuas', value: 'Estatuas' },
+    ],
+  },
+  {
+    key: 'tomar-algo',
+    label: 'Tomar algo',
+    legacyValue: 'Bares y noche',
+    image: exploreDrinksIcon,
+    filterTokens: ['Tomar algo', 'Bares y noche'],
+    subcategories: [
+      { label: 'Cocteles', value: 'Cocteles' },
+      { label: 'Vino', value: 'Vino' },
+      { label: 'Cerveza', value: 'Cerveza' },
+      { label: 'Rooftop', value: 'Rooftop' },
+      { label: 'Terraza', value: 'Terraza' },
+      { label: 'Tardear', value: 'Tardear' },
+      { label: 'After office', value: 'After office' },
+    ],
+  },
+  {
+    key: 'vida-nocturna',
+    label: 'Vida nocturna',
+    legacyValue: 'Bares y noche',
+    image: exploreNightlifeIcon,
+    filterTokens: ['Vida nocturna', 'Bares y noche'],
+    subcategories: [
+      { label: 'Rumba', value: 'Rumba' },
+      { label: 'Discotecas', value: 'Discotecas' },
+      { label: 'Bailar', value: 'Bailar' },
+      { label: 'DJ set', value: 'DJ set' },
+      { label: 'Salsa', value: 'Salsa' },
+      { label: 'Reggaetón', value: 'Reggaetón' },
+    ],
+  },
+  {
+    key: 'comida',
+    label: 'Comida',
+    legacyValue: 'Restaurantes y cafés',
+    image: exploreFoodIcon,
+    filterTokens: ['Comida', 'Restaurantes y cafés'],
+    subcategories: [
+      { label: 'Italiana', value: 'Italiana' },
+      { label: 'Mexicana', value: 'Mexicana' },
+      { label: 'Japonesa', value: 'Japonesa' },
+      { label: 'Nikkei', value: 'Nikkei' },
+      { label: 'Mediterránea', value: 'Mediterránea' },
+      { label: 'Colombiana', value: 'Colombiana' },
+      { label: 'Americana', value: 'Americana' },
+      { label: 'Asiática', value: 'Asiática' },
+      { label: 'Fusión', value: 'Fusión' },
+      { label: 'Saludable', value: 'Saludable' },
+      { label: 'Vegana', value: 'Vegana' },
+      { label: 'Vegetariana', value: 'Vegetariana' },
+      { label: 'Mariscos', value: 'Mariscos' },
+      { label: 'Parrilla', value: 'Parrilla' },
+      { label: 'Pizza', value: 'Pizza' },
+      { label: 'Pasta', value: 'Pasta' },
+      { label: 'Sushi', value: 'Sushi' },
+      { label: 'Hamburguesas', value: 'Hamburguesas' },
+      { label: 'Tacos', value: 'Tacos' },
+      { label: 'Ramen', value: 'Ramen' },
+      { label: 'Poke', value: 'Poke' },
+      { label: 'Pitas', value: 'Pitas' },
+      { label: 'Bowls', value: 'Bowls' },
+      { label: 'Pollo frito', value: 'Pollo frito' },
+      { label: 'Sandwiches', value: 'Sandwiches' },
+      { label: 'Panadería', value: 'Panadería' },
+      { label: 'Helado', value: 'Helado' },
+      { label: 'Postres', value: 'Postres' },
+      { label: 'Desayuno', value: 'Desayuno' },
+      { label: 'Brunch', value: 'Brunch' },
+      { label: 'Almuerzo', value: 'Almuerzo' },
+      { label: 'Cena', value: 'Cena' },
+      { label: 'Tardeo', value: 'Tardeo' },
+      { label: 'Café', value: 'Café' },
+    ],
+  },
+  {
+    key: 'bienestar',
+    label: 'Bienestar',
+    legacyValue: 'Deporte y bienestar',
+    image: exploreSportsIcon,
+    filterTokens: ['Bienestar', 'Deporte y bienestar'],
+    subcategories: [
+      { label: 'Yoga', value: 'Yoga' },
+      { label: 'Pilates', value: 'Pilates' },
+      { label: 'Spa', value: 'Spa' },
+      { label: 'Masajes', value: 'Masajes' },
+      { label: 'Running', value: 'Running' },
+      { label: 'Hiking', value: 'Hiking' },
+      { label: 'Escalada', value: 'Escalada' },
+      { label: 'Gym', value: 'Gym' },
+    ],
+  },
+  {
+    key: 'familiar',
+    label: 'Familiar',
+    legacyValue: 'Familiar',
+    image: exploreFamilyIcon,
+    filterTokens: ['Familiar'],
+    subcategories: [
+      { label: 'Pintar', value: 'Pintar' },
+      { label: 'Cerámica', value: 'Cerámica' },
+      { label: 'Juegos infantiles', value: 'Juegos infantiles' },
+      { label: 'Manualidades', value: 'Manualidades' },
+      { label: 'Parques infantiles', value: 'Parques infantiles' },
+      { label: 'Plan familiar', value: 'Plan familiar' },
+    ],
+  },
+  {
+    key: 'al-aire-libre',
+    label: 'Al aire libre',
+    legacyValue: 'Naturaleza y aire libre',
+    image: exploreNatureIcon,
+    filterTokens: ['Al aire libre', 'Naturaleza y aire libre'],
+    subcategories: [
+      { label: 'Miradores', value: 'Miradores' },
+      { label: 'Caminatas', value: 'Caminatas' },
+      { label: 'Parques', value: 'Parques' },
+      { label: 'Montañas', value: 'Montañas' },
+      { label: 'Hiking', value: 'Hiking' },
+      { label: 'Running', value: 'Running' },
+    ],
+  },
 ];
+
+function inferSelectedCategoryKey(values: string[]) {
+  for (const option of categoryOptions) {
+    if (option.filterTokens.some((token) => values.includes(token))) {
+      return option.key;
+    }
+
+    if (option.subcategories.some((subcategory) => values.includes(subcategory.value))) {
+      return option.key;
+    }
+  }
+
+  return null;
+}
 
 const sortOptions: Array<{ label: string; value: ExploreSort }> = [
   { label: 'Más nuevos', value: 'recent' },
@@ -207,6 +365,7 @@ export function FiltersSheet({
   const [sectorSearch, setSectorSearch] = useState('');
   const [mallSearch, setMallSearch] = useState('');
   const [distance, setDistance] = useState(initialFilters.distance);
+  const [showAdvancedDistance, setShowAdvancedDistance] = useState(false);
   const [minBudget, setMinBudget] = useState(initialFilters.minBudget);
   const [maxBudget, setMaxBudget] = useState(initialFilters.maxBudget);
   const [time, setTime] = useState(initialFilters.time);
@@ -216,21 +375,48 @@ export function FiltersSheet({
   const [sortBy, setSortBy] = useState(initialFilters.sortBy);
   const [openNowOnly, setOpenNowOnly] = useState(initialFilters.openNowOnly);
   const [hideManuallyAdjusted, setHideManuallyAdjusted] = useState(initialFilters.hideManuallyAdjusted);
+  const [expandedCategoryKey, setExpandedCategoryKey] = useState<string | null>(
+    inferSelectedCategoryKey(initialFilters.interests),
+  );
   const [neighborhoodPickerOpen, setNeighborhoodPickerOpen] = useState(false);
   const [showAdvancedWhen, setShowAdvancedWhen] = useState(false);
   const [showAllLocationSectors, setShowAllLocationSectors] = useState(false);
   const [showAllLocationMalls, setShowAllLocationMalls] = useState(false);
   const [showAllIdealFor, setShowAllIdealFor] = useState(false);
+  const [showAllSubcategories, setShowAllSubcategories] = useState(false);
   const sheetTranslateY = useRef(new Animated.Value(FILTERS_COLLAPSED_OFFSET)).current;
   const sectorChipsAnim = useRef(new Animated.Value(1)).current;
   const mallChipsAnim = useRef(new Animated.Value(1)).current;
   const sheetLastOffset = useRef(FILTERS_COLLAPSED_OFFSET);
   const closingRef = useRef(false);
-  const categoryValues = useMemo<string[]>(() => categoryOptions.map((option) => option.value), []);
+  const categoryValues = useMemo<string[]>(
+    () => Array.from(new Set(categoryOptions.flatMap((option) => option.filterTokens))),
+    [],
+  );
+  const categorySubcategoryValues = useMemo<string[]>(
+    () => categoryOptions.flatMap((option) => option.subcategories.map((subcategory) => subcategory.value)),
+    [],
+  );
+  const expandedPrimaryCategory = useMemo(
+    () => categoryOptions.find((option) => option.key === expandedCategoryKey) ?? null,
+    [expandedCategoryKey],
+  );
+  const categorySelectionValues = useMemo<string[]>(
+    () => [...categoryValues, ...categorySubcategoryValues],
+    [categorySubcategoryValues, categoryValues],
+  );
   const idealForValues = useMemo<string[]>(() => idealForOptions.map((option) => option.value), []);
-  const selectedCategoryValues = useMemo(
-    () => selectedCategories.filter((value) => categoryValues.includes(value)),
-    [categoryValues, selectedCategories],
+  const distanceSliderTrackWidthRef = useRef(0);
+  const hasCategorySelection = useMemo(
+    () => selectedCategories.some((value) => categorySelectionValues.includes(value)),
+    [categorySelectionValues, selectedCategories],
+  );
+  const hasExpandedSubcategorySelection = useMemo(
+    () =>
+      expandedPrimaryCategory
+        ? expandedPrimaryCategory.subcategories.some((subcategory) => selectedCategories.includes(subcategory.value))
+        : false,
+    [expandedPrimaryCategory, selectedCategories],
   );
   const selectedIdealForValues = useMemo(
     () => selectedCategories.filter((value) => idealForValues.includes(value)),
@@ -251,6 +437,7 @@ export function FiltersSheet({
     setSectorSearch('');
     setMallSearch('');
     setDistance(initialFilters.distance);
+    setShowAdvancedDistance(false);
     setMinBudget(initialFilters.minBudget);
     setMaxBudget(initialFilters.maxBudget);
     setTime(initialFilters.time);
@@ -260,9 +447,11 @@ export function FiltersSheet({
     setSortBy(initialFilters.sortBy);
     setOpenNowOnly(initialFilters.openNowOnly);
     setHideManuallyAdjusted(initialFilters.hideManuallyAdjusted);
+    setExpandedCategoryKey(inferSelectedCategoryKey(initialFilters.interests));
     setShowAllLocationSectors(false);
     setShowAllLocationMalls(false);
     setShowAllIdealFor(false);
+    setShowAllSubcategories(false);
     setShowAdvancedWhen(currentPreset === null && (
       initialFilters.days.length > 0 ||
       Boolean(initialFilters.time) ||
@@ -301,6 +490,7 @@ export function FiltersSheet({
       hideManuallyAdjusted,
     ],
   );
+  const deferredFilters = useDeferredValue(filters);
 
   const activeData = useMemo(
     () => getSpotsByTypeFromList(spots, activeTab === 'places' ? 'place' : 'event'),
@@ -309,7 +499,7 @@ export function FiltersSheet({
   const resultsCount = useMemo(() => {
     const filteredSpots = sortSpots(
       activeData.filter((spot) =>
-        matchesSpotToFilters(spot, filters, query, userLocation),
+        matchesSpotToFilters(spot, deferredFilters, query, userLocation),
       ),
       sortBy,
     );
@@ -319,7 +509,7 @@ export function FiltersSheet({
     }
 
     return aggregatePlaceSpotsFromList(filteredSpots).length;
-  }, [activeData, activeTab, filters, query, sortBy, userLocation]);
+  }, [activeData, activeTab, deferredFilters, query, sortBy, userLocation]);
   const neighborhoodOptions = useMemo(() => {
     return Array.from(
       new Set(
@@ -359,10 +549,10 @@ export function FiltersSheet({
   const filteredMallSearch = mallSearch.trim().toLocaleLowerCase('es');
   const locationPreviewFilters = useMemo(
     () => ({
-      ...filters,
+      ...deferredFilters,
       hubName: [],
     }),
-    [filters],
+    [deferredFilters],
   );
   const locationCandidateSpots = useMemo(
     () =>
@@ -501,6 +691,11 @@ export function FiltersSheet({
     ? locationMallsForDisplay
     : locationMallsForDisplay.slice(0, 10);
   const visibleIdealForOptions = showAllIdealFor ? idealForOptions : idealForOptions.slice(0, 8);
+  const visibleSubcategories = expandedPrimaryCategory
+    ? showAllSubcategories
+      ? expandedPrimaryCategory.subcategories
+      : expandedPrimaryCategory.subcategories.slice(0, 10)
+    : [];
   const visibleLocationSectorSignature = useMemo(
     () => visibleLocationSectors.map((option) => option.key).join('|'),
     [visibleLocationSectors],
@@ -579,6 +774,9 @@ export function FiltersSheet({
   );
 
   function clearFilters() {
+    const clearedFilters = {
+      ...DEFAULT_FILTERS,
+    };
     setSelectedCategories(DEFAULT_FILTERS.interests);
     setSelectedNeighborhoods([]);
     setSelectedHubNames(DEFAULT_FILTERS.hubName);
@@ -594,17 +792,42 @@ export function FiltersSheet({
     setSortBy(DEFAULT_FILTERS.sortBy);
     setOpenNowOnly(DEFAULT_FILTERS.openNowOnly);
     setHideManuallyAdjusted(DEFAULT_FILTERS.hideManuallyAdjusted);
+    setExpandedCategoryKey(null);
     setShowAdvancedWhen(false);
     setShowAllLocationSectors(false);
     setShowAllLocationMalls(false);
     setShowAllIdealFor(false);
+    setShowAllSubcategories(false);
     onClearQuery?.();
+    onApply(clearedFilters);
   }
 
   function toggleCategory(value: string) {
+    const nextOption = categoryOptions.find((option) => option.key === value);
+    if (!nextOption) {
+      return;
+    }
+
+    setExpandedCategoryKey((currentExpandedKey) => (currentExpandedKey === value ? null : value));
+    setShowAllSubcategories(false);
+    startTransition(() => {
+      setSelectedCategories((current) => {
+        const currentKey = inferSelectedCategoryKey(current);
+        const withoutCategories = current.filter((item) => !categorySelectionValues.includes(item));
+        return currentKey === value ? withoutCategories : [...withoutCategories, ...nextOption.filterTokens];
+      });
+    });
+  }
+
+  function toggleSubcategory(value: string) {
     setSelectedCategories((current) => {
-      const withoutCategories = current.filter((item) => !categoryValues.includes(item));
-      return current.includes(value) ? withoutCategories : [...withoutCategories, value];
+      const withoutCategoryTokens = current.filter(
+        (item) => !categoryValues.includes(item) || expandedPrimaryCategory?.filterTokens.includes(item),
+      );
+
+      return withoutCategoryTokens.includes(value)
+        ? withoutCategoryTokens.filter((item) => item !== value)
+        : [...withoutCategoryTokens, value];
     });
   }
 
@@ -617,7 +840,20 @@ export function FiltersSheet({
   }
 
   function clearCategorySelections() {
-    setSelectedCategories((current) => current.filter((item) => !categoryValues.includes(item)));
+    setExpandedCategoryKey(null);
+    setShowAllSubcategories(false);
+    startTransition(() => {
+      setSelectedCategories((current) => current.filter((item) => !categorySelectionValues.includes(item)));
+    });
+  }
+
+  function clearExpandedSubcategories() {
+    if (!expandedPrimaryCategory) {
+      return;
+    }
+
+    const subcategoryValues = new Set(expandedPrimaryCategory.subcategories.map((subcategory) => subcategory.value));
+    setSelectedCategories((current) => current.filter((item) => !subcategoryValues.has(item)));
   }
 
   function clearIdealForSelections() {
@@ -763,9 +999,42 @@ export function FiltersSheet({
     setTime(`${cleaned.slice(0, 2)}:${cleaned.slice(2, 4)}`);
   }
 
+  function applyCurrentTimeSelection() {
+    const now = new Date();
+    const rawHours = now.getHours();
+    const minutes = now.getMinutes();
+    const periodValue: ExplorePeriod = rawHours >= 12 ? 'PM' : 'AM';
+    const hours12 = rawHours % 12 || 12;
+    const formattedTime = `${hours12}:${String(minutes).padStart(2, '0')}`;
+
+    setOpenNowOnly(false);
+    setTime(formattedTime);
+    setPeriod(periodValue);
+    setShowAdvancedWhen(true);
+  }
+
   function applyDistancePreset(nextDistance: number) {
     setDistance((current) => (current === nextDistance ? DEFAULT_FILTERS.distance : nextDistance));
+    setShowAdvancedDistance(false);
   }
+
+  function setDistanceFromSliderPosition(positionX: number) {
+    const trackWidth = distanceSliderTrackWidthRef.current;
+    if (trackWidth <= 0) {
+      return;
+    }
+
+    const clampedPosition = clamp(positionX, 0, trackWidth);
+    const ratio = clampedPosition / trackWidth;
+    const nextDistance = Math.round(ratio * 50);
+    setDistance(nextDistance);
+  }
+
+  function handleDistanceSliderLayout(event: LayoutChangeEvent) {
+    distanceSliderTrackWidthRef.current = event.nativeEvent.layout.width;
+  }
+
+  const distanceSliderRatio = distance / 50;
 
   function applyBudgetPreset(min: number, max: number) {
     const isActive = minBudget === min && maxBudget === max;
@@ -922,7 +1191,7 @@ export function FiltersSheet({
           </View>
 
           <View style={styles.header}>
-            <Text style={styles.headerTitle}>Filters</Text>
+            <Text style={styles.headerTitle}>Filtros</Text>
             <AppIconButton
               name="close"
               onPress={() => closeSheet()}
@@ -968,18 +1237,18 @@ export function FiltersSheet({
 
           <Section
             title="Categoría"
-            actionLabel={selectedCategoryValues.length > 0 ? 'Quitar' : undefined}
-            onActionPress={selectedCategoryValues.length > 0 ? clearCategorySelections : undefined}
+            actionLabel={hasCategorySelection ? 'Quitar' : undefined}
+            onActionPress={hasCategorySelection ? clearCategorySelections : undefined}
             onLayout={(event) => handleDynamicSectionLayout('category', event)}
           >
             <View style={styles.categoryRow}>
               {categoryOptions.map((option) => {
-                const active = selectedCategoryValues.includes(option.value);
+                const active = expandedCategoryKey === option.key;
                 return (
                   <Pressable
-                    key={option.value}
+                    key={option.key}
                     style={[styles.categoryPill, active && styles.categoryPillActive]}
-                    onPress={() => toggleCategory(option.value)}
+                    onPress={() => toggleCategory(option.key)}
                   >
                     <Image source={option.image} style={styles.categoryPillImage} resizeMode="contain" />
                     <Text style={[styles.categoryPillText, active && styles.categoryPillTextActive]}>
@@ -989,6 +1258,48 @@ export function FiltersSheet({
                 );
               })}
             </View>
+            {expandedPrimaryCategory ? (
+              <View style={styles.subcategoryBlock}>
+                <View style={styles.sectionHeaderRow}>
+                  <Text style={styles.subcategoryLabel}>Subcategorías</Text>
+                  {hasExpandedSubcategorySelection ? (
+                    <Pressable onPress={clearExpandedSubcategories} hitSlop={8}>
+                      <Text style={styles.sectionActionText}>Quitar</Text>
+                    </Pressable>
+                  ) : null}
+                </View>
+                <View style={styles.subcategoryRow}>
+                  {visibleSubcategories.map((subcategory) => {
+                    const active = selectedCategories.includes(subcategory.value);
+                    return (
+                      <Pressable
+                        key={subcategory.value}
+                        style={[styles.subcategoryPill, active && styles.subcategoryPillActive]}
+                        onPress={() => toggleSubcategory(subcategory.value)}
+                      >
+                        <Text style={[styles.subcategoryPillText, active && styles.subcategoryPillTextActive]}>
+                          {subcategory.label}
+                        </Text>
+                      </Pressable>
+                    );
+                  })}
+                </View>
+                {expandedPrimaryCategory.subcategories.length > 10 ? (
+                  <Pressable
+                    onPress={() => setShowAllSubcategories((current) => !current)}
+                    hitSlop={8}
+                    style={styles.inlineChevronAction}
+                  >
+                    <Text style={styles.linkButtonText}>{showAllSubcategories ? 'Ver menos' : 'Ver más'}</Text>
+                    <Ionicons
+                      name={showAllSubcategories ? 'chevron-up' : 'chevron-down'}
+                      size={14}
+                      color={filtersUi.accent}
+                    />
+                  </Pressable>
+                ) : null}
+              </View>
+            ) : null}
           </Section>
 
           <Divider />
@@ -1025,7 +1336,7 @@ export function FiltersSheet({
                   })}
                 </View>
                 <Pressable onPress={() => setShowAdvancedWhen(true)}>
-                  <Text style={styles.linkButtonText}>Refinar búsqueda</Text>
+                  <Text style={styles.linkButtonText}>Búsqueda avanzada</Text>
                 </Pressable>
               </>
             ) : (
@@ -1104,6 +1415,9 @@ export function FiltersSheet({
                       );
                     })}
                   </View>
+                  <Pressable style={styles.timeNowButton} onPress={applyCurrentTimeSelection}>
+                    <Text style={styles.timeNowButtonText}>Hora actual</Text>
+                  </Pressable>
                 </View>
                 <Pressable onPress={() => setShowAdvancedWhen(false)}>
                   <Text style={styles.linkButtonText}>Volver a sugeridos</Text>
@@ -1120,22 +1434,70 @@ export function FiltersSheet({
             onActionPress={distance !== DEFAULT_FILTERS.distance ? () => setDistance(DEFAULT_FILTERS.distance) : undefined}
             onLayout={(event) => handleDynamicSectionLayout('distance', event)}
           >
-            <View style={styles.presetGrid}>
-              {distancePresetOptions.map((option) => {
-                const active = selectedDistancePreset === option.value;
-                return (
-                  <Pressable
-                    key={option.label}
-                    style={[styles.filterChip, active && styles.filterChipActive]}
-                    onPress={() => applyDistancePreset(option.value)}
-                  >
-                    <Text style={[styles.filterChipText, active && styles.filterChipTextActive]}>
-                      {option.label}
-                    </Text>
+            {!showAdvancedDistance ? (
+              <>
+                <View style={styles.presetGrid}>
+                  {distancePresetOptions.map((option) => {
+                    const active = selectedDistancePreset === option.value;
+                    return (
+                      <Pressable
+                        key={option.label}
+                        style={[styles.filterChip, active && styles.filterChipActive]}
+                        onPress={() => applyDistancePreset(option.value)}
+                      >
+                        <Text style={[styles.filterChipText, active && styles.filterChipTextActive]}>
+                          {option.label}
+                        </Text>
+                      </Pressable>
+                    );
+                  })}
+                </View>
+              <Pressable onPress={() => setShowAdvancedDistance(true)} style={styles.inlineChevronAction}>
+                <Text style={styles.linkButtonText}>Búsqueda avanzada</Text>
+              </Pressable>
+              </>
+            ) : (
+              <View style={styles.distanceAdvancedWrap}>
+                <View style={styles.metricRow}>
+                  <Text style={styles.metricValue}>{distance} km</Text>
+                  <Pressable onPress={() => setShowAdvancedDistance(false)} hitSlop={8}>
+                    <Text style={styles.linkButtonText}>Volver a sugeridos</Text>
                   </Pressable>
-                );
-              })}
-            </View>
+                </View>
+                <Text style={styles.metricHint}>Ajusta la distancia exacta en pasos de 1 km</Text>
+                <View
+                  style={styles.distanceSliderWrap}
+                  onLayout={handleDistanceSliderLayout}
+                  onStartShouldSetResponder={() => true}
+                  onMoveShouldSetResponder={() => true}
+                  onResponderGrant={(event) => {
+                    setDistanceFromSliderPosition(event.nativeEvent.locationX);
+                  }}
+                  onResponderMove={(event) => {
+                    setDistanceFromSliderPosition(event.nativeEvent.locationX);
+                  }}
+                >
+                  <View style={styles.sliderTrack}>
+                    <View style={[styles.sliderFill, { width: `${distanceSliderRatio * 100}%` }]} />
+                  </View>
+                  <View
+                    pointerEvents="none"
+                    style={[
+                      styles.sliderThumbTouch,
+                      {
+                        left: `${distanceSliderRatio * 100}%`,
+                      },
+                    ]}
+                  >
+                    <View style={styles.sliderThumb} />
+                  </View>
+                </View>
+                <View style={styles.distanceSliderLabels}>
+                  <Text style={styles.distanceSliderLabel}>0 km</Text>
+                  <Text style={styles.distanceSliderLabel}>50 km</Text>
+                </View>
+              </View>
+            )}
             {locationError ? (
               <Pressable onPress={requestLocation}>
                 <Text style={styles.locationText}>Activa ubicación para usar distancia real</Text>
@@ -1879,6 +2241,41 @@ const styles = StyleSheet.create({
   categoryPillTextActive: {
     color: chipTextActiveColor,
   },
+  subcategoryBlock: {
+    marginTop: 16,
+    gap: 10,
+  },
+  subcategoryLabel: {
+    fontSize: 12,
+    fontWeight: '700',
+    letterSpacing: 0.4,
+    textTransform: 'uppercase',
+    color: filtersUi.textTertiary,
+  },
+  subcategoryRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
+  },
+  subcategoryPill: {
+    minHeight: 38,
+    borderRadius: 999,
+    backgroundColor: filtersUi.surfaceMuted,
+    paddingHorizontal: 13,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  subcategoryPillActive: {
+    backgroundColor: filtersUi.accentSoft,
+  },
+  subcategoryPillText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: chipTextDefaultColor,
+  },
+  subcategoryPillTextActive: {
+    color: chipTextActiveColor,
+  },
   sortRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -1945,22 +2342,23 @@ const styles = StyleSheet.create({
     color: filtersUi.textTertiary,
   },
   sliderTrack: {
-    marginTop: 2,
-    height: 5,
+    height: 6,
     borderRadius: 999,
-    backgroundColor: '#ddddE3',
+    backgroundColor: 'rgba(239,56,87,0.16)',
     justifyContent: 'center',
     overflow: 'visible',
   },
   sliderFill: {
     position: 'absolute',
-    height: 5,
+    height: 6,
     borderRadius: 999,
-    backgroundColor: filtersUi.text,
+    backgroundColor: filtersUi.accent,
   },
   sliderThumbTouch: {
     position: 'absolute',
     marginLeft: -20,
+    top: '50%',
+    marginTop: -20,
     width: 40,
     height: 40,
     alignItems: 'center',
@@ -1970,13 +2368,12 @@ const styles = StyleSheet.create({
     width: 18,
     height: 18,
     borderRadius: 9,
-    backgroundColor: filtersUi.surface,
-    borderWidth: 2,
-    borderColor: filtersUi.text,
-    shadowColor: '#000000',
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 3 },
+    backgroundColor: filtersUi.accent,
+    borderWidth: 0,
+    shadowColor: '#EF3857',
+    shadowOpacity: 0.2,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 4 },
     elevation: 4,
   },
   sliderThumbSecondary: {
@@ -1991,6 +2388,25 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     shadowOffset: { width: 0, height: 3 },
     elevation: 4,
+  },
+  distanceAdvancedWrap: {
+    marginTop: 10,
+    gap: 10,
+  },
+  distanceSliderWrap: {
+    position: 'relative',
+    justifyContent: 'center',
+    minHeight: 40,
+  },
+  distanceSliderLabels: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  distanceSliderLabel: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: filtersUi.textTertiary,
   },
   locationText: {
     fontSize: 13,
@@ -2041,12 +2457,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'nowrap',
     gap: 8,
+    width: '100%',
   },
   whenDayChip: {
+    flex: 1,
     minHeight: 38,
     borderRadius: 14,
     backgroundColor: filtersUi.surface,
-    paddingHorizontal: 12,
     paddingVertical: 7,
     justifyContent: 'center',
     alignItems: 'center',
@@ -2225,9 +2642,9 @@ const styles = StyleSheet.create({
     color: filtersUi.text,
   },
   periodToggle: {
-    flex: 1.04,
     flexDirection: 'row',
     alignItems: 'center',
+    alignSelf: 'flex-start',
     borderRadius: 16,
     backgroundColor: filtersUi.surface,
     padding: 4,
@@ -2249,6 +2666,19 @@ const styles = StyleSheet.create({
   },
   periodSegmentTextActive: {
     color: chipTextActiveColor,
+  },
+  timeNowButton: {
+    minHeight: 36,
+    borderRadius: 14,
+    paddingHorizontal: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(239,56,87,0.08)',
+  },
+  timeNowButtonText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: filtersUi.accent,
   },
   whenDisabled: {
     opacity: 0.46,

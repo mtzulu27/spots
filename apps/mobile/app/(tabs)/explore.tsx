@@ -58,6 +58,7 @@ import {
   getBranchLocationLabel,
   getSpotFeedSubtitle,
   getSpotsByTypeFromList,
+  normalizeSpotCategory,
   type Spot,
 } from '@/lib/mock-spots';
 import { formatLikesCount, useLikesStore } from '@/lib/likes-store';
@@ -73,24 +74,26 @@ import {
 } from '@/lib/web-push';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-const exploreFoodIcon = require('../../assets/explore_food_icon.png');
+const exploreFoodIcon = require('../../assets/explore_food_chef_hat_icon.png');
 const exploreCinemaIcon = require('../../assets/explore_cinema_icon.png');
 const exploreArtIcon = require('../../assets/explore_art_icon.png');
-const exploreNightlifeIcon = require('../../assets/explore_nightlife_icon.png');
-const exploreSportsIcon = require('../../assets/explore_sports_icon.png');
+const exploreDrinksIcon = require('../../assets/explore_nightlife_icon.png');
+const exploreNightlifeIcon = require('../../assets/explore_nightlife_disco_ball_icon.png');
+const exploreSportsIcon = require('../../assets/explore_wellness_dumbbell_icon.png');
 const exploreFamilyIcon = require('../../assets/explore_family_icon.png');
 const exploreEventsIcon = require('../../assets/explore_events_icon.png');
 const exploreNatureIcon = require('../../assets/explore_nature_icon.png');
+const explorePetIcon = require('../../assets/explore_pet_icon.png');
 
 function getCategoryImage(category: Spot['category']) {
-  switch (category) {
+  switch (normalizeSpotCategory(category)) {
     case 'Arte y cultura':
       return exploreArtIcon;
     case 'Bares y noche':
       return exploreNightlifeIcon;
     case 'Cine':
       return exploreCinemaIcon;
-    case 'Restaurantes y cafés':
+    case 'Comida':
     case 'Restaurantes':
       return exploreFoodIcon;
     case 'Eventos':
@@ -108,14 +111,14 @@ function getCategoryImage(category: Spot['category']) {
 }
 
 function getCategoryIcon(category: Spot['category']): keyof typeof Ionicons.glyphMap {
-  switch (category) {
+  switch (normalizeSpotCategory(category)) {
     case 'Arte y cultura':
       return 'color-palette-outline';
     case 'Bares y noche':
       return 'wine-outline';
     case 'Cine':
       return 'film-outline';
-    case 'Restaurantes y cafés':
+    case 'Comida':
     case 'Restaurantes':
       return 'restaurant-outline';
     case 'Eventos':
@@ -134,24 +137,29 @@ function getCategoryIcon(category: Spot['category']): keyof typeof Ionicons.glyp
 }
 
 function getCategoryAccent(category: Spot['category']) {
-  switch (category) {
+  switch (normalizeSpotCategory(category)) {
     case 'Arte y cultura':
       return '#6B1D4A';
+    case 'Tomar algo':
+      return '#FF7A00';
+    case 'Vida nocturna':
     case 'Bares y noche':
       return '#FF2D55';
     case 'Cine':
       return '#1B1464';
-    case 'Restaurantes y cafés':
+    case 'Comida':
     case 'Restaurantes':
       return '#F5C400';
     case 'Eventos':
       return '#FF6B00';
+    case 'Bienestar':
     case 'Deporte y bienestar':
       return '#00C48C';
     case 'Familiar':
       return '#FFB6D9';
     case 'Pet friendly':
       return '#00C48C';
+    case 'Al aire libre':
     case 'Naturaleza y aire libre':
       return '#C8E600';
     default:
@@ -210,11 +218,12 @@ const categoryOptions: Array<{
   image?: any;
 }> = [
   { label: 'Arte y cultura', value: 'Arte y cultura', icon: 'color-palette-outline', image: exploreArtIcon },
-  { label: 'Bares y noche', value: 'Bares y noche', icon: 'wine-outline', image: exploreNightlifeIcon },
-  { label: 'Restaurantes y cafés', value: 'Restaurantes y cafés', icon: 'restaurant-outline', image: exploreFoodIcon },
-  { label: 'Deporte', value: 'Deporte y bienestar', icon: 'barbell-outline', image: exploreSportsIcon },
+  { label: 'Tomar algo', value: 'Tomar algo', icon: 'wine-outline', image: exploreDrinksIcon },
+  { label: 'Vida nocturna', value: 'Vida nocturna', icon: 'disc-outline', image: exploreNightlifeIcon },
+  { label: 'Comida', value: 'Comida', icon: 'restaurant-outline', image: exploreFoodIcon },
+  { label: 'Bienestar', value: 'Bienestar', icon: 'barbell-outline', image: exploreSportsIcon },
   { label: 'Familiar', value: 'Familiar', icon: 'people-outline', image: exploreFamilyIcon },
-  { label: 'Naturaleza', value: 'Naturaleza y aire libre', icon: 'leaf-outline', image: exploreNatureIcon },
+  { label: 'Al aire libre', value: 'Al aire libre', icon: 'leaf-outline', image: exploreNatureIcon },
 ];
 
 function getPriceLabel(spot: Spot) {
@@ -291,6 +300,7 @@ export default function ExploreScreen() {
   const [feedbackVisible, setFeedbackVisible] = useState(false);
   const [feedbackDraft, setFeedbackDraft] = useState('');
   const [feedbackSubmitting, setFeedbackSubmitting] = useState(false);
+  const [optimisticQuickCategory, setOptimisticQuickCategory] = useState<string | null>(null);
   const [layoutMode, setLayoutMode] = useState<ExploreLayoutMode>('editorial');
   const [generalRenderLimit, setGeneralRenderLimit] = useState(debugGeneralRenderLimit);
   const [topBarTotalHeight, setTopBarTotalHeight] = useState(220);
@@ -328,6 +338,7 @@ export default function ExploreScreen() {
   const lastScrollY = useRef(0);
   const scrollDirectionRef = useRef<'up' | 'down' | null>(null);
   const scrollDistanceRef = useRef(0);
+  const feedScrollRef = useRef<ScrollView | null>(null);
   const bannerTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const webPushToastTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const suggestModalCloseTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -338,6 +349,10 @@ export default function ExploreScreen() {
   const querySyncTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const deferredQuery = useDeferredValue(draftQuery);
   const iosResultsAnimationTrigger = `${activeTab}|${deferredQuery}|${serializeFilters(filters)}`;
+
+  useEffect(() => {
+    setOptimisticQuickCategory(filters.interests[0] ?? null);
+  }, [filters.interests.join('|')]);
 
   useFocusEffect(
     useCallback(() => {
@@ -784,14 +799,6 @@ export default function ExploreScreen() {
             onClearQuery={() => {
               setIosFeedAnimationNonce((current) => current + 1);
               setDraftQuery('');
-              router.replace({
-                pathname: '/(tabs)/explore',
-                params: {
-                  ...serializeFilters(filters),
-                  tab: activeTab,
-                  query: '',
-                },
-              });
             }}
             onClose={() => setFiltersOpen(false)}
           />
@@ -1497,6 +1504,7 @@ export default function ExploreScreen() {
   }, []);
 
   function changeTab(nextTab: ExploreTab) {
+    resetFeedViewportToTop();
     setDraftQuery('');
     router.replace({
       pathname: '/(tabs)/explore',
@@ -1512,7 +1520,16 @@ export default function ExploreScreen() {
     setDraftQuery(nextQuery);
   }
 
+  function resetFeedViewportToTop() {
+    lastScrollY.current = 0;
+    scrollDirectionRef.current = null;
+    scrollDistanceRef.current = 0;
+    animateHeader(true, { force: true });
+    feedScrollRef.current?.scrollTo({ y: 0, animated: false });
+  }
+
   function applyFilters(nextFilters: typeof filters) {
+    resetFeedViewportToTop();
     router.replace({
       pathname: '/(tabs)/explore',
       params: {
@@ -1525,14 +1542,17 @@ export default function ExploreScreen() {
 
   function toggleQuickCategory(value: string) {
     const nextInterests = filters.interests.includes(value) ? [] : [value];
-
-    applyFilters({
-      ...filters,
-      interests: nextInterests,
+    setOptimisticQuickCategory(nextInterests[0] ?? null);
+    startTransition(() => {
+      applyFilters({
+        ...filters,
+        interests: nextInterests,
+      });
     });
   }
 
   function clearAppliedFilters() {
+    resetFeedViewportToTop();
     setDraftQuery('');
     router.replace({
       pathname: '/(tabs)/explore',
@@ -1545,6 +1565,7 @@ export default function ExploreScreen() {
   }
 
   function clearQueryOnly() {
+    resetFeedViewportToTop();
     setDraftQuery('');
     router.replace({
       pathname: '/(tabs)/explore',
@@ -1568,7 +1589,9 @@ export default function ExploreScreen() {
         style={options?.marginTop != null ? { marginTop: options.marginTop } : undefined}
       >
         {categoryOptions.map((option) => {
-          const active = filters.interests.includes(option.value);
+          const active = optimisticQuickCategory !== null
+            ? optimisticQuickCategory === option.value
+            : filters.interests.includes(option.value);
           const accent = getCategoryAccent(option.value as Spot['category']);
           const progress = quickCategoryProgress.get(option.value) ?? new Animated.Value(0);
 
@@ -2450,6 +2473,7 @@ export default function ExploreScreen() {
       ) : null}
 
       <Animated.ScrollView
+        ref={feedScrollRef}
         style={[
           styles.feed,
           {
@@ -2890,12 +2914,12 @@ export default function ExploreScreen() {
       {renderFeedbackSheet()}
 
       {filtersOpen ? (
-        <FiltersSheet
-          activeTab={activeTab}
-          initialFilters={filters}
-          query={deferredQuery}
-          onApply={applyFilters}
-          onClearQuery={clearQueryOnly}
+          <FiltersSheet
+            activeTab={activeTab}
+            initialFilters={filters}
+            query={deferredQuery}
+            onApply={applyFilters}
+          onClearQuery={() => setDraftQuery('')}
           onClose={() => setFiltersOpen(false)}
         />
       ) : null}
@@ -3424,11 +3448,11 @@ const styles = StyleSheet.create({
     backgroundColor: spotsUi.surfaceElevated,
   },
   layoutStage: {
-    gap: 24,
+    gap: 8,
   },
   card: {
     gap: 12,
-    marginBottom: 28,
+    marginBottom: 18,
   },
   cardImage: {
     height: 188,

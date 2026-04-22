@@ -47,6 +47,14 @@ export type Spot = {
 
 const emptySpots: Spot[] = []
 
+export function normalizeSpotCategory(category: string) {
+  if (category === 'Restaurantes y cafés') {
+    return 'Comida'
+  }
+
+  return category
+}
+
 function toFiniteBudget(value: number | undefined, fallback: number | undefined) {
   if (Number.isFinite(value)) {
     return value as number

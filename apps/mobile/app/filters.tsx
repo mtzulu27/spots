@@ -53,7 +53,7 @@ const categoryOptions: Array<{
 }> = [
   { label: 'Arte y cultura', value: 'Arte y cultura', icon: 'color-palette-outline' },
   { label: 'Bares y noche', value: 'Bares y noche', icon: 'wine-outline' },
-  { label: 'Restaurantes y cafés', value: 'Restaurantes y cafés', icon: 'restaurant-outline' },
+  { label: 'Comida', value: 'Comida', icon: 'restaurant-outline' },
   { label: 'Deporte', value: 'Deporte y bienestar', icon: 'barbell-outline' },
   { label: 'Familiar', value: 'Familiar', icon: 'people-outline' },
   { label: 'Naturaleza', value: 'Naturaleza y aire libre', icon: 'leaf-outline' },
