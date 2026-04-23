@@ -2192,7 +2192,7 @@ const styles = StyleSheet.create({
     marginTop: 24,
   },
   quickInfoSectionBlock: {
-    marginTop: 8,
+    marginTop: 12,
   },
   quickActionsSectionBlock: {
     marginTop: 14,

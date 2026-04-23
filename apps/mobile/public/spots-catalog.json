@@ -412,7 +412,12 @@
         "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/memorial/cover/memorial-cover-1-1776031952382.jpg",
         "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/memorial/gallery/memorial-gallery-2-1776033104781.jpg"
       ],
-      "category": "Comida",
+      "category": "Tomar algo",
+      "subcategories": [
+        "Cerveza",
+        "Cerveza artesanal",
+        "Tardear"
+      ],
       "city": "Cali",
       "likes": "0",
       "tags": [

@@ -131,37 +131,88 @@ const structuredInterestGroups = [
   {
     primary: 'Arte y cultura',
     aliases: ['Arte y cultura'],
-    subcategories: ['Museos', 'Teatro', 'Cine alternativo', 'Pintar', 'Cerámica', 'Manualidades', 'Tertulias', 'Monumentos', 'Estatuas'],
+    subcategories: ['Museos', 'Galerías', 'Cine alternativo', 'Tertulias', 'Monumentos', 'Teatro', 'Standup', 'Comediantes', 'Danza', 'Poesía'],
   },
   {
     primary: 'Tomar algo',
     aliases: ['Tomar algo', 'Bares y noche'],
-    subcategories: ['Cocteles', 'Vino', 'Cerveza', 'Rooftop', 'Terraza', 'Tardear', 'After office'],
+    subcategories: ['Cerveza', 'Cocktails', 'Vino', 'Café', 'Tardear', 'Cerveza artesanal', 'Rooftop', 'Pub', 'Terraza', 'Speakeasy', 'After office'],
   },
   {
     primary: 'Vida nocturna',
     aliases: ['Vida nocturna', 'Bares y noche'],
-    subcategories: ['Rumba', 'Discotecas', 'Bailar', 'DJ set', 'Salsa', 'Reggaetón'],
+    subcategories: ['Salsa', 'Reggaetón', 'Techno', 'Disco', 'Dancehall', 'Crossover', 'Karaoke', 'Shows en vivo'],
   },
   {
     primary: 'Comida',
     aliases: ['Comida', 'Restaurantes y cafés'],
-    subcategories: ['Desayuno', 'Brunch', 'Almuerzo', 'Cena', 'Café', 'Postres', 'Nikkei', 'Pizza', 'Pasta', 'Hamburguesas', 'Sushi', 'Rooftop'],
+    subcategories: [
+      'Desayuno',
+      'Brunch',
+      'Almuerzo',
+      'Tardear',
+      'Cena',
+      'Postres',
+      'Café',
+      'Panadería',
+      'Pastelería',
+      'Waffles',
+      'Pancakes',
+      'Bowls',
+      'Sandwiches',
+      'Huevos',
+      'Tostadas',
+      'Açaí',
+      'Fruta',
+      'Jugos',
+      'Saludable',
+      'Vegana',
+      'Vegetariana',
+      'Colombiana',
+      'Americana',
+      'Mediterránea',
+      'Mimosas',
+      'Italiana',
+      'Mexicana',
+      'Japonesa',
+      'Nikkei',
+      'Asiática',
+      'Fusión',
+      'Pizza',
+      'Pasta',
+      'Sushi',
+      'Tacos',
+      'Ramen',
+      'Poke',
+      'Pitas',
+      'Hamburguesas',
+      'Pollo frito',
+      'Parrilla',
+      'Mariscos',
+      'Tapas',
+      'Helado',
+      'Galletas',
+      'Tortas',
+      'Cheesecake',
+      'Brownies',
+      'Donas',
+      'Chocolatería',
+    ],
   },
   {
     primary: 'Bienestar',
     aliases: ['Bienestar', 'Deporte y bienestar'],
-    subcategories: ['Yoga', 'Pilates', 'Spa', 'Masajes', 'Running', 'Hiking', 'Escalada', 'Gym'],
+    subcategories: ['Yoga', 'Pilates', 'Spa', 'Masajes', 'Gym', 'Running', 'Hiking', 'Meditación'],
   },
   {
     primary: 'Familiar',
     aliases: ['Familiar'],
-    subcategories: ['Pintar', 'Cerámica', 'Juegos infantiles', 'Manualidades', 'Parques infantiles', 'Plan familiar'],
+    subcategories: ['Parques infantiles', 'Juegos', 'Manualidades', 'Pintar', 'Cerámica', 'Plan familiar', 'Animales', 'Diversión'],
   },
   {
     primary: 'Al aire libre',
     aliases: ['Al aire libre', 'Naturaleza y aire libre'],
-    subcategories: ['Miradores', 'Caminatas', 'Parques', 'Montañas', 'Hiking', 'Running'],
+    subcategories: ['Parques', 'Miradores', 'Caminatas', 'Montañas', 'Running', 'Hiking', 'Picnic', 'Camping'],
   },
 ] as const;
 
@@ -922,15 +973,19 @@ function getInterestMatchTerms(interest: string) {
   switch (normalizedInterest) {
     case 'comida':
     case 'restaurantes y cafes':
-      return ['comida', 'restaurantes y cafes', 'restaurantes', 'cafe', 'desayuno', 'brunch'];
+      return ['comida', 'restaurantes y cafes', 'restaurantes', 'cafe', 'desayuno', 'brunch', 'almuerzo', 'cena', 'postres'];
+    case 'tardear':
+      return ['tardear', 'cafe', 'postres', 'panaderia', 'waffles', 'pancakes'];
     case 'tomar algo':
-      return ['tomar algo', 'bares y noche', 'bar', 'cocteles', 'vino', 'cerveza', 'rooftop', 'terraza'];
+      return ['tomar algo', 'bares y noche', 'bar', 'cocteles', 'cocktails', 'vino', 'cerveza', 'rooftop', 'terraza', 'pub', 'speakeasy', 'cafe', 'after office', 'tardear'];
+    case 'cocktails':
+      return ['cocktails', 'cocteles', 'bar', 'trago', 'tomar algo'];
     case 'vida nocturna':
-      return ['vida nocturna', 'bares y noche', 'rumba', 'bailar', 'discotecas', 'dj set', 'salsa', 'reggaeton'];
+      return ['vida nocturna', 'bares y noche', 'salsa', 'reggaeton', 'techno', 'disco', 'dancehall', 'crossover', 'karaoke', 'shows en vivo'];
     case 'bienestar':
-      return ['bienestar', 'deporte y bienestar', 'yoga', 'pilates', 'spa', 'masajes', 'running', 'hiking', 'escalada', 'gym'];
+      return ['bienestar', 'deporte y bienestar', 'yoga', 'pilates', 'spa', 'masajes', 'gym', 'running', 'hiking', 'meditacion'];
     case 'al aire libre':
-      return ['al aire libre', 'naturaleza y aire libre', 'naturaleza', 'miradores', 'caminatas', 'parques', 'montanas', 'hiking', 'running'];
+      return ['al aire libre', 'naturaleza y aire libre', 'naturaleza', 'miradores', 'caminatas', 'parques', 'montanas', 'hiking', 'running', 'picnic', 'camping'];
     default:
       return [normalizedInterest];
   }
@@ -980,7 +1035,7 @@ function getSpotSearchAliases(spot: Spot) {
     case 'Comida':
     case 'Restaurantes y cafés':
     case 'Restaurantes':
-      ['comer', 'comida', 'almuerzo', 'cena', 'restaurante', 'restaurantes', 'algo rico'].forEach((value) =>
+      ['comer', 'comida', 'almuerzo', 'cena', 'desayuno', 'brunch', 'tardear', 'postres', 'restaurante', 'restaurantes', 'algo rico'].forEach((value) =>
         aliases.add(value),
       );
       break;

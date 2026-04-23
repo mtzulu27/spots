@@ -96,7 +96,164 @@ type CategoryOption = {
   image: any;
   filterTokens: string[];
   subcategories: CategorySuboption[];
+  momentOptions?: CategorySuboption[];
+  relatedOptionsByMoment?: Record<string, CategorySuboption[]>;
 };
+
+const foodMomentOptions: CategorySuboption[] = [
+  { label: 'Desayuno', value: 'Desayuno' },
+  { label: 'Brunch', value: 'Brunch' },
+  { label: 'Almuerzo', value: 'Almuerzo' },
+  { label: 'Tardear', value: 'Tardear' },
+  { label: 'Cena', value: 'Cena' },
+  { label: 'Postres', value: 'Postres' },
+];
+
+const foodRelatedOptionsByMoment: Record<string, CategorySuboption[]> = {
+  Desayuno: [
+    { label: 'Café', value: 'Café' },
+    { label: 'Panadería', value: 'Panadería' },
+    { label: 'Pastelería', value: 'Pastelería' },
+    { label: 'Waffles', value: 'Waffles' },
+    { label: 'Pancakes', value: 'Pancakes' },
+    { label: 'Bowls', value: 'Bowls' },
+    { label: 'Sandwiches', value: 'Sandwiches' },
+    { label: 'Huevos', value: 'Huevos' },
+    { label: 'Tostadas', value: 'Tostadas' },
+    { label: 'Açaí', value: 'Açaí' },
+    { label: 'Fruta', value: 'Fruta' },
+    { label: 'Jugos', value: 'Jugos' },
+    { label: 'Saludable', value: 'Saludable' },
+    { label: 'Vegana', value: 'Vegana' },
+    { label: 'Vegetariana', value: 'Vegetariana' },
+    { label: 'Colombiana', value: 'Colombiana' },
+    { label: 'Americana', value: 'Americana' },
+    { label: 'Mediterránea', value: 'Mediterránea' },
+  ],
+  Brunch: [
+    { label: 'Café', value: 'Café' },
+    { label: 'Panadería', value: 'Panadería' },
+    { label: 'Pastelería', value: 'Pastelería' },
+    { label: 'Waffles', value: 'Waffles' },
+    { label: 'Pancakes', value: 'Pancakes' },
+    { label: 'Bowls', value: 'Bowls' },
+    { label: 'Sandwiches', value: 'Sandwiches' },
+    { label: 'Huevos', value: 'Huevos' },
+    { label: 'Tostadas', value: 'Tostadas' },
+    { label: 'Mimosas', value: 'Mimosas' },
+    { label: 'Açaí', value: 'Açaí' },
+    { label: 'Saludable', value: 'Saludable' },
+    { label: 'Vegana', value: 'Vegana' },
+    { label: 'Vegetariana', value: 'Vegetariana' },
+    { label: 'Americana', value: 'Americana' },
+    { label: 'Mediterránea', value: 'Mediterránea' },
+    { label: 'Fusión', value: 'Fusión' },
+  ],
+  Almuerzo: [
+    { label: 'Italiana', value: 'Italiana' },
+    { label: 'Mexicana', value: 'Mexicana' },
+    { label: 'Japonesa', value: 'Japonesa' },
+    { label: 'Nikkei', value: 'Nikkei' },
+    { label: 'Mediterránea', value: 'Mediterránea' },
+    { label: 'Colombiana', value: 'Colombiana' },
+    { label: 'Americana', value: 'Americana' },
+    { label: 'Asiática', value: 'Asiática' },
+    { label: 'Fusión', value: 'Fusión' },
+    { label: 'Pizza', value: 'Pizza' },
+    { label: 'Pasta', value: 'Pasta' },
+    { label: 'Sushi', value: 'Sushi' },
+    { label: 'Tacos', value: 'Tacos' },
+    { label: 'Ramen', value: 'Ramen' },
+    { label: 'Poke', value: 'Poke' },
+    { label: 'Pitas', value: 'Pitas' },
+    { label: 'Bowls', value: 'Bowls' },
+    { label: 'Hamburguesas', value: 'Hamburguesas' },
+    { label: 'Pollo frito', value: 'Pollo frito' },
+    { label: 'Sandwiches', value: 'Sandwiches' },
+    { label: 'Parrilla', value: 'Parrilla' },
+    { label: 'Mariscos', value: 'Mariscos' },
+    { label: 'Saludable', value: 'Saludable' },
+    { label: 'Vegana', value: 'Vegana' },
+    { label: 'Vegetariana', value: 'Vegetariana' },
+  ],
+  Tardear: [
+    { label: 'Café', value: 'Café' },
+    { label: 'Panadería', value: 'Panadería' },
+    { label: 'Pastelería', value: 'Pastelería' },
+    { label: 'Postres', value: 'Postres' },
+    { label: 'Helado', value: 'Helado' },
+    { label: 'Waffles', value: 'Waffles' },
+    { label: 'Pancakes', value: 'Pancakes' },
+    { label: 'Sandwiches', value: 'Sandwiches' },
+    { label: 'Pizza', value: 'Pizza' },
+    { label: 'Tapas', value: 'Tapas' },
+    { label: 'Bowls', value: 'Bowls' },
+    { label: 'Brunch', value: 'Brunch' },
+    { label: 'Saludable', value: 'Saludable' },
+    { label: 'Vegana', value: 'Vegana' },
+    { label: 'Vegetariana', value: 'Vegetariana' },
+    { label: 'Americana', value: 'Americana' },
+    { label: 'Mediterránea', value: 'Mediterránea' },
+    { label: 'Fusión', value: 'Fusión' },
+  ],
+  Cena: [
+    { label: 'Italiana', value: 'Italiana' },
+    { label: 'Mexicana', value: 'Mexicana' },
+    { label: 'Japonesa', value: 'Japonesa' },
+    { label: 'Nikkei', value: 'Nikkei' },
+    { label: 'Mediterránea', value: 'Mediterránea' },
+    { label: 'Colombiana', value: 'Colombiana' },
+    { label: 'Americana', value: 'Americana' },
+    { label: 'Asiática', value: 'Asiática' },
+    { label: 'Fusión', value: 'Fusión' },
+    { label: 'Pizza', value: 'Pizza' },
+    { label: 'Pasta', value: 'Pasta' },
+    { label: 'Sushi', value: 'Sushi' },
+    { label: 'Tacos', value: 'Tacos' },
+    { label: 'Ramen', value: 'Ramen' },
+    { label: 'Pitas', value: 'Pitas' },
+    { label: 'Hamburguesas', value: 'Hamburguesas' },
+    { label: 'Parrilla', value: 'Parrilla' },
+    { label: 'Mariscos', value: 'Mariscos' },
+    { label: 'Tapas', value: 'Tapas' },
+    { label: 'Vegana', value: 'Vegana' },
+    { label: 'Vegetariana', value: 'Vegetariana' },
+    { label: 'Saludable', value: 'Saludable' },
+  ],
+  Postres: [
+    { label: 'Postres', value: 'Postres' },
+    { label: 'Helado', value: 'Helado' },
+    { label: 'Pastelería', value: 'Pastelería' },
+    { label: 'Panadería', value: 'Panadería' },
+    { label: 'Café', value: 'Café' },
+    { label: 'Waffles', value: 'Waffles' },
+    { label: 'Pancakes', value: 'Pancakes' },
+    { label: 'Galletas', value: 'Galletas' },
+    { label: 'Tortas', value: 'Tortas' },
+    { label: 'Cheesecake', value: 'Cheesecake' },
+    { label: 'Brownies', value: 'Brownies' },
+    { label: 'Donas', value: 'Donas' },
+    { label: 'Chocolatería', value: 'Chocolatería' },
+    { label: 'Açaí', value: 'Açaí' },
+  ],
+};
+
+const alwaysExpandedSubcategoryCategoryKeys = new Set(['tomar-algo']);
+
+function getCategoryAllSuboptions(option: CategoryOption) {
+  const groupedOptions = option.momentOptions
+    ? [
+        ...option.momentOptions,
+        ...Object.values(option.relatedOptionsByMoment ?? {}).flat(),
+      ]
+    : [];
+
+  return Array.from(
+    new Map(
+      [...option.subcategories, ...groupedOptions].map((subcategory) => [subcategory.value, subcategory] as const),
+    ).values(),
+  );
+}
 
 const categoryOptions: CategoryOption[] = [
   {
@@ -107,14 +264,15 @@ const categoryOptions: CategoryOption[] = [
     filterTokens: ['Arte y cultura'],
     subcategories: [
       { label: 'Museos', value: 'Museos' },
-      { label: 'Teatro', value: 'Teatro' },
+      { label: 'Galerías', value: 'Galerías' },
       { label: 'Cine alternativo', value: 'Cine alternativo' },
-      { label: 'Pintar', value: 'Pintar' },
-      { label: 'Cerámica', value: 'Cerámica' },
-      { label: 'Manualidades', value: 'Manualidades' },
       { label: 'Tertulias', value: 'Tertulias' },
       { label: 'Monumentos', value: 'Monumentos' },
-      { label: 'Estatuas', value: 'Estatuas' },
+      { label: 'Teatro', value: 'Teatro' },
+      { label: 'Standup', value: 'Standup' },
+      { label: 'Comediantes', value: 'Comediantes' },
+      { label: 'Danza', value: 'Danza' },
+      { label: 'Poesía', value: 'Poesía' },
     ],
   },
   {
@@ -124,12 +282,16 @@ const categoryOptions: CategoryOption[] = [
     image: exploreDrinksIcon,
     filterTokens: ['Tomar algo', 'Bares y noche'],
     subcategories: [
-      { label: 'Cocteles', value: 'Cocteles' },
-      { label: 'Vino', value: 'Vino' },
       { label: 'Cerveza', value: 'Cerveza' },
-      { label: 'Rooftop', value: 'Rooftop' },
-      { label: 'Terraza', value: 'Terraza' },
+      { label: 'Cocktails', value: 'Cocktails' },
+      { label: 'Vino', value: 'Vino' },
+      { label: 'Café', value: 'Café' },
       { label: 'Tardear', value: 'Tardear' },
+      { label: 'Cerveza artesanal', value: 'Cerveza artesanal' },
+      { label: 'Rooftop', value: 'Rooftop' },
+      { label: 'Pub', value: 'Pub' },
+      { label: 'Terraza', value: 'Terraza' },
+      { label: 'Speakeasy', value: 'Speakeasy' },
       { label: 'After office', value: 'After office' },
     ],
   },
@@ -140,12 +302,14 @@ const categoryOptions: CategoryOption[] = [
     image: exploreNightlifeIcon,
     filterTokens: ['Vida nocturna', 'Bares y noche'],
     subcategories: [
-      { label: 'Rumba', value: 'Rumba' },
-      { label: 'Discotecas', value: 'Discotecas' },
-      { label: 'Bailar', value: 'Bailar' },
-      { label: 'DJ set', value: 'DJ set' },
       { label: 'Salsa', value: 'Salsa' },
       { label: 'Reggaetón', value: 'Reggaetón' },
+      { label: 'Techno', value: 'Techno' },
+      { label: 'Disco', value: 'Disco' },
+      { label: 'Dancehall', value: 'Dancehall' },
+      { label: 'Crossover', value: 'Crossover' },
+      { label: 'Karaoke', value: 'Karaoke' },
+      { label: 'Shows en vivo', value: 'Shows en vivo' },
     ],
   },
   {
@@ -154,42 +318,9 @@ const categoryOptions: CategoryOption[] = [
     legacyValue: 'Restaurantes y cafés',
     image: exploreFoodIcon,
     filterTokens: ['Comida', 'Restaurantes y cafés'],
-    subcategories: [
-      { label: 'Italiana', value: 'Italiana' },
-      { label: 'Mexicana', value: 'Mexicana' },
-      { label: 'Japonesa', value: 'Japonesa' },
-      { label: 'Nikkei', value: 'Nikkei' },
-      { label: 'Mediterránea', value: 'Mediterránea' },
-      { label: 'Colombiana', value: 'Colombiana' },
-      { label: 'Americana', value: 'Americana' },
-      { label: 'Asiática', value: 'Asiática' },
-      { label: 'Fusión', value: 'Fusión' },
-      { label: 'Saludable', value: 'Saludable' },
-      { label: 'Vegana', value: 'Vegana' },
-      { label: 'Vegetariana', value: 'Vegetariana' },
-      { label: 'Mariscos', value: 'Mariscos' },
-      { label: 'Parrilla', value: 'Parrilla' },
-      { label: 'Pizza', value: 'Pizza' },
-      { label: 'Pasta', value: 'Pasta' },
-      { label: 'Sushi', value: 'Sushi' },
-      { label: 'Hamburguesas', value: 'Hamburguesas' },
-      { label: 'Tacos', value: 'Tacos' },
-      { label: 'Ramen', value: 'Ramen' },
-      { label: 'Poke', value: 'Poke' },
-      { label: 'Pitas', value: 'Pitas' },
-      { label: 'Bowls', value: 'Bowls' },
-      { label: 'Pollo frito', value: 'Pollo frito' },
-      { label: 'Sandwiches', value: 'Sandwiches' },
-      { label: 'Panadería', value: 'Panadería' },
-      { label: 'Helado', value: 'Helado' },
-      { label: 'Postres', value: 'Postres' },
-      { label: 'Desayuno', value: 'Desayuno' },
-      { label: 'Brunch', value: 'Brunch' },
-      { label: 'Almuerzo', value: 'Almuerzo' },
-      { label: 'Cena', value: 'Cena' },
-      { label: 'Tardeo', value: 'Tardeo' },
-      { label: 'Café', value: 'Café' },
-    ],
+    subcategories: foodMomentOptions,
+    momentOptions: foodMomentOptions,
+    relatedOptionsByMoment: foodRelatedOptionsByMoment,
   },
   {
     key: 'bienestar',
@@ -202,10 +333,10 @@ const categoryOptions: CategoryOption[] = [
       { label: 'Pilates', value: 'Pilates' },
       { label: 'Spa', value: 'Spa' },
       { label: 'Masajes', value: 'Masajes' },
+      { label: 'Gym', value: 'Gym' },
       { label: 'Running', value: 'Running' },
       { label: 'Hiking', value: 'Hiking' },
-      { label: 'Escalada', value: 'Escalada' },
-      { label: 'Gym', value: 'Gym' },
+      { label: 'Meditación', value: 'Meditación' },
     ],
   },
   {
@@ -215,12 +346,14 @@ const categoryOptions: CategoryOption[] = [
     image: exploreFamilyIcon,
     filterTokens: ['Familiar'],
     subcategories: [
+      { label: 'Parques infantiles', value: 'Parques infantiles' },
+      { label: 'Juegos', value: 'Juegos' },
+      { label: 'Manualidades', value: 'Manualidades' },
       { label: 'Pintar', value: 'Pintar' },
       { label: 'Cerámica', value: 'Cerámica' },
-      { label: 'Juegos infantiles', value: 'Juegos infantiles' },
-      { label: 'Manualidades', value: 'Manualidades' },
-      { label: 'Parques infantiles', value: 'Parques infantiles' },
       { label: 'Plan familiar', value: 'Plan familiar' },
+      { label: 'Animales', value: 'Animales' },
+      { label: 'Diversión', value: 'Diversión' },
     ],
   },
   {
@@ -230,23 +363,33 @@ const categoryOptions: CategoryOption[] = [
     image: exploreNatureIcon,
     filterTokens: ['Al aire libre', 'Naturaleza y aire libre'],
     subcategories: [
+      { label: 'Parques', value: 'Parques' },
       { label: 'Miradores', value: 'Miradores' },
       { label: 'Caminatas', value: 'Caminatas' },
-      { label: 'Parques', value: 'Parques' },
       { label: 'Montañas', value: 'Montañas' },
       { label: 'Hiking', value: 'Hiking' },
       { label: 'Running', value: 'Running' },
+      { label: 'Picnic', value: 'Picnic' },
+      { label: 'Camping', value: 'Camping' },
     ],
   },
 ];
 
 function inferSelectedCategoryKey(values: string[]) {
   for (const option of categoryOptions) {
-    if (option.filterTokens.some((token) => values.includes(token))) {
+    if (values.includes(option.label)) {
       return option.key;
     }
+  }
 
-    if (option.subcategories.some((subcategory) => values.includes(subcategory.value))) {
+  for (const option of categoryOptions) {
+    if (getCategoryAllSuboptions(option).some((subcategory) => values.includes(subcategory.value))) {
+      return option.key;
+    }
+  }
+
+  for (const option of categoryOptions) {
+    if (option.filterTokens.some((token) => token !== option.label && values.includes(token))) {
       return option.key;
     }
   }
@@ -394,7 +537,7 @@ export function FiltersSheet({
     [],
   );
   const categorySubcategoryValues = useMemo<string[]>(
-    () => categoryOptions.flatMap((option) => option.subcategories.map((subcategory) => subcategory.value)),
+    () => categoryOptions.flatMap((option) => getCategoryAllSuboptions(option).map((subcategory) => subcategory.value)),
     [],
   );
   const expandedPrimaryCategory = useMemo(
@@ -414,10 +557,20 @@ export function FiltersSheet({
   const hasExpandedSubcategorySelection = useMemo(
     () =>
       expandedPrimaryCategory
-        ? expandedPrimaryCategory.subcategories.some((subcategory) => selectedCategories.includes(subcategory.value))
+        ? getCategoryAllSuboptions(expandedPrimaryCategory).some((subcategory) => selectedCategories.includes(subcategory.value))
         : false,
     [expandedPrimaryCategory, selectedCategories],
   );
+  const selectedFoodMomentValues = useMemo(
+    () =>
+      expandedPrimaryCategory?.momentOptions
+        ? expandedPrimaryCategory.momentOptions
+            .map((momentOption) => momentOption.value)
+            .filter((value) => selectedCategories.includes(value))
+        : [],
+    [expandedPrimaryCategory, selectedCategories],
+  );
+  const hasExpandedMomentSelection = selectedFoodMomentValues.length > 0;
   const selectedIdealForValues = useMemo(
     () => selectedCategories.filter((value) => idealForValues.includes(value)),
     [idealForValues, selectedCategories],
@@ -691,11 +844,49 @@ export function FiltersSheet({
     ? locationMallsForDisplay
     : locationMallsForDisplay.slice(0, 10);
   const visibleIdealForOptions = showAllIdealFor ? idealForOptions : idealForOptions.slice(0, 8);
-  const visibleSubcategories = expandedPrimaryCategory
-    ? showAllSubcategories
-      ? expandedPrimaryCategory.subcategories
-      : expandedPrimaryCategory.subcategories.slice(0, 10)
-    : [];
+  const sortedExpandedMoments = useMemo(
+    () =>
+      expandedPrimaryCategory?.momentOptions
+        ? [...expandedPrimaryCategory.momentOptions].sort((left, right) =>
+            left.label.localeCompare(right.label, 'es', { sensitivity: 'base' }),
+          )
+        : [],
+    [expandedPrimaryCategory],
+  );
+  const relatedExpandedSubcategories = useMemo(() => {
+    if (!expandedPrimaryCategory?.relatedOptionsByMoment) {
+      return expandedPrimaryCategory ? [...expandedPrimaryCategory.subcategories] : [];
+    }
+
+    if (selectedFoodMomentValues.length === 0) {
+      return [];
+    }
+
+    if (selectedFoodMomentValues.length === 1 && selectedFoodMomentValues[0] === 'Postres') {
+      return [];
+    }
+
+    return Array.from(
+      new Map(
+        selectedFoodMomentValues
+          .flatMap((momentValue) => expandedPrimaryCategory.relatedOptionsByMoment?.[momentValue] ?? [])
+          .map((subcategory) => [subcategory.value, subcategory] as const),
+      ).values(),
+    );
+  }, [expandedPrimaryCategory, selectedFoodMomentValues]);
+  const sortedExpandedSubcategories = useMemo(
+    () =>
+      relatedExpandedSubcategories.length > 0
+        ? [...relatedExpandedSubcategories].sort((left, right) =>
+            left.label.localeCompare(right.label, 'es', { sensitivity: 'base' }),
+          )
+        : [],
+    [relatedExpandedSubcategories],
+  );
+  const visibleSubcategories = showAllSubcategories
+    || (expandedPrimaryCategory ? alwaysExpandedSubcategoryCategoryKeys.has(expandedPrimaryCategory.key) : false)
+    ? sortedExpandedSubcategories
+    : sortedExpandedSubcategories.slice(0, 10);
   const visibleLocationSectorSignature = useMemo(
     () => visibleLocationSectors.map((option) => option.key).join('|'),
     [visibleLocationSectors],
@@ -821,9 +1012,17 @@ export function FiltersSheet({
 
   function toggleSubcategory(value: string) {
     setSelectedCategories((current) => {
+      const foodMomentValues = new Set(expandedPrimaryCategory?.momentOptions?.map((momentOption) => momentOption.value) ?? []);
       const withoutCategoryTokens = current.filter(
         (item) => !categoryValues.includes(item) || expandedPrimaryCategory?.filterTokens.includes(item),
       );
+
+      if (foodMomentValues.has(value)) {
+        const withoutMoments = withoutCategoryTokens.filter((item) => !foodMomentValues.has(item));
+        return current.includes(value)
+          ? withoutMoments
+          : [...withoutMoments, value];
+      }
 
       return withoutCategoryTokens.includes(value)
         ? withoutCategoryTokens.filter((item) => item !== value)
@@ -852,8 +1051,17 @@ export function FiltersSheet({
       return;
     }
 
-    const subcategoryValues = new Set(expandedPrimaryCategory.subcategories.map((subcategory) => subcategory.value));
+    const subcategoryValues = new Set(getCategoryAllSuboptions(expandedPrimaryCategory).map((subcategory) => subcategory.value));
     setSelectedCategories((current) => current.filter((item) => !subcategoryValues.has(item)));
+  }
+
+  function clearExpandedMoments() {
+    if (!expandedPrimaryCategory?.momentOptions) {
+      return;
+    }
+
+    const momentValues = new Set(expandedPrimaryCategory.momentOptions.map((momentOption) => momentOption.value));
+    setSelectedCategories((current) => current.filter((item) => !momentValues.has(item)));
   }
 
   function clearIdealForSelections() {
@@ -1260,43 +1468,80 @@ export function FiltersSheet({
             </View>
             {expandedPrimaryCategory ? (
               <View style={styles.subcategoryBlock}>
-                <View style={styles.sectionHeaderRow}>
-                  <Text style={styles.subcategoryLabel}>Subcategorías</Text>
-                  {hasExpandedSubcategorySelection ? (
-                    <Pressable onPress={clearExpandedSubcategories} hitSlop={8}>
-                      <Text style={styles.sectionActionText}>Quitar</Text>
-                    </Pressable>
-                  ) : null}
-                </View>
-                <View style={styles.subcategoryRow}>
-                  {visibleSubcategories.map((subcategory) => {
-                    const active = selectedCategories.includes(subcategory.value);
-                    return (
-                      <Pressable
-                        key={subcategory.value}
-                        style={[styles.subcategoryPill, active && styles.subcategoryPillActive]}
-                        onPress={() => toggleSubcategory(subcategory.value)}
-                      >
-                        <Text style={[styles.subcategoryPillText, active && styles.subcategoryPillTextActive]}>
-                          {subcategory.label}
-                        </Text>
-                      </Pressable>
-                    );
-                  })}
-                </View>
-                {expandedPrimaryCategory.subcategories.length > 10 ? (
+                {sortedExpandedMoments.length > 0 ? (
+                  <>
+                    <View style={styles.sectionHeaderRow}>
+                      <Text style={styles.subcategoryLabel}>Momentos</Text>
+                      {hasExpandedMomentSelection ? (
+                        <Pressable onPress={clearExpandedMoments} hitSlop={8}>
+                          <Text style={styles.sectionActionText}>Quitar</Text>
+                        </Pressable>
+                      ) : null}
+                    </View>
+                    <View style={styles.subcategoryRow}>
+                      {sortedExpandedMoments.map((subcategory) => {
+                        const active = selectedCategories.includes(subcategory.value);
+                        return (
+                          <Pressable
+                            key={subcategory.value}
+                            style={[styles.subcategoryPill, active && styles.subcategoryPillActive]}
+                            onPress={() => toggleSubcategory(subcategory.value)}
+                          >
+                            <Text style={[styles.subcategoryPillText, active && styles.subcategoryPillTextActive]}>
+                              {subcategory.label}
+                            </Text>
+                          </Pressable>
+                        );
+                      })}
+                    </View>
+                  </>
+                ) : null}
+                {((sortedExpandedMoments.length === 0) || selectedFoodMomentValues.length > 0) && sortedExpandedSubcategories.length > 0 ? (
+                  <>
+                    <View style={styles.sectionHeaderRow}>
+                      <Text style={styles.subcategoryLabel}>
+                        {sortedExpandedMoments.length > 0 ? 'Relacionadas' : 'Subcategorías'}
+                      </Text>
+                      {hasExpandedSubcategorySelection ? (
+                        <Pressable onPress={clearExpandedSubcategories} hitSlop={8}>
+                          <Text style={styles.sectionActionText}>Quitar</Text>
+                        </Pressable>
+                      ) : null}
+                    </View>
+                    {visibleSubcategories.length > 0 ? (
+                      <View style={styles.subcategoryRow}>
+                        {visibleSubcategories.map((subcategory) => {
+                          const active = selectedCategories.includes(subcategory.value);
+                          return (
+                            <Pressable
+                              key={subcategory.value}
+                              style={[styles.subcategoryPill, active && styles.subcategoryPillActive]}
+                              onPress={() => toggleSubcategory(subcategory.value)}
+                            >
+                              <Text style={[styles.subcategoryPillText, active && styles.subcategoryPillTextActive]}>
+                                {subcategory.label}
+                              </Text>
+                            </Pressable>
+                          );
+                        })}
+                      </View>
+                    ) : null}
+                {sortedExpandedSubcategories.length > 10 &&
+                !(expandedPrimaryCategory ? alwaysExpandedSubcategoryCategoryKeys.has(expandedPrimaryCategory.key) : false) ? (
                   <Pressable
                     onPress={() => setShowAllSubcategories((current) => !current)}
                     hitSlop={8}
-                    style={styles.inlineChevronAction}
-                  >
-                    <Text style={styles.linkButtonText}>{showAllSubcategories ? 'Ver menos' : 'Ver más'}</Text>
-                    <Ionicons
-                      name={showAllSubcategories ? 'chevron-up' : 'chevron-down'}
-                      size={14}
-                      color={filtersUi.accent}
-                    />
-                  </Pressable>
+                        style={styles.inlineChevronAction}
+                      >
+                        <Text style={styles.linkButtonText}>{showAllSubcategories ? 'Ver menos' : 'Ver más'}</Text>
+                        <Ionicons
+                          name={showAllSubcategories ? 'chevron-up' : 'chevron-down'}
+                          size={14}
+                          color={filtersUi.accent}
+                        />
+                      </Pressable>
+                    ) : null}
+                  </>
                 ) : null}
               </View>
             ) : null}
@@ -2251,6 +2496,11 @@ const styles = StyleSheet.create({
     letterSpacing: 0.4,
     textTransform: 'uppercase',
     color: filtersUi.textTertiary,
+  },
+  subcategoryHintText: {
+    fontSize: 13,
+    lineHeight: 18,
+    color: filtersUi.textSecondary,
   },
   subcategoryRow: {
     flexDirection: 'row',
