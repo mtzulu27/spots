@@ -186,6 +186,11 @@
         "/place-media/mo-sushi/gallery-7.jpg"
       ],
       "category": "Comida",
+      "subcategories": [
+        "Sandwiches",
+        "Postres",
+        "Almuerzo"
+      ],
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -268,6 +273,11 @@
         "/place-media/selvah-rooftop/gallery-10.jpg"
       ],
       "category": "Comida",
+      "subcategories": [
+        "Postres",
+        "Helado",
+        "Saludable"
+      ],
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -298,6 +308,11 @@
       "cover_image_url": "",
       "gallery_urls": [],
       "category": "Comida",
+      "subcategories": [
+        "Helado",
+        "Postres",
+        "Açaí"
+      ],
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -408,6 +423,11 @@
       "cover_image_url": "",
       "gallery_urls": [],
       "category": "Comida",
+      "subcategories": [
+        "Helado",
+        "Postres",
+        "Italiana"
+      ],
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -629,6 +649,11 @@
         "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/parisina/gallery/parisina-gallery-10-1776127935312.jpg"
       ],
       "category": "Comida",
+      "subcategories": [
+        "Sandwiches",
+        "Postres",
+        "Almuerzo"
+      ],
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -660,6 +685,11 @@
       "cover_image_url": "",
       "gallery_urls": [],
       "category": "Comida",
+      "subcategories": [
+        "Colombiana",
+        "Desayuno",
+        "Almuerzo"
+      ],
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -836,6 +866,10 @@
         "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/namaste/gallery/namaste-gallery-5-1776136186439.jpg"
       ],
       "category": "Comida",
+      "subcategories": [
+        "Fusión",
+        "Cena"
+      ],
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -945,6 +979,11 @@
       "cover_image_url": "",
       "gallery_urls": [],
       "category": "Comida",
+      "subcategories": [
+        "Hamburguesas",
+        "Americana",
+        "Cena"
+      ],
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -1011,6 +1050,11 @@
         "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/prote-and-co/gallery/prote-and-co-gallery-9-1776137718550.jpg"
       ],
       "category": "Comida",
+      "subcategories": [
+        "Postres",
+        "Helado",
+        "Saludable"
+      ],
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -1254,6 +1298,11 @@
         "/place-media/carpaneto/gallery-5.webp"
       ],
       "category": "Comida",
+      "subcategories": [
+        "Pizza",
+        "Italiana",
+        "Cena"
+      ],
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -1292,6 +1341,11 @@
         "/place-media/joes/gallery-6.jpg"
       ],
       "category": "Comida",
+      "subcategories": [
+        "Café",
+        "Brunch",
+        "Desayuno"
+      ],
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -1336,6 +1390,11 @@
         "/place-media/dolka/gallery-10.jpg"
       ],
       "category": "Comida",
+      "subcategories": [
+        "Postres",
+        "Helado",
+        "Tardear"
+      ],
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -1371,6 +1430,11 @@
         "/place-media/chelita-go-mex/gallery-2.jpg"
       ],
       "category": "Comida",
+      "subcategories": [
+        "Tacos",
+        "Mexicana",
+        "Cena"
+      ],
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -1806,6 +1870,11 @@
       "cover_image_url": "",
       "gallery_urls": [],
       "category": "Comida",
+      "subcategories": [
+        "Pizza",
+        "Italiana",
+        "Cena"
+      ],
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -1848,6 +1917,12 @@
         "/place-media/madelo-lago-verde/gallery-8.jpg"
       ],
       "category": "Comida",
+      "subcategories": [
+        "Café",
+        "Brunch",
+        "Pastelería",
+        "Desayuno"
+      ],
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -1883,6 +1958,12 @@
       "cover_image_url": "",
       "gallery_urls": [],
       "category": "Comida",
+      "subcategories": [
+        "Sushi",
+        "Japonesa",
+        "Parrilla",
+        "Cena"
+      ],
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -1925,6 +2006,11 @@
         "/place-media/domingo/gallery-5.jpg"
       ],
       "category": "Comida",
+      "subcategories": [
+        "Pasta",
+        "Italiana",
+        "Cena"
+      ],
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -1969,6 +2055,12 @@
         "/place-media/new-anchor-caffe/gallery-7.jpg"
       ],
       "category": "Comida",
+      "subcategories": [
+        "Café",
+        "Desayuno",
+        "Brunch",
+        "Sandwiches"
+      ],
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -2012,6 +2104,12 @@
         "/place-media/la-puerta-bakery/gallery-6.jpg"
       ],
       "category": "Comida",
+      "subcategories": [
+        "Panadería",
+        "Café",
+        "Desayuno",
+        "Brunch"
+      ],
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -2060,6 +2158,12 @@
         "/place-media/kumo-sushi-bar/gallery-9.jpg"
       ],
       "category": "Comida",
+      "subcategories": [
+        "Sushi",
+        "Japonesa",
+        "Nikkei",
+        "Cena"
+      ],
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -2156,6 +2260,10 @@
         "/place-media/el-correo-y-amada/gallery-7.jpg"
       ],
       "category": "Comida",
+      "subcategories": [
+        "Fusión",
+        "Cena"
+      ],
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -2485,6 +2593,11 @@
         "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/donde-leon-cocina-dulce/cover/donde-leon-user-cover-1775264938047.png"
       ],
       "category": "Comida",
+      "subcategories": [
+        "Postres",
+        "Café",
+        "Desayuno"
+      ],
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -2520,6 +2633,11 @@
         "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/tierradentro-cafe-co/gallery/tierradentro-gallery-3-1775266885232.png"
       ],
       "category": "Comida",
+      "subcategories": [
+        "Café",
+        "Brunch",
+        "Desayuno"
+      ],
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -2554,6 +2672,11 @@
         "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/la-chocolatada/gallery/la-chocolatada-gallery-3-1775267705336.png"
       ],
       "category": "Comida",
+      "subcategories": [
+        "Panadería",
+        "Café",
+        "Desayuno"
+      ],
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -2870,6 +2993,11 @@
         "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/winkle-waffle/gallery/winkle-gallery-5-1775331291314.jpg"
       ],
       "category": "Comida",
+      "subcategories": [
+        "Waffles",
+        "Postres",
+        "Tardear"
+      ],
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -3669,6 +3797,12 @@
       "cover_image_url": "https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=1200&q=80",
       "gallery_urls": [],
       "category": "Comida",
+      "subcategories": [
+        "Café",
+        "Brunch",
+        "Pastelería",
+        "Desayuno"
+      ],
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -5159,6 +5293,12 @@
       "cover_image_url": "https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=1600&q=80",
       "gallery_urls": [],
       "category": "Comida",
+      "subcategories": [
+        "Hamburguesas",
+        "Americana",
+        "Almuerzo",
+        "Cena"
+      ],
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -5226,6 +5366,12 @@
       "cover_image_url": "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1200&q=80",
       "gallery_urls": [],
       "category": "Comida",
+      "subcategories": [
+        "Café",
+        "Brunch",
+        "Pastelería",
+        "Desayuno"
+      ],
       "city": "Cali",
       "likes": "0",
       "tags": [
