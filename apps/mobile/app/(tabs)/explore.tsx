@@ -230,6 +230,10 @@ function getPriceLabel(spot: Spot) {
   return formatApproxBudgetPerPersonLabel(spot.minBudget, spot.maxBudget);
 }
 
+function hasFeedMinPrice(spot: Spot) {
+  return Number(spot.minBudget) > 0;
+}
+
 function getFeedMinPriceLabel(spot: Spot) {
   return formatApproxBudgetPerPersonLabel(spot.minBudget, spot.maxBudget)
 }
@@ -729,12 +733,14 @@ export default function ExploreScreen() {
                               {getSpotFeedSubtitle(spot)}
                             </Text>
                           </View>
-                          <View style={styles.feedPriceInline}>
-                            <Ionicons name="cash-outline" size={12} color="#5f5f67" />
-                            <Text style={[styles.feedMetaText, { color: '#5f5f67' }]}>
-                              {getFeedMinPriceLabel(spot)}
-                            </Text>
-                          </View>
+                          {hasFeedMinPrice(spot) ? (
+                            <View style={styles.feedPriceInline}>
+                              <Ionicons name="cash-outline" size={12} color="#5f5f67" />
+                              <Text style={[styles.feedMetaText, { color: '#5f5f67' }]}>
+                                {getFeedMinPriceLabel(spot)}
+                              </Text>
+                            </View>
+                          ) : null}
                           <Text
                             style={[
                               styles.feedMetaText,
@@ -2614,12 +2620,14 @@ export default function ExploreScreen() {
                                       : getBranchLocationLabel(spot)}
                                   </Text>
                                 </View>
-                                <View style={styles.feedPriceInline}>
-                                  <Ionicons name="cash-outline" size={12} color={theme.textSecondary} />
-                                  <Text style={[styles.feedMetaText, { color: theme.textSecondary }]}>
-                                    {getFeedMinPriceLabel(spot)}
-                                  </Text>
-                                </View>
+                                {hasFeedMinPrice(spot) ? (
+                                  <View style={styles.feedPriceInline}>
+                                    <Ionicons name="cash-outline" size={12} color={theme.textSecondary} />
+                                    <Text style={[styles.feedMetaText, { color: theme.textSecondary }]}>
+                                      {getFeedMinPriceLabel(spot)}
+                                    </Text>
+                                  </View>
+                                ) : null}
                                 <Text
                                   style={[
                                     styles.feedMetaText,
@@ -2792,12 +2800,14 @@ export default function ExploreScreen() {
                               {getSpotFeedSubtitle(spot)}
                             </Text>
                           </View>
-                          <View style={styles.feedPriceInline}>
-                            <Ionicons name="cash-outline" size={12} color={theme.textSecondary} />
-                            <Text style={[styles.feedMetaText, { color: theme.textSecondary }]}>
-                              {getFeedMinPriceLabel(spot)}
-                            </Text>
-                          </View>
+                          {hasFeedMinPrice(spot) ? (
+                            <View style={styles.feedPriceInline}>
+                              <Ionicons name="cash-outline" size={12} color={theme.textSecondary} />
+                              <Text style={[styles.feedMetaText, { color: theme.textSecondary }]}>
+                                {getFeedMinPriceLabel(spot)}
+                              </Text>
+                            </View>
+                          ) : null}
                         </View>
                         <Text
                           style={[
@@ -2864,12 +2874,14 @@ export default function ExploreScreen() {
                             {getSpotFeedSubtitle(spot)}
                           </Text>
                         </View>
-                        <View style={styles.feedPriceInline}>
-                          <Ionicons name="cash-outline" size={12} color={theme.textSecondary} />
-                          <Text style={[styles.feedMetaText, { color: theme.textSecondary }]}>
-                            {getFeedMinPriceLabel(spot)}
-                          </Text>
-                        </View>
+                        {hasFeedMinPrice(spot) ? (
+                          <View style={styles.feedPriceInline}>
+                            <Ionicons name="cash-outline" size={12} color={theme.textSecondary} />
+                            <Text style={[styles.feedMetaText, { color: theme.textSecondary }]}>
+                              {getFeedMinPriceLabel(spot)}
+                            </Text>
+                          </View>
+                        ) : null}
                       </View>
                     </View>
                   </View>

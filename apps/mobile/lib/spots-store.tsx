@@ -11,7 +11,7 @@ import type { Spot } from '@/lib/mock-spots';
 import { normalizeCommercialCenterLabel, normalizeSpotCategory } from '@/lib/mock-spots';
 import { backendEnabled } from '@/lib/supabase';
 
-const spotsCacheKey = 'spots-cache-v12';
+const spotsCacheKey = 'spots-cache-v13';
 const staticCatalogPath = '/spots-catalog.json';
 
 type SpotRow = {
@@ -23,6 +23,7 @@ type SpotRow = {
   cover_image_url: string;
   gallery_urls: string[] | null;
   category: string;
+  subcategories: string[] | null;
   city: string;
   likes: string;
   tags: string[] | null;
@@ -146,9 +147,11 @@ function readCachedSpots() {
       ? parsed.map((spot) => ({
           ...spot,
           category: normalizeSpotCategory(spot.category),
+          subcategories: Array.isArray(spot.subcategories) ? spot.subcategories : [],
           branches: spot.branches?.map((branch) => ({
             ...branch,
             category: normalizeSpotCategory(branch.category),
+            subcategories: Array.isArray(branch.subcategories) ? branch.subcategories : [],
           })),
         }))
       : null;
@@ -178,6 +181,16 @@ function getPrimarySpotImage(
   )?.trim();
 
   return firstGalleryImage || coverImageUrl || '';
+}
+
+function normalizeSpotSubcategories(values: string[] | null | undefined) {
+  return Array.from(
+    new Set(
+      (values ?? [])
+        .map((value) => value.trim())
+        .filter(Boolean),
+    ),
+  );
 }
 
 function mapRowsToSpots(spotRows: SpotRow[], branchRows: BranchRow[], branchHourRows: BranchHourRow[]) {
@@ -221,6 +234,7 @@ function mapRowsToSpots(spotRows: SpotRow[], branchRows: BranchRow[], branchHour
 
   activeSpots.forEach((spot) => {
     const canonicalCategory = normalizeSpotCategory(spot.category);
+    const normalizedSubcategories = normalizeSpotSubcategories(spot.subcategories);
     const enrichedTags = enrichSpotTaxonomy(spot.slug, spot.tags ?? [], 'tags');
     const enrichedMoods = enrichSpotTaxonomy(spot.slug, spot.moods ?? [], 'moods');
     const branches = (branchesBySpot.get(spot.id) ?? []).sort(
@@ -251,6 +265,7 @@ function mapRowsToSpots(spotRows: SpotRow[], branchRows: BranchRow[], branchHour
         neighborhood: '',
         hubName: '',
         category: canonicalCategory,
+        subcategories: normalizedSubcategories,
         city: spot.city,
         likes: spot.likes,
         image: getPrimarySpotImage(spot.cover_image_url, spot.gallery_urls),
@@ -322,6 +337,7 @@ function mapRowsToSpots(spotRows: SpotRow[], branchRows: BranchRow[], branchHour
         shortDescription: spot.short_description,
         description: branchDescription,
         interests: [],
+        subcategories: normalizedSubcategories,
         maxPeople: branch.max_people,
         days: [],
         distanceKm: 0,

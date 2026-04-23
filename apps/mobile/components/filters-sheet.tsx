@@ -26,6 +26,7 @@ import {
   type ExploreSort,
   type ExploreTab,
   formatBudget,
+  getSpotCatalogSignals,
   matchesSpotToFilters,
   sortSpots,
 } from '@/lib/explore-filters';
@@ -397,6 +398,17 @@ function inferSelectedCategoryKey(values: string[]) {
   return null;
 }
 
+function normalizeFilterValue(value: string) {
+  return value
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/['’`´"]/g, '')
+    .replace(/[^a-z0-9\s]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 const sortOptions: Array<{ label: string; value: ExploreSort }> = [
   { label: 'Más nuevos', value: 'recent' },
   { label: 'Mejor calificados', value: 'topRated' },
@@ -649,6 +661,29 @@ export function FiltersSheet({
     () => getSpotsByTypeFromList(spots, activeTab === 'places' ? 'place' : 'event'),
     [activeTab, spots],
   );
+  const availableCatalogSignals = useMemo(() => {
+    const signals = new Set<string>();
+
+    activeData.forEach((spot) => {
+      getSpotCatalogSignals(spot).forEach((value) => {
+        signals.add(value);
+      });
+    });
+
+    return signals;
+  }, [activeData]);
+  const visibleCategoryOptions = useMemo(
+    () =>
+      categoryOptions.filter((option) => {
+        const isSelected = option.filterTokens.some((token) => selectedCategories.includes(token));
+        if (isSelected) {
+          return true;
+        }
+
+        return option.filterTokens.some((token) => availableCatalogSignals.has(normalizeFilterValue(token)));
+      }),
+    [availableCatalogSignals, selectedCategories],
+  );
   const resultsCount = useMemo(() => {
     const filteredSpots = sortSpots(
       activeData.filter((spot) =>
@@ -847,15 +882,27 @@ export function FiltersSheet({
   const sortedExpandedMoments = useMemo(
     () =>
       expandedPrimaryCategory?.momentOptions
-        ? [...expandedPrimaryCategory.momentOptions].sort((left, right) =>
-            left.label.localeCompare(right.label, 'es', { sensitivity: 'base' }),
-          )
+        ? expandedPrimaryCategory.momentOptions
+            .filter(
+              (momentOption) =>
+                selectedCategories.includes(momentOption.value) ||
+                availableCatalogSignals.has(normalizeFilterValue(momentOption.value)),
+            )
+            .sort((left, right) =>
+              left.label.localeCompare(right.label, 'es', { sensitivity: 'base' }),
+            )
         : [],
-    [expandedPrimaryCategory],
+    [availableCatalogSignals, expandedPrimaryCategory, selectedCategories],
   );
   const relatedExpandedSubcategories = useMemo(() => {
     if (!expandedPrimaryCategory?.relatedOptionsByMoment) {
-      return expandedPrimaryCategory ? [...expandedPrimaryCategory.subcategories] : [];
+      return expandedPrimaryCategory
+        ? expandedPrimaryCategory.subcategories.filter(
+            (subcategory) =>
+              selectedCategories.includes(subcategory.value) ||
+              availableCatalogSignals.has(normalizeFilterValue(subcategory.value)),
+          )
+        : [];
     }
 
     if (selectedFoodMomentValues.length === 0) {
@@ -872,8 +919,12 @@ export function FiltersSheet({
           .flatMap((momentValue) => expandedPrimaryCategory.relatedOptionsByMoment?.[momentValue] ?? [])
           .map((subcategory) => [subcategory.value, subcategory] as const),
       ).values(),
+    ).filter(
+      (subcategory) =>
+        selectedCategories.includes(subcategory.value) ||
+        availableCatalogSignals.has(normalizeFilterValue(subcategory.value)),
     );
-  }, [expandedPrimaryCategory, selectedFoodMomentValues]);
+  }, [availableCatalogSignals, expandedPrimaryCategory, selectedCategories, selectedFoodMomentValues]);
   const sortedExpandedSubcategories = useMemo(
     () =>
       relatedExpandedSubcategories.length > 0
@@ -1450,7 +1501,7 @@ export function FiltersSheet({
             onLayout={(event) => handleDynamicSectionLayout('category', event)}
           >
             <View style={styles.categoryRow}>
-              {categoryOptions.map((option) => {
+              {visibleCategoryOptions.map((option) => {
                 const active = expandedCategoryKey === option.key;
                 return (
                   <Pressable
@@ -1913,67 +1964,6 @@ export function FiltersSheet({
                 ${formatBudget(minBudget)} – ${formatBudget(maxBudget)}
               </Text>
             ) : null}
-          </Section>
-
-          <Divider />
-
-          <Section
-            title="Ideal para"
-            actionLabel={selectedIdealForValues.length > 0 ? 'Quitar' : undefined}
-            onActionPress={selectedIdealForValues.length > 0 ? clearIdealForSelections : undefined}
-          >
-            <View style={styles.presetGrid}>
-              {visibleIdealForOptions.map((option) => {
-                const active = selectedIdealForValues.includes(option.value);
-                return (
-                  <Pressable
-                    key={option.value}
-                    style={[styles.filterChip, active && styles.filterChipActive]}
-                    onPress={() => toggleIdealFor(option.value)}
-                  >
-                    <Text style={[styles.filterChipText, active && styles.filterChipTextActive]}>
-                      {option.label}
-                    </Text>
-                  </Pressable>
-                );
-              })}
-            </View>
-            {idealForOptions.length > 8 ? (
-              <Pressable onPress={() => setShowAllIdealFor((current) => !current)} hitSlop={8} style={styles.inlineChevronAction}>
-                <Text style={styles.linkButtonText}>{showAllIdealFor ? 'Ver menos' : 'Ver todos'}</Text>
-                <Ionicons
-                  name={showAllIdealFor ? 'chevron-up' : 'chevron-down'}
-                  size={14}
-                  color={filtersUi.accent}
-                />
-              </Pressable>
-            ) : null}
-          </Section>
-
-          <Divider />
-
-          <Section
-            title="Personas"
-            actionLabel={people !== 0 ? 'Quitar' : undefined}
-            onActionPress={people !== 0 ? () => setPeople(0) : undefined}
-            onLayout={(event) => handleDynamicSectionLayout('people', event)}
-          >
-            <View style={styles.presetGrid}>
-              {peoplePresetOptions.map((option) => {
-                const active = people === option.value;
-                return (
-                  <Pressable
-                    key={option.label}
-                    style={[styles.filterChip, active && styles.filterChipActive]}
-                    onPress={() => applyPeoplePreset(option.value)}
-                  >
-                    <Text style={[styles.filterChipText, active && styles.filterChipTextActive]}>
-                      {option.label}
-                    </Text>
-                  </Pressable>
-                );
-              })}
-            </View>
           </Section>
 
           </ScrollView>

@@ -19,6 +19,7 @@ export type Spot = {
   neighborhood: string
   hubName: string
   category: string
+  subcategories: string[]
   city: string
   likes: string
   image: string
@@ -267,6 +268,7 @@ export function aggregatePlaceBranches(branches: Spot[]) {
   )
 
   const uniqueInterests = Array.from(new Set(branches.flatMap((branch) => branch.interests)))
+  const uniqueSubcategories = Array.from(new Set(branches.flatMap((branch) => branch.subcategories)))
   const uniqueDays = Array.from(new Set(branches.flatMap((branch) => branch.days)))
   const uniqueTags = Array.from(new Set(branches.flatMap((branch) => branch.tags)))
   const uniqueMoods = Array.from(new Set(branches.flatMap((branch) => branch.moods)))
@@ -294,6 +296,7 @@ export function aggregatePlaceBranches(branches: Spot[]) {
     shortDescription: primary.shortDescription,
     description: primary.description,
     interests: uniqueInterests,
+    subcategories: uniqueSubcategories,
     maxPeople: Math.max(...branches.map((branch) => branch.maxPeople)),
     days: uniqueDays,
     distanceKm: Math.min(...branches.map((branch) => branch.distanceKm)),

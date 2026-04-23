@@ -13,6 +13,12 @@
         "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/fiel/gallery/fiel-gallery-2-1776018672755.jpg"
       ],
       "category": "Comida",
+      "subcategories": [
+        "Café",
+        "Desayuno",
+        "Brunch",
+        "Sandwiches"
+      ],
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -48,6 +54,12 @@
         "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/sorsi/gallery/sorsi-gallery-4-1776117144374.jpg"
       ],
       "category": "Comida",
+      "subcategories": [
+        "Panadería",
+        "Café",
+        "Desayuno",
+        "Brunch"
+      ],
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -89,6 +101,12 @@
         "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/baltazar-y-siete-lunas/gallery/baltazar-gallery-9-1776117028807.jpg"
       ],
       "category": "Comida",
+      "subcategories": [
+        "Sushi",
+        "Japonesa",
+        "Nikkei",
+        "Cena"
+      ],
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -126,6 +144,12 @@
         "/place-media/ve-de-bistro/gallery-5.jpg"
       ],
       "category": "Comida",
+      "subcategories": [
+        "Hamburguesas",
+        "Americana",
+        "Almuerzo",
+        "Cena"
+      ],
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -197,10 +221,10 @@
       ],
       "category": "Comida",
       "subcategories": [
-        "pitas",
-        "griega",
-        "mexicana",
-        "bowls"
+        "Pitas",
+        "Mexicana",
+        "Mediterránea",
+        "Fusión"
       ],
       "city": "Cali",
       "likes": "0",
@@ -306,8 +330,7 @@
       ],
       "category": "Comida",
       "subcategories": [
-        "cena",
-        "cocteles"
+        "Cena"
       ],
       "city": "Cali",
       "likes": "0",
@@ -348,13 +371,19 @@
         "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/santa-fusion/gallery/santa-fusion-gallery-8-1776124840894.jpg"
       ],
       "category": "Comida",
+      "subcategories": [
+        "Desayuno",
+        "Brunch",
+        "Almuerzo",
+        "Café"
+      ],
       "city": "Cali",
       "likes": "0",
       "tags": [
+        "desayuno",
         "brunch",
-        "almuerzos",
-        "tardeo",
-        "cena",
+        "almuerzo",
+        "café",
         "lago verde",
         "pance"
       ],
@@ -459,16 +488,25 @@
         "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/montolivo/gallery/montolivo-gallery-8-1776126065245.jpg"
       ],
       "category": "Comida",
+      "subcategories": [
+        "Pasta",
+        "Italiana",
+        "Saludable",
+        "Vegetariana"
+      ],
       "city": "Cali",
       "likes": "0",
       "tags": [
-        "comida",
-        "cena",
-        "pareja"
+        "pasta",
+        "bowls",
+        "italiana",
+        "saludable",
+        "vegetariana"
       ],
       "moods": [
-        "algo especial",
-        "comer rico"
+        "comer rico",
+        "casual",
+        "plan tranqui"
       ],
       "is_active": true,
       "is_featured": false,
@@ -494,13 +532,23 @@
         "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/brunch-house/gallery/brunch-house-gallery-8-1776127066095.jpg"
       ],
       "category": "Comida",
+      "subcategories": [
+        "Desayuno",
+        "Brunch",
+        "Almuerzo",
+        "Café",
+        "Saludable",
+        "Americana"
+      ],
       "city": "Cali",
       "likes": "0",
       "tags": [
         "brunch",
         "desayuno",
-        "cafe",
-        "tardear"
+        "café",
+        "almuerzo",
+        "saludable",
+        "americana"
       ],
       "moods": [
         "brunch",
@@ -531,15 +579,23 @@
         "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/capriatto/gallery/cappriato-gallery-8-1776127747853.jpg"
       ],
       "category": "Comida",
+      "subcategories": [
+        "Sandwiches",
+        "Mediterránea",
+        "Almuerzo",
+        "Cena"
+      ],
       "city": "Cali",
       "likes": "0",
       "tags": [
         "sandwiches",
         "focaccia",
         "burrata",
-        "aperol",
+        "spritz",
         "granada",
-        "ciudad jardin"
+        "ciudad jardin",
+        "almuerzo",
+        "cena"
       ],
       "moods": [
         "comer rico",
@@ -645,14 +701,20 @@
         "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/fusion-wok/gallery/fusion-wok-gallery-12-1776128880196.jpg"
       ],
       "category": "Comida",
+      "subcategories": [
+        "Asiática",
+        "Sushi",
+        "Wok",
+        "Almuerzo"
+      ],
       "city": "Cali",
       "likes": "0",
       "tags": [
         "sushi",
         "wok",
-        "asiatico",
+        "asiatica",
         "rolls",
-        "cena casual",
+        "cena",
         "almuerzo"
       ],
       "moods": [
@@ -683,15 +745,22 @@
         "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/baoku/gallery/baoku-gallery-7-1776133322613.jpg"
       ],
       "category": "Comida",
+      "subcategories": [
+        "Asiática",
+        "Fusión",
+        "Ramen",
+        "Almuerzo"
+      ],
       "city": "Cali",
       "likes": "0",
       "tags": [
         "baos",
         "parrilla asiatica",
-        "asiatico",
+        "asiatica",
         "carnes",
-        "cena casual",
-        "almuerzo"
+        "ramen",
+        "almuerzo",
+        "cena"
       ],
       "moods": [
         "comer rico",
@@ -726,13 +795,20 @@
         "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/natal-coffee/gallery/natal-coffee-gallery-12-1776134185123.jpg"
       ],
       "category": "Comida",
+      "subcategories": [
+        "Café",
+        "Desayuno",
+        "Brunch",
+        "Panadería"
+      ],
       "city": "Cali",
       "likes": "0",
       "tags": [
         "cafe",
         "desayuno",
         "brunch",
-        "tardear"
+        "panaderia",
+        "croissants"
       ],
       "moods": [
         "cafe",
@@ -799,12 +875,19 @@
         "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/sabor-gourmet/gallery/sabor-gourmet-gallery-8-1776136750667.jpg"
       ],
       "category": "Comida",
+      "subcategories": [
+        "Café",
+        "Postres",
+        "Desayuno",
+        "Almuerzo"
+      ],
       "city": "Cali",
       "likes": "0",
       "tags": [
-        "comida",
-        "postres",
         "cafe",
+        "postres",
+        "desayuno",
+        "almuerzo",
         "granada"
       ],
       "moods": [
@@ -972,19 +1055,25 @@
       "name": "Hamburgo",
       "short_description": "Parrilla, hamburguesas y platos fuertes para plan casual entre Palmas Mall y Jamundí.",
       "category": "Comida",
+      "subcategories": [
+        "Hamburguesas",
+        "Parrilla",
+        "Americana",
+        "Almuerzo"
+      ],
       "tags": [
         "hamburguesas",
         "parrilla",
         "jamundi",
         "palmas mall",
-        "cena",
+        "almuerzo",
         "con amigos"
       ],
       "moods": [
         "casual",
         "con amigos",
         "antojo",
-        "cena"
+        "comer rico"
       ]
     },
     {
@@ -1011,12 +1100,19 @@
       "name": "Don Samuel Bakery",
       "short_description": "Healthy bakery sin gluten y sin azúcar añadida para postres, brownies y antojo dulce en Lago Verde.",
       "category": "Comida",
+      "subcategories": [
+        "Postres",
+        "Pastelería",
+        "Saludable",
+        "Café"
+      ],
       "tags": [
         "healthy bakery",
         "sin gluten",
         "sin azucar",
         "postres",
-        "brownies",
+        "cheesecakes",
+        "cafe",
         "lago verde"
       ],
       "moods": [
@@ -1042,6 +1138,12 @@
         "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/simons/gallery/simons-gallery-6-1776184250843.jpg"
       ],
       "category": "Comida",
+      "subcategories": [
+        "Hamburguesas",
+        "Sandwiches",
+        "Americana",
+        "Cena"
+      ],
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -1049,7 +1151,8 @@
         "hamburguesas",
         "sandwiches",
         "picadas",
-        "marbella plaza"
+        "marbella plaza",
+        "salchipapas"
       ],
       "moods": [
         "antojo",
@@ -1105,14 +1208,21 @@
         "/place-media/fit-bar/gallery-4.jpg"
       ],
       "category": "Comida",
+      "subcategories": [
+        "Desayuno",
+        "Brunch",
+        "Café",
+        "Saludable"
+      ],
       "city": "Cali",
       "likes": "0",
       "tags": [
         "saludable",
-        "shakes",
+        "smoothies",
         "oats",
         "brunch",
         "proteina",
+        "cafe",
         "campanella plaza",
         "pance"
       ],
@@ -1391,6 +1501,12 @@
       "name": "Entre Costas",
       "short_description": "Un restaurante de cocina peruana y fusión en Palmas Mall para una comida especial, cocteles y una mesa larga con sabores del Pacífico. Se siente más de salida rica y bien montada que de parche casual rápido, y funciona muy bien para pareja o plan con amigos.",
       "category": "Comida",
+      "subcategories": [
+        "Fusión",
+        "Mariscos",
+        "Almuerzo",
+        "Cena"
+      ],
       "tags": [
         "peruano",
         "fusion",
@@ -1507,6 +1623,12 @@
       "name": "Vé de Bistro",
       "short_description": "Un bistró de mar y vino en Puerto 125 para ir por platos para compartir, cocina más foodie y una mesa que se siente especial sin ser rígida. Encaja muy bien para una salida en pareja, una comida distinta o una tarde larga con vino.",
       "category": "Comida",
+      "subcategories": [
+        "Mariscos",
+        "Tapas",
+        "Almuerzo",
+        "Cena"
+      ],
       "tags": [
         "bistro",
         "mariscos",
@@ -1547,6 +1669,10 @@
       "name": "King Papa",
       "short_description": "Un spot de salchipapas y desvare poderoso para ir con hambre, pedir sin culpa y resolver ese antojo callejero que funciona perfecto con amigos y de noche.",
       "category": "Comida",
+      "subcategories": [
+        "Americana",
+        "Cena"
+      ],
       "tags": [
         "salchipapas",
         "fast food",
@@ -1587,6 +1713,12 @@
       "name": "Mo Sushi",
       "short_description": "Bocados de sushi para el alma con varias sedes en Cali para resolver rolls, makis y antojo japonés en plan casual. Funciona muy bien para almuerzo, cena, parche con amigos o una salida suave en pareja.",
       "category": "Comida",
+      "subcategories": [
+        "Sushi",
+        "Japonesa",
+        "Almuerzo",
+        "Cena"
+      ],
       "tags": [
         "sushi",
         "japones",
@@ -1637,6 +1769,12 @@
       "name": "Bulería",
       "short_description": "Tapas españolas para compartir el ritmo dentro del InterContinental Cali, con una mesa pensada para tapeo, vino y sobremesa larga. Funciona muy bien para una salida especial, plan en pareja o comida para compartir entre amigos.",
       "category": "Comida",
+      "subcategories": [
+        "Tapas",
+        "Mediterránea",
+        "Almuerzo",
+        "Cena"
+      ],
       "tags": [
         "tapas",
         "tapeo",
@@ -1971,6 +2109,9 @@
         "/place-media/selvah-rooftop/gallery-10.jpg"
       ],
       "category": "Bares y noche",
+      "subcategories": [
+        "Disco"
+      ],
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -2055,6 +2196,12 @@
         "/place-media/maranello/gallery-2.jpg"
       ],
       "category": "Comida",
+      "subcategories": [
+        "Pasta",
+        "Italiana",
+        "Almuerzo",
+        "Cena"
+      ],
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -2065,22 +2212,12 @@
         "jardin plaza",
         "restaurantes",
         "comida",
-        "comer",
-        "naturaleza",
-        "aire libre",
-        "caminar",
-        "plantas",
-        "jardin",
-        "pet friendly",
-        "mascotas",
-        "perros"
+        "comer"
       ],
       "moods": [
         "comer rico",
         "casual",
         "con amigos",
-        "al aire libre",
-        "caminar",
         "plan tranqui"
       ],
       "is_active": true,
@@ -2279,6 +2416,9 @@
         "/place-media/discopico/gallery-5.jpg"
       ],
       "category": "Bares y noche",
+      "subcategories": [
+        "Disco"
+      ],
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -2821,7 +2961,6 @@
         "manualidades",
         "coffee shop",
         "jardín",
-        "aire libre",
         "estilo",
         "instagrameable",
         "plan en pareja",
@@ -2836,8 +2975,7 @@
         "café",
         "tranqui",
         "plan tranqui",
-        "experiencia",
-        "al aire libre"
+        "experiencia"
       ],
       "is_active": true,
       "is_featured": false,
@@ -3070,15 +3208,21 @@
         "/place-media/cafe-san-camilo/gallery-8.jpg"
       ],
       "category": "Comida",
+      "subcategories": [
+        "Café",
+        "Desayuno",
+        "Brunch",
+        "Sandwiches"
+      ],
       "city": "Cali",
       "likes": "0",
       "tags": [
         "cafe",
         "brunch",
-        "cafeteria",
         "desayuno",
         "croissants",
         "bagels",
+        "sandwiches",
         "ciudad jardin",
         "pance",
         "el penon",
@@ -4843,6 +4987,12 @@
       "cover_image_url": "https://images.unsplash.com/photo-1552332386-f8dd00dc2f85?auto=format&fit=crop&w=1200&q=80",
       "gallery_urls": [],
       "category": "Comida",
+      "subcategories": [
+        "Tacos",
+        "Mexicana",
+        "Almuerzo",
+        "Cena"
+      ],
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -4851,23 +5001,15 @@
         "pance",
         "lago verde",
         "parque del perro",
-        "restaurantes",
-        "comida",
-        "comer",
-        "naturaleza",
-        "aire libre",
-        "caminar",
-        "pet friendly",
-        "mascotas",
-        "perros"
+        "gringas",
+        "almuerzo",
+        "cena"
       ],
       "moods": [
         "casual",
         "antojo",
         "con amigos",
         "comer rico",
-        "al aire libre",
-        "caminar",
         "plan tranqui"
       ],
       "is_active": true,
@@ -5331,10 +5473,16 @@
       "cover_image_url": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=1200&q=80",
       "gallery_urls": [],
       "category": "Comida",
+      "subcategories": [
+        "Asiática",
+        "Bowls",
+        "Saludable",
+        "Almuerzo"
+      ],
       "city": "Cali",
       "likes": "0",
       "tags": [
-        "asiatico",
+        "asiatica",
         "bowls",
         "cali",
         "granada",
@@ -5342,24 +5490,13 @@
         "jardin plaza",
         "pacific center",
         "parque del perro",
-        "restaurantes",
-        "comida",
-        "comer",
-        "naturaleza",
-        "aire libre",
-        "caminar",
-        "plantas",
-        "jardin",
-        "pet friendly",
-        "mascotas",
-        "perros"
+        "almuerzo",
+        "saludable"
       ],
       "moods": [
         "comer rico",
         "casual",
         "algo especial",
-        "al aire libre",
-        "caminar",
         "plan tranqui"
       ],
       "is_active": true,
@@ -5376,6 +5513,11 @@
       "cover_image_url": "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=1200&q=80",
       "gallery_urls": [],
       "category": "Comida",
+      "subcategories": [
+        "Parrilla",
+        "Almuerzo",
+        "Cena"
+      ],
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -5389,24 +5531,13 @@
         "unicentro",
         "chipichape",
         "parque del perro",
-        "restaurantes",
-        "comida",
-        "comer",
-        "naturaleza",
-        "aire libre",
-        "caminar",
-        "plantas",
-        "jardin",
-        "pet friendly",
-        "mascotas",
-        "perros"
+        "almuerzo",
+        "cena"
       ],
       "moods": [
         "con amigos",
         "comer rico",
         "casual",
-        "al aire libre",
-        "caminar",
         "plan tranqui"
       ],
       "is_active": true,
@@ -5423,6 +5554,12 @@
       "cover_image_url": "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=1200&q=80",
       "gallery_urls": [],
       "category": "Comida",
+      "subcategories": [
+        "Hamburguesas",
+        "Americana",
+        "Almuerzo",
+        "Cena"
+      ],
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -5432,22 +5569,15 @@
         "jardin plaza",
         "la flora",
         "novena",
-        "restaurantes",
-        "comida",
-        "comer",
-        "plantas",
-        "jardin",
-        "naturaleza",
         "burger",
-        "aire libre",
-        "caminar"
+        "americana",
+        "almuerzo",
+        "cena"
       ],
       "moods": [
         "casual",
         "con amigos",
-        "comer rico",
-        "al aire libre",
-        "caminar"
+        "comer rico"
       ],
       "is_active": true,
       "is_featured": false,
@@ -5495,6 +5625,12 @@
       "cover_image_url": "https://images.unsplash.com/photo-1552332386-f8dd00dc2f85?auto=format&fit=crop&w=1200&q=80",
       "gallery_urls": [],
       "category": "Comida",
+      "subcategories": [
+        "Tacos",
+        "Mexicana",
+        "Almuerzo",
+        "Cena"
+      ],
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -5507,22 +5643,14 @@
         "unicentro",
         "pacific center",
         "jardin plaza",
-        "restaurantes",
-        "comida",
-        "comer",
-        "plantas",
-        "jardin",
-        "naturaleza",
-        "aire libre",
-        "caminar"
+        "almuerzo",
+        "cena"
       ],
       "moods": [
         "casual",
         "antojo",
         "con amigos",
-        "comer rico",
-        "al aire libre",
-        "caminar"
+        "comer rico"
       ],
       "is_active": true,
       "is_featured": false,
@@ -5949,6 +6077,12 @@
       "cover_image_url": "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?auto=format&fit=crop&w=1200&q=80",
       "gallery_urls": [],
       "category": "Comida",
+      "subcategories": [
+        "Sushi",
+        "Japonesa",
+        "Almuerzo",
+        "Cena"
+      ],
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -5956,22 +6090,13 @@
         "parque del perro",
         "san fernando",
         "japones",
-        "restaurantes",
-        "comida",
-        "comer",
-        "naturaleza",
-        "aire libre",
-        "caminar",
-        "pet friendly",
-        "mascotas",
-        "perros"
+        "almuerzo",
+        "cena"
       ],
       "moods": [
         "casual",
         "comer rico",
         "hablar",
-        "al aire libre",
-        "caminar",
         "plan tranqui"
       ],
       "is_active": true,
@@ -5988,6 +6113,12 @@
       "cover_image_url": "https://images.unsplash.com/photo-1552332386-f8dd00dc2f85?auto=format&fit=crop&w=1200&q=80",
       "gallery_urls": [],
       "category": "Comida",
+      "subcategories": [
+        "Tacos",
+        "Mexicana",
+        "Almuerzo",
+        "Cena"
+      ],
       "city": "Cali",
       "likes": "0",
       "tags": [
@@ -5995,22 +6126,13 @@
         "mexicano",
         "parque del perro",
         "san fernando",
-        "restaurantes",
-        "comida",
-        "comer",
-        "naturaleza",
-        "aire libre",
-        "caminar",
-        "pet friendly",
-        "mascotas",
-        "perros"
+        "almuerzo",
+        "cena"
       ],
       "moods": [
         "casual",
         "comer rico",
         "con amigos",
-        "al aire libre",
-        "caminar",
         "antojo",
         "plan tranqui"
       ],
@@ -6573,28 +6695,26 @@
       "cover_image_url": "https://images.unsplash.com/photo-1517433670267-08bbd4be890f?auto=format&fit=crop&w=1200&q=80",
       "gallery_urls": [],
       "category": "Comida",
+      "subcategories": [
+        "Panadería",
+        "Café",
+        "Desayuno",
+        "Brunch"
+      ],
       "city": "Cali",
       "likes": "0",
       "tags": [
-        "restaurantes",
-        "comida",
-        "comer",
-        "plantas",
-        "jardin",
-        "naturaleza",
         "brunch",
         "desayuno",
         "panaderia",
         "bakery",
-        "aire libre",
-        "caminar"
+        "cafe",
+        "ciudad jardin"
       ],
       "moods": [
         "comer rico",
-        "al aire libre",
         "plan tranqui",
-        "antojo",
-        "caminar"
+        "antojo"
       ],
       "is_active": true,
       "is_featured": false,
@@ -6785,10 +6905,9 @@
       ],
       "category": "Comida",
       "subcategories": [
-        "sushi",
-        "japonesa",
-        "cena",
-        "cocteles"
+        "Sushi",
+        "Japonesa",
+        "Cena"
       ],
       "city": "Cali",
       "likes": "0",

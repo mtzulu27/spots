@@ -80,6 +80,7 @@ const emptySpotForActions: Spot = {
   neighborhood: '',
   hubName: '',
   category: 'Comida',
+  subcategories: [],
   city: 'Cali',
   likes: '0',
   image: '',

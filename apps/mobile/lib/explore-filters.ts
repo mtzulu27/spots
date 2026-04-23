@@ -338,8 +338,13 @@ export function matchesSpotToFilters(
     normalizedQuery,
     queryIntentFilters.requiredTerms,
   );
+  const spotCatalogSignals = getSpotCatalogSignals(spot);
   const spotInterestSignals = getSpotInterestSignals(spot);
-  const matchesInterests = matchesStructuredInterestFilters(mergedFilters.interests, spotInterestSignals);
+  const matchesInterests = matchesStructuredInterestFilters(
+    mergedFilters.interests,
+    spotCatalogSignals,
+    spotInterestSignals,
+  );
   const matchesPeople = mergedFilters.people === 0 || spot.maxPeople >= mergedFilters.people;
   const matchesHubName = matchesSpotLocationFilters(spot, mergedFilters.hubName);
   const activeDayFilters = mergedFilters.days.length > 0 ? mergedFilters.days : ['Any'];
@@ -385,7 +390,11 @@ export function matchesSpotToFilters(
   );
 }
 
-function matchesStructuredInterestFilters(selectedInterests: string[], spotInterestSignals: Set<string>) {
+function matchesStructuredInterestFilters(
+  selectedInterests: string[],
+  spotCatalogSignals: Set<string>,
+  spotInterestSignals: Set<string>,
+) {
   if (selectedInterests.length === 0) {
     return true;
   }
@@ -415,9 +424,11 @@ function matchesStructuredInterestFilters(selectedInterests: string[], spotInter
     selectedSubcategories.forEach((subcategory) => remainingSelections.delete(subcategory));
 
     if (primarySelected) {
-      const primaryMatches = group.aliases
-        .flatMap((alias) => getInterestMatchTerms(alias))
-        .some((term) => spotInterestSignals.has(term));
+      const primaryMatches =
+        group.aliases.some((alias) => spotCatalogSignals.has(normalizeSearchText(alias))) ||
+        group.aliases
+          .flatMap((alias) => getInterestMatchTerms(alias))
+          .some((term) => spotInterestSignals.has(term));
 
       if (!primaryMatches) {
         return false;
@@ -427,6 +438,7 @@ function matchesStructuredInterestFilters(selectedInterests: string[], spotInter
     if (
       selectedSubcategories.length > 0 &&
       !selectedSubcategories.some((subcategory) =>
+        spotCatalogSignals.has(subcategory) ||
         getInterestMatchTerms(subcategory).some((term) => spotInterestSignals.has(term)),
       )
     ) {
@@ -439,6 +451,7 @@ function matchesStructuredInterestFilters(selectedInterests: string[], spotInter
   }
 
   return Array.from(remainingSelections).some((interest) =>
+    spotCatalogSignals.has(interest) ||
     getInterestMatchTerms(interest).some((term) => spotInterestSignals.has(term)),
   );
 }
@@ -816,12 +829,26 @@ export function sortSpots(
       }
 
       if (sortBy === 'priceAsc') {
-        const diff = getBudgetLowerBound(a.spot) - getBudgetLowerBound(b.spot);
+        const aBudget = getBudgetLowerBound(a.spot);
+        const bBudget = getBudgetLowerBound(b.spot);
+        const aUnknown = aBudget <= 0;
+        const bUnknown = bBudget <= 0;
+        if (aUnknown !== bUnknown) {
+          return aUnknown ? 1 : -1;
+        }
+        const diff = aBudget - bBudget;
         return diff !== 0 ? diff : a.index - b.index;
       }
 
       if (sortBy === 'priceDesc') {
-        const diff = getBudgetUpperBound(b.spot) - getBudgetUpperBound(a.spot);
+        const aBudget = getBudgetLowerBound(a.spot);
+        const bBudget = getBudgetLowerBound(b.spot);
+        const aUnknown = aBudget <= 0;
+        const bUnknown = bBudget <= 0;
+        if (aUnknown !== bUnknown) {
+          return aUnknown ? 1 : -1;
+        }
+        const diff = bBudget - aBudget;
         return diff !== 0 ? diff : a.index - b.index;
       }
 
@@ -991,33 +1018,32 @@ function getInterestMatchTerms(interest: string) {
   }
 }
 
+export function getSpotCatalogSignals(spot: Spot) {
+  const signals = new Set<string>();
+
+  const addSignal = (value: string) => {
+    const normalized = normalizeSearchText(value);
+    if (normalized) {
+      signals.add(normalized);
+    }
+  };
+
+  addSignal(spot.category);
+  spot.subcategories.forEach(addSignal);
+  spot.interests.forEach(addSignal);
+  spot.tags.forEach(addSignal);
+  spot.moods.forEach(addSignal);
+
+  return signals;
+}
+
 function getSpotInterestSignals(spot: Spot) {
   const cached = spotInterestSignalsCache.get(spot);
   if (cached) {
     return cached;
   }
 
-  const signals = new Set<string>();
-
-  spot.interests.forEach((value) => {
-    const normalized = normalizeSearchText(value);
-    if (normalized) signals.add(normalized);
-  });
-
-  const normalizedCategory = normalizeSearchText(spot.category);
-  if (normalizedCategory) {
-    signals.add(normalizedCategory);
-  }
-
-  spot.tags.forEach((value) => {
-    const normalized = normalizeSearchText(value);
-    if (normalized) signals.add(normalized);
-  });
-
-  spot.moods.forEach((value) => {
-    const normalized = normalizeSearchText(value);
-    if (normalized) signals.add(normalized);
-  });
+  const signals = new Set<string>(getSpotCatalogSignals(spot));
 
   getSpotSearchAliases(spot).forEach((value) => {
     const normalized = normalizeSearchText(value);
@@ -1127,6 +1153,7 @@ function getSpotSearchDocument(spot: Spot) {
     branch.hubName,
     branch.address,
     branch.hours,
+    ...branch.subcategories,
     ...branch.tags,
     ...branch.moods,
     ...getSpotScheduleAliases(branch),
@@ -1148,6 +1175,7 @@ function getSpotSearchDocument(spot: Spot) {
       spot.hours,
       spot.instagram,
       spot.menuUrl,
+      ...spot.subcategories,
       ...spot.tags,
       ...spot.moods,
       ...getSpotSearchAliases(spot),
@@ -1414,7 +1442,7 @@ function parseSortValue(value: RawParam): ExploreSort {
 
 function getBudgetLowerBound(spot: Spot) {
   if (spot.minBudget > 0) return spot.minBudget;
-  return spot.maxBudget;
+  return 0;
 }
 
 function getBudgetUpperBound(spot: Spot) {
