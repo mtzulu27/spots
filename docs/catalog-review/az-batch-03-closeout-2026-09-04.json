@@ -1,0 +1,25 @@
+{
+  "batch": 3,
+  "status": "reviewed_with_pending",
+  "reviewedIds": [119, 3638, 3664, 3634, 3557],
+  "catalogChanges": {
+    "Bomberry": "Ficha, telefono, coordenadas y presupuesto estimado desde menu.",
+    "Brunch Duquesa": "Sin cambios: identidad no resuelta; permanece inactivo.",
+    "Brunch's house": "Descripcion, subcategorias y palabras clave respaldadas por dos menus completos.",
+    "Buleria": "Menu especifico de Cali, descripcion, subcategorias y palabras clave respaldadas por tres cartas.",
+    "Busca Por Dentro": "Coordenadas de Google Maps y descripcion depurada."
+  },
+  "validation": {
+    "catalogJson": true,
+    "progressCounts": "15 revisados + 174 pendientes = 189",
+    "diffCheckScoped": true,
+    "deploy": false
+  },
+  "pending": [
+    "Brunch Duquesa requiere fuente oficial que resuelva su identidad.",
+    "Brunch's house requiere fotos locales y contraste Google/Instagram.",
+    "Buleria requiere contraste final de horarios y contacto.",
+    "Busca Por Dentro conserva conflictos explicitos de direccion y horario.",
+    "Revisado no equivale a completamente verificado."
+  ]
+}

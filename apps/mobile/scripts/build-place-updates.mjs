@@ -1,0 +1,15 @@
+import { readFileSync, writeFileSync, renameSync, existsSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { projectCatalog, diffCatalog, mergeEvents } from '../lib/catalog-updates/engine.mjs';
+const root = new URL('../', import.meta.url);
+const baseline = new URL('public/place-updates-baseline.json', root);
+const feed = new URL('public/place-updates.json', root);
+const read = path => JSON.parse(readFileSync(path, 'utf8'));
+const atomic = (url, value) => { const path = fileURLToPath(url); writeFileSync(`${path}.tmp`, JSON.stringify(value)); renameSync(`${path}.tmp`, path); };
+const next = projectCatalog(read(new URL('public/spots-catalog.json', root)));
+if (!existsSync(baseline)) throw new Error('Missing baseline. Initialize it deliberately; do not announce the whole catalog.');
+const events = diffCatalog(read(baseline), next, new Date().toISOString());
+const existing = existsSync(feed) ? read(feed).events : [];
+atomic(feed, { version: 1, events: mergeEvents(existing, events) });
+atomic(baseline, next);
+console.log(`Place updates: ${events.length} changes, ${mergeEvents(existing, events).length} retained.`);

@@ -1,0 +1,14 @@
+{
+  "spot_id": 3541,
+  "status": "partial",
+  "source": "https://www.google.com/maps/search/Cabo+Leones+Cali/",
+  "confirmed": {
+    "phone": "3125931270",
+    "address": "Av. 9 Nte. #9 Norte -10 Tercer piso, Granada, Cali",
+    "latitude": 3.4560099,
+    "longitude": -76.5372538,
+    "hours": "Lunes cerrado; martes y miercoles 16-23; jueves 16-00; viernes y sabado 16-02; domingo 16-23"
+  },
+  "comparison": "Telefono, direccion y horario coinciden con catalogo. Coordenadas pendientes de incorporar al guardar ficha completa.",
+  "pending": ["Contraste Instagram", "Guardar ficha y validar fotos locales"]
+}

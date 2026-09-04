@@ -1,3 +1,4 @@
+import { getCategoryLabel } from '@/lib/category-icons';
 import { Link, useLocalSearchParams, useRouter } from 'expo-router';
 import {
   ImageBackground,
@@ -101,7 +102,7 @@ export default function TodayResultsScreen() {
                 <View style={styles.copy}>
                   <Text style={styles.title}>{spot.name}</Text>
                   <View style={styles.metaRow}>
-                    <Text style={styles.category}>{spot.category}</Text>
+                    <Text style={styles.category}>{getCategoryLabel(spot.category)}</Text>
                     <Text style={styles.likes}>
                       ♡ {formatLikesCount(getLikesCount(spot.likeTargetId))}
                     </Text>

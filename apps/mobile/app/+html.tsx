@@ -11,9 +11,9 @@ export default function RootHtml({ children }: PropsWithChildren) {
           name="viewport"
           content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"
         />
-        <meta name="theme-color" content="#050305" />
+        <meta name="theme-color" content="#f5f5f7" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="apple-mobile-web-app-title" content="Spots" />
         <meta name="mobile-web-app-capable" content="yes" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -32,7 +32,12 @@ export default function RootHtml({ children }: PropsWithChildren) {
           dangerouslySetInnerHTML={{
             __html: `
               (function () {
-                var stableHeight = 0;
+                var authChrome = window.location.pathname === '/' || /login|signup|welcome|profile-setup|onboarding/.test(window.location.pathname);
+  var chromeColor = authChrome ? '#050305' : '#f5f5f7';
+  document.querySelector('meta[name="theme-color"]').setAttribute('content', chromeColor);
+  document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]').setAttribute('content', authChrome ? 'black' : 'default');
+  document.documentElement.style.backgroundColor = chromeColor;
+  var stableHeight = 0;
                 var pendingShrinkHeight = null;
                 var rootReady = false;
                 var resumeTimer = null;
@@ -93,17 +98,10 @@ export default function RootHtml({ children }: PropsWithChildren) {
                   var nextHeight = readAppHeight();
                   var allowShrink = options && options.allowShrink && !isKeyboardFocusActive();
 
-                  if (
-                    window.navigator &&
-                    window.navigator.standalone &&
-                    window.screen &&
-                    window.screen.height
-                  ) {
+                  // Preserve the existing iOS standalone full-screen height recovery.
+                  if (window.navigator && window.navigator.standalone && window.screen && window.screen.height) {
                     var screenH = window.screen.height;
-                    var orient =
-                      (window.screen.orientation && window.screen.orientation.angle) ||
-                      window.orientation ||
-                      0;
+                    var orient = (window.screen.orientation && window.screen.orientation.angle) || window.orientation || 0;
                     if (orient % 180 === 0 && screenH - nextHeight > 30) {
                       nextHeight = screenH;
                     }
@@ -232,7 +230,7 @@ export default function RootHtml({ children }: PropsWithChildren) {
                 width: 100%;
                 height: var(--app-height);
                 min-height: var(--app-height);
-                background: #050305;
+                background: #f5f5f7;
                 font-family: 'Montserrat', 'Segoe UI', sans-serif;
                 -webkit-text-size-adjust: 100%;
                 overflow: hidden;

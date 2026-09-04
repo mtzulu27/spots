@@ -6,6 +6,14 @@ type ExploreMapProps = {
   spots: Spot[];
   onOpenSpot: (spotId: string) => void;
   onVisibleSpotsChange?: (spotIds: string[]) => void;
+  fullscreen?: boolean;
+  selectedSpotId?: string;
+  focusKey?: number;
+  onSelectSpot?: (id: string) => void;
+  userLocation?: { latitude: number; longitude: number } | null;
+  recenterKey?: number;
+  onBackgroundPress?: () => void;
+  onUserMove?: () => void;
 };
 
 export function ExploreMap({ spots, onOpenSpot, onVisibleSpotsChange }: ExploreMapProps) {

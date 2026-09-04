@@ -1,0 +1,30 @@
+{
+  "spot_id": 3664,
+  "status": "partial_review_menus_read",
+  "source": "https://lnk.bio/brunchshouse",
+  "menus": [
+    {
+      "branch": "Santa Elena",
+      "url": "https://storage2.me-qr.com/pdf/80990d4e-cd0f-48e0-ad85-132a2ce19c2f.pdf?time=1748106818",
+      "read": "Texto completo de las 9 paginas extraido con pdftotext.",
+      "offer": ["desayunos americanos", "huevos", "pancakes", "waffles de pandebono", "sandwiches", "costillas", "lomo de res", "postres", "cafe"],
+      "note": "Promocion de cafe vencida el 31 de julio de 2026: no usarla como precio vigente."
+    },
+    {
+      "branch": "Ciudad Jardin Bio Mall",
+      "url": "https://storage2.me-qr.com/pdf/3bf132d1-6176-410d-9e60-1586a193eb85.pdf?time=1747949538",
+      "read": "Texto completo de las 17 paginas extraido con pdftotext.",
+      "offer": ["desayunos americanos", "omelettes", "almuerzos", "zona keto y fit", "sandwiches", "hamburguesas", "hot dogs", "burritos", "pancakes", "waffles", "postres", "cafe", "opciones vegetarianas"],
+      "note": "La zona Keto y Fit respalda conservar Saludable como opcion, no como afirmacion nutricional general. No agregar Cena automaticamente pese al titulo Dinner de portada."
+    }
+  ],
+  "prices_cop": {
+    "coffee": 5300,
+    "adult_breakfast_examples": [16800, 17900, 26900, 33600],
+    "lunch_examples": [26300, 30500, 33600, 34900, 55700],
+    "existing_budget_preserved": [38000, 65000]
+  },
+  "pending": ["Verificacion visual de paginas antes de cambiar precios", "Instagram y Google Maps por sede", "Fotos remotas existentes: revisar y reemplazar por locales cuando sea necesario", "Asignar subcategorias existentes tras contraste"],
+  "catalog_changed": false,
+  "progress_changed": false
+}

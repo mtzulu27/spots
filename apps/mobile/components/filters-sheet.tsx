@@ -3,7 +3,6 @@ import { startTransition, useDeferredValue, useEffect, useMemo, useRef, useState
 import {
   Animated,
   Dimensions,
-  Image,
   LayoutChangeEvent,
   Easing,
   Modal,
@@ -19,6 +18,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AppIconButton, AppPrimaryButton } from '@/components/app-ui';
+import { CategoryIcon } from '@/components/category-icon';
 import {
   DEFAULT_FILTERS,
   type ExploreFilters,
@@ -38,16 +38,8 @@ import {
 import { useLocationStore } from '@/lib/location-store';
 import { useRelayoutSubscription } from '@/lib/relayout';
 import { useSpotsStore } from '@/lib/spots-store';
+import { accountUi } from '@/lib/account-ui';
 
-const exploreFoodIcon = require('../assets/explore_food_chef_hat_icon.png');
-const exploreCinemaIcon = require('../assets/explore_cinema_icon.png');
-const exploreArtIcon = require('../assets/explore_art_icon.png');
-const exploreDrinksIcon = require('../assets/explore_nightlife_icon.png');
-const exploreNightlifeIcon = require('../assets/explore_nightlife_disco_ball_icon.png');
-const exploreSportsIcon = require('../assets/explore_wellness_dumbbell_icon.png');
-const exploreFamilyIcon = require('../assets/explore_family_icon.png');
-const exploreEventsIcon = require('../assets/explore_events_icon.png');
-const exploreNatureIcon = require('../assets/explore_nature_icon.png');
 
 const MIN_PRICE = 0;
 const MAX_PRICE = 150000;
@@ -55,19 +47,19 @@ const SCREEN_HEIGHT = Dimensions.get('window').height;
 const FILTERS_SHEET_HEIGHT = Math.round(SCREEN_HEIGHT * 0.88);
 const FILTERS_COLLAPSED_OFFSET = FILTERS_SHEET_HEIGHT;
 const filtersUi = {
-  bg: '#f6f6f8',
-  surface: '#ffffff',
-  surfaceMuted: '#f0f0f3',
-  text: '#141417',
-  textSecondary: '#5f5f67',
-  textTertiary: '#85858f',
-  accent: '#EF3857',
-  accentSoft: 'rgba(239,56,87,0.08)',
+  bg: accountUi.surface,
+  surface: accountUi.bg,
+  surfaceMuted: accountUi.surfaceMuted,
+  text: accountUi.text,
+  textSecondary: accountUi.textSecondary,
+  textTertiary: accountUi.textTertiary,
+  accent: accountUi.accent,
+  accentSoft: accountUi.accentSoft,
 };
 
 const chipTextBase = {
-  fontSize: 14,
-  fontWeight: '600' as const,
+  fontSize: 12,
+  fontWeight: '500' as const,
 };
 
 const chipTextDefaultColor = '#5f5f67';
@@ -94,7 +86,6 @@ type CategoryOption = {
   key: string;
   label: string;
   legacyValue: string;
-  image: any;
   filterTokens: string[];
   subcategories: CategorySuboption[];
   momentOptions?: CategorySuboption[];
@@ -261,7 +252,6 @@ const categoryOptions: CategoryOption[] = [
     key: 'arte-cultura',
     label: 'Arte y cultura',
     legacyValue: 'Arte y cultura',
-    image: exploreArtIcon,
     filterTokens: ['Arte y cultura'],
     subcategories: [
       { label: 'Museos', value: 'Museos' },
@@ -280,7 +270,6 @@ const categoryOptions: CategoryOption[] = [
     key: 'tomar-algo',
     label: 'Tomar algo',
     legacyValue: 'Bares y noche',
-    image: exploreDrinksIcon,
     filterTokens: ['Tomar algo', 'Bares y noche'],
     subcategories: [
       { label: 'Cerveza', value: 'Cerveza' },
@@ -300,7 +289,6 @@ const categoryOptions: CategoryOption[] = [
     key: 'vida-nocturna',
     label: 'Vida nocturna',
     legacyValue: 'Bares y noche',
-    image: exploreNightlifeIcon,
     filterTokens: ['Vida nocturna', 'Bares y noche'],
     subcategories: [
       { label: 'Salsa', value: 'Salsa' },
@@ -317,7 +305,6 @@ const categoryOptions: CategoryOption[] = [
     key: 'comida',
     label: 'Comida',
     legacyValue: 'Restaurantes y cafés',
-    image: exploreFoodIcon,
     filterTokens: ['Comida', 'Restaurantes y cafés'],
     subcategories: foodMomentOptions,
     momentOptions: foodMomentOptions,
@@ -327,7 +314,6 @@ const categoryOptions: CategoryOption[] = [
     key: 'bienestar',
     label: 'Bienestar',
     legacyValue: 'Deporte y bienestar',
-    image: exploreSportsIcon,
     filterTokens: ['Bienestar', 'Deporte y bienestar'],
     subcategories: [
       { label: 'Yoga', value: 'Yoga' },
@@ -344,7 +330,6 @@ const categoryOptions: CategoryOption[] = [
     key: 'familiar',
     label: 'Familiar',
     legacyValue: 'Familiar',
-    image: exploreFamilyIcon,
     filterTokens: ['Familiar'],
     subcategories: [
       { label: 'Parques infantiles', value: 'Parques infantiles' },
@@ -361,7 +346,6 @@ const categoryOptions: CategoryOption[] = [
     key: 'al-aire-libre',
     label: 'Al aire libre',
     legacyValue: 'Naturaleza y aire libre',
-    image: exploreNatureIcon,
     filterTokens: ['Al aire libre', 'Naturaleza y aire libre'],
     subcategories: [
       { label: 'Parques', value: 'Parques' },
@@ -504,6 +488,11 @@ export function FiltersSheet({
   const { spots } = useSpotsStore();
   const { userLocation, error: locationError, requestLocation } = useLocationStore();
   const scrollRef = useRef<ScrollView | null>(null);
+  const [openSection, setOpenSection] = useState<string | null>(null);
+  const accordion = (key: string) => ({
+    expanded: openSection === key,
+    onToggle: () => setOpenSection(current => current === key ? null : key),
+  });
   const currentScrollYRef = useRef(0);
   const sectionLayoutRef = useRef<Record<DynamicSectionKey, { y: number; height: number } | null>>({
     category: null,
@@ -1473,7 +1462,9 @@ export function FiltersSheet({
             onScroll={handleFiltersScroll}
             scrollEventThrottle={16}
           >
-          <Section title="Ordenar por">
+          <Section title="Ordenar por" expanded
+            actionLabel={sortBy !== DEFAULT_FILTERS.sortBy ? 'Quitar' : undefined}
+            onActionPress={() => setSortBy(DEFAULT_FILTERS.sortBy)}>
             <View style={styles.sortRow}>
               {sortOptions.map((option) => {
                 const active = sortBy === option.value;
@@ -1496,6 +1487,8 @@ export function FiltersSheet({
 
           <Section
             title="Categoría"
+            {...accordion('category')}
+            activeCount={new Set(selectedCategories.filter(value => categorySelectionValues.includes(value))).size}
             actionLabel={hasCategorySelection ? 'Quitar' : undefined}
             onActionPress={hasCategorySelection ? clearCategorySelections : undefined}
             onLayout={(event) => handleDynamicSectionLayout('category', event)}
@@ -1509,7 +1502,7 @@ export function FiltersSheet({
                     style={[styles.categoryPill, active && styles.categoryPillActive]}
                     onPress={() => toggleCategory(option.key)}
                   >
-                    <Image source={option.image} style={styles.categoryPillImage} resizeMode="contain" />
+                    <CategoryIcon category={option.label} size={20} color={active ? chipTextActiveColor : chipTextDefaultColor} />
                     <Text style={[styles.categoryPillText, active && styles.categoryPillTextActive]}>
                       {option.label}
                     </Text>
@@ -1602,9 +1595,11 @@ export function FiltersSheet({
 
           <Section
             title="Disponibilidad"
-            actionLabel={selectedWhenPreset !== 'any' || showAdvancedWhen ? 'Quitar' : undefined}
+            {...accordion('availability')}
+            activeCount={Number(openNowOnly) + selectedDays.length + Number(Boolean(time)) + Number(Boolean(period))}
+            actionLabel={openNowOnly || selectedDays.length > 0 || Boolean(time) || Boolean(period) ? 'Quitar' : undefined}
             onActionPress={
-              selectedWhenPreset !== 'any' || showAdvancedWhen
+              openNowOnly || selectedDays.length > 0 || Boolean(time) || Boolean(period)
                 ? () => {
                     applyWhenPreset('any');
                     setShowAdvancedWhen(false);
@@ -1726,6 +1721,7 @@ export function FiltersSheet({
 
           <Section
             title="Distancia"
+            {...accordion('distance')}
             actionLabel={distance !== DEFAULT_FILTERS.distance ? 'Quitar' : undefined}
             onActionPress={distance !== DEFAULT_FILTERS.distance ? () => setDistance(DEFAULT_FILTERS.distance) : undefined}
             onLayout={(event) => handleDynamicSectionLayout('distance', event)}
@@ -1805,6 +1801,10 @@ export function FiltersSheet({
 
           <Section
             title="Ubicación"
+            {...accordion('location')}
+            activeCount={new Set(selectedHubNames).size}
+            actionLabel={selectedHubNames.length > 0 ? 'Quitar' : undefined}
+            onActionPress={() => { setSelectedHubNames([]); setSelectedNeighborhoods([]); }}
             onLayout={(event) => handleDynamicSectionLayout('location', event)}
           >
             <View style={styles.locationContent}>
@@ -1933,11 +1933,13 @@ export function FiltersSheet({
             </View>
           </Section>
 
+          <Divider />
           <Section
             title="Presupuesto"
-            actionLabel={selectedBudgetPreset !== null ? 'Quitar' : undefined}
+            {...accordion('budget')}
+            actionLabel={minBudget !== DEFAULT_FILTERS.minBudget || maxBudget !== DEFAULT_FILTERS.maxBudget ? 'Quitar' : undefined}
             onActionPress={
-              selectedBudgetPreset !== null
+              minBudget !== DEFAULT_FILTERS.minBudget || maxBudget !== DEFAULT_FILTERS.maxBudget
                 ? () => applyBudgetPreset(DEFAULT_FILTERS.minBudget, DEFAULT_FILTERS.maxBudget)
                 : undefined
             }
@@ -2105,6 +2107,9 @@ function Section({
   actionLabel,
   onActionPress,
   onLayout,
+  expanded,
+  onToggle,
+  activeCount = actionLabel ? 1 : 0,
 }: {
   title: string;
   children: ReactNode;
@@ -2112,18 +2117,65 @@ function Section({
   actionLabel?: string;
   onActionPress?: () => void;
   onLayout?: (event: LayoutChangeEvent) => void;
+  expanded: boolean;
+  onToggle?: () => void;
+  activeCount?: number;
 }) {
+  const progress = useRef(new Animated.Value(expanded ? 1 : 0)).current;
+  const [contentMounted, setContentMounted] = useState(expanded);
+  const [contentHeight, setContentHeight] = useState(0);
+
+  useEffect(() => {
+    if (expanded) setContentMounted(true);
+    const animation = Animated.timing(progress, {
+      toValue: expanded ? 1 : 0,
+      duration: expanded ? 180 : 150,
+      useNativeDriver: false,
+    });
+    animation.start(({ finished }) => {
+      if (finished && !expanded) setContentMounted(false);
+    });
+    return () => animation.stop();
+  }, [expanded, progress]);
+
   return (
     <View style={[styles.section, containerStyle]} onLayout={onLayout}>
       <View style={styles.sectionHeaderRow}>
-        <Text style={styles.sectionTitle}>{title}</Text>
+        <Pressable disabled={!onToggle} accessibilityRole={onToggle ? 'button' : 'header'} accessibilityLabel={`${title}${activeCount ? `, ${activeCount} filtros activos` : ''}`} accessibilityState={onToggle ? { expanded } : undefined} onPress={onToggle} style={styles.accordionTrigger}>
+          <View style={styles.accordionLabel}>
+            <Text style={styles.sectionTitle}>{title}</Text>
+            {activeCount > 0 && <View style={styles.accordionBadge}><Text style={styles.accordionBadgeText}>{activeCount}</Text></View>}
+          </View>
+        </Pressable>
         {actionLabel && onActionPress ? (
-          <Pressable onPress={onActionPress} hitSlop={8}>
+          <Pressable accessibilityRole="button" accessibilityLabel={`Quitar filtros de ${title}`} onPress={onActionPress} hitSlop={8}>
             <Text style={styles.sectionActionText}>{actionLabel}</Text>
           </Pressable>
         ) : null}
+        {onToggle ? <Pressable accessibilityRole="button" accessibilityLabel={`${expanded ? 'Colapsar' : 'Expandir'} ${title}`} accessibilityState={{ expanded }} onPress={onToggle} style={{ minWidth: 44, minHeight: 44, alignItems: 'center', justifyContent: 'center' }}>
+          <Ionicons name={expanded ? 'chevron-up' : 'chevron-down'} size={20} color={filtersUi.text} />
+        </Pressable> : null}
       </View>
-      {children}
+      {!onToggle ? <View style={{ paddingTop: 12, gap: 12 }}>{children}</View> : contentMounted ? (
+        <Animated.View
+          pointerEvents={expanded ? 'auto' : 'none'}
+          accessibilityElementsHidden={!expanded}
+          importantForAccessibility={expanded ? 'auto' : 'no-hide-descendants'}
+          style={{
+            overflow: 'hidden',
+            height: progress.interpolate({ inputRange: [0, 1], outputRange: [0, contentHeight] }),
+            opacity: progress,
+            transform: [{ translateY: progress.interpolate({ inputRange: [0, 1], outputRange: [-8, 0] }) }],
+          }}
+        >
+          <View
+            style={styles.accordionContent}
+            onLayout={event => setContentHeight(event.nativeEvent.layout.height)}
+          >
+            {children}
+          </View>
+        </Animated.View>
+      ) : null}
     </View>
   );
 }
@@ -2356,7 +2408,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 18,
-    fontWeight: '700',
+    fontWeight: '600',
     color: filtersUi.text,
     letterSpacing: -0.3,
   },
@@ -2366,12 +2418,20 @@ const styles = StyleSheet.create({
   },
   content: {
     paddingHorizontal: 20,
-    gap: 18,
+    gap: 12,
   },
   section: {
-    gap: 12,
-    paddingVertical: 4,
+    gap: 0,
+    paddingVertical: 2,
     zIndex: 1,
+  },
+  accordionContent: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    paddingTop: 12,
+    gap: 12,
   },
   sectionHeaderRow: {
     flexDirection: 'row',
@@ -2383,11 +2443,35 @@ const styles = StyleSheet.create({
     zIndex: 12,
   },
   sectionTitle: {
-    fontSize: 13,
+    fontSize: 15,
     fontWeight: '600',
-    color: filtersUi.textTertiary,
-    textTransform: 'uppercase',
-    letterSpacing: 0.3,
+    color: filtersUi.text,
+  },
+  accordionTrigger: {
+    flex: 1,
+    minHeight: 44,
+    justifyContent: 'center',
+    alignItems: 'flex-start',
+  },
+  accordionLabel: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  accordionBadge: {
+    minWidth: 20,
+    height: 20,
+    paddingHorizontal: 4,
+    borderRadius: 10,
+    backgroundColor: accountUi.accent,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  accordionBadgeText: {
+    color: '#ffffff',
+    fontSize: 11,
+    fontWeight: '700',
+    lineHeight: 14,
   },
   sectionActionText: {
     fontSize: 13,
@@ -2419,8 +2503,10 @@ const styles = StyleSheet.create({
   },
   locationSelectButton: {
     minHeight: 48,
-    borderRadius: 16,
-    backgroundColor: filtersUi.surface,
+    borderRadius: 24,
+    borderWidth: 1,
+    borderColor: '#d6d6dc',
+    backgroundColor: accountUi.surface,
     paddingHorizontal: 14,
     flexDirection: 'row',
     alignItems: 'center',
@@ -2436,7 +2522,7 @@ const styles = StyleSheet.create({
   locationSelectValue: {
     flex: 1,
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: '400',
   },
   locationSelectValuePlaceholder: {
     color: filtersUi.textTertiary,
@@ -2461,10 +2547,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 6,
-  },
-  categoryPillImage: {
-    width: 30,
-    height: 30,
   },
   categoryPillActive: {
     backgroundColor: filtersUi.accentSoft,
@@ -2771,7 +2853,9 @@ const styles = StyleSheet.create({
     flex: 0.88,
     height: 44,
     borderRadius: 16,
-    backgroundColor: filtersUi.surface,
+    borderWidth: 1,
+    borderColor: '#d6d6dc',
+    backgroundColor: accountUi.surface,
     paddingHorizontal: 14,
     justifyContent: 'center',
   },
@@ -2790,7 +2874,7 @@ const styles = StyleSheet.create({
   daySelectValue: {
     flex: 1,
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: '400',
     color: filtersUi.textTertiary,
   },
   daySelectValueActive: {
@@ -2955,7 +3039,7 @@ const styles = StyleSheet.create({
     zIndex: 24,
     paddingHorizontal: 20,
     paddingTop: 12,
-    backgroundColor: 'rgba(245,245,247,0.98)',
+    backgroundColor: filtersUi.bg,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
@@ -2995,9 +3079,11 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   selectorSearchWrap: {
-    minHeight: 46,
-    borderRadius: 16,
-    backgroundColor: filtersUi.surface,
+    minHeight: 48,
+    borderRadius: 24,
+    borderWidth: 1,
+    borderColor: '#d6d6dc',
+    backgroundColor: accountUi.surface,
     paddingHorizontal: 14,
     marginBottom: 12,
     flexDirection: 'row',
@@ -3015,8 +3101,8 @@ const styles = StyleSheet.create({
   },
   selectorSearchInput: {
     flex: 1,
-    fontSize: 15,
-    fontWeight: '500',
+    fontSize: 16,
+    fontWeight: '400',
     color: filtersUi.text,
     paddingVertical: 0,
     outlineStyle: 'none' as never,
@@ -3030,7 +3116,7 @@ const styles = StyleSheet.create({
   },
   selectorTitle: {
     fontSize: 18,
-    fontWeight: '700',
+    fontWeight: '600',
     color: filtersUi.text,
   },
   selectorList: {
@@ -3220,8 +3306,6 @@ const styles = StyleSheet.create({
   clearButton: {
     width: '30%',
     minHeight: 52,
-    borderRadius: 28,
-    backgroundColor: filtersUi.surface,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -3239,3 +3323,6 @@ const styles = StyleSheet.create({
     color: filtersUi.accent,
   },
 });
+
+// Shared visual primitives for discovery filter sheets.
+export { Section as FilterSection, Divider as FilterDivider, styles as filterSheetStyles };

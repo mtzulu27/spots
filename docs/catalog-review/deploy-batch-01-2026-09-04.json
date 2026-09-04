@@ -1,0 +1,12 @@
+{
+  "batch": 1,
+  "status": "failed_partial_upload",
+  "build": "export:web completed successfully",
+  "transport": "FTPS TLS 1.3, certificate validated for hostinger.com, configured server 145.223.107.61",
+  "acceptedFiles": ["index.html"],
+  "failedFile": "place-media/agave-azul-cocina-bar/revision-az-20260904-0.jpg",
+  "serverError": "450 Transfer aborted. Link to file server lost",
+  "publicVerification": false,
+  "nextAction": "Resolve Hostinger file-server failure, then retry and verify the entire pending deployment before continuing catalogue batches.",
+  "authorization": "User approved publication of current local UI, auth and configuration changes with the catalogue."
+}

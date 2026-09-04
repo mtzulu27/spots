@@ -1,0 +1,264 @@
+{
+  "date": "2026-09-04",
+  "status": "partial_batch_saved",
+  "spotIds": [
+    442,
+    3531
+  ],
+  "before": [
+    {
+      "id": 3531,
+      "type": "place",
+      "slug": "cafe-san-camilo",
+      "name": "Café San Camilo",
+      "short_description": "Café, brunch y terraza con varias sedes en Cali y Dapa para resolver desayunos bonitos, platos de brunch y café bien hecho en un plan más chill que nocturno. Funciona muy bien para desayuno largo, media mañana, tarde suave o parche tranquilo entre semana y fin de semana.",
+      "cover_image_url": "/place-media/cafe-san-camilo/cover.jpg",
+      "gallery_urls": [
+        "/place-media/cafe-san-camilo/gallery-1.jpg",
+        "/place-media/cafe-san-camilo/gallery-2.jpg",
+        "/place-media/cafe-san-camilo/gallery-3.jpg",
+        "/place-media/cafe-san-camilo/gallery-4.jpg",
+        "/place-media/cafe-san-camilo/gallery-5.jpg",
+        "/place-media/cafe-san-camilo/gallery-6.jpg",
+        "/place-media/cafe-san-camilo/gallery-7.jpg",
+        "/place-media/cafe-san-camilo/gallery-8.jpg"
+      ],
+      "category": "Comida",
+      "subcategories": [
+        "Café",
+        "Desayuno",
+        "Brunch",
+        "Sandwiches"
+      ],
+      "city": "Cali",
+      "likes": "0",
+      "tags": [
+        "cafe",
+        "brunch",
+        "desayuno",
+        "croissants",
+        "bagels",
+        "sandwiches",
+        "ciudad jardin",
+        "pance",
+        "el penon",
+        "dapa",
+        "terraza",
+        "brunch bonito"
+      ],
+      "moods": [
+        "cafe",
+        "brunch",
+        "comer rico",
+        "plan tranqui",
+        "antojo",
+        "algo especial"
+      ],
+      "is_active": true,
+      "is_featured": false,
+      "created_at": "2026-04-02T18:16:16.33289+00:00",
+      "updated_at": "2026-04-18T04:20:00.000000+00:00"
+    },
+    {
+      "id": 442,
+      "type": "place",
+      "slug": "cafe-gardenia",
+      "name": "Cafe Gardenia",
+      "short_description": "Cafe, pasteleria y brunch para parche suave y mesa larga.",
+      "cover_image_url": "/place-media/cafe-gardenia/instagram-20260904-1.jpg",
+      "gallery_urls": [
+        "/place-media/cafe-gardenia/instagram-20260904-1.jpg",
+        "/place-media/cafe-gardenia/instagram-20260904-0.jpg"
+      ],
+      "category": "Comida",
+      "subcategories": [
+        "Café",
+        "Brunch",
+        "Pastelería",
+        "Panadería",
+        "Desayuno",
+        "Almuerzo",
+        "Sandwiches",
+        "Bowls",
+        "Vegetariana",
+        "Postres"
+      ],
+      "city": "Cali",
+      "likes": "0",
+      "tags": [
+        "cafe",
+        "brunch",
+        "pasteleria",
+        "postres",
+        "cali",
+        "restaurantes",
+        "comida",
+        "comer",
+        "cafeteria",
+        "desayuno",
+        "dulce",
+        "opciones veganas",
+        "masa madre",
+        "bowls",
+        "sandwiches"
+      ],
+      "moods": [
+        "cafe",
+        "tranqui",
+        "brunch",
+        "comer rico",
+        "plan tranqui",
+        "antojo"
+      ],
+      "is_active": true,
+      "is_featured": false,
+      "created_at": "2026-04-01T15:49:20.545129+00:00",
+      "updated_at": "2026-04-01T15:49:20.545129+00:00"
+    }
+  ],
+  "finalRecords": [
+    {
+      "id": 3531,
+      "type": "place",
+      "slug": "cafe-san-camilo",
+      "name": "Café San Camilo",
+      "short_description": "Café y brunch con bagels, croissants rellenos, pancakes, bowls de açaí y pastelería. Ofrece espresso, cold brew y métodos de filtrado; la carta de hamburguesas es exclusiva de Dapa.",
+      "cover_image_url": "/place-media/cafe-san-camilo/cover.jpg",
+      "gallery_urls": [
+        "/place-media/cafe-san-camilo/gallery-1.jpg",
+        "/place-media/cafe-san-camilo/gallery-2.jpg",
+        "/place-media/cafe-san-camilo/gallery-3.jpg",
+        "/place-media/cafe-san-camilo/gallery-4.jpg",
+        "/place-media/cafe-san-camilo/gallery-5.jpg",
+        "/place-media/cafe-san-camilo/gallery-6.jpg",
+        "/place-media/cafe-san-camilo/gallery-7.jpg",
+        "/place-media/cafe-san-camilo/gallery-8.jpg"
+      ],
+      "category": "Comida",
+      "subcategories": [
+        "Café",
+        "Desayuno",
+        "Brunch",
+        "Sandwiches",
+        "Panadería",
+        "Pastelería",
+        "Bowls",
+        "Açaí",
+        "Postres"
+      ],
+      "city": "Cali",
+      "likes": "0",
+      "tags": [
+        "cafe",
+        "brunch",
+        "desayuno",
+        "croissants",
+        "bagels",
+        "sandwiches",
+        "acai",
+        "pancakes",
+        "pasteleria",
+        "cold brew",
+        "cafe filtrado",
+        "chemex",
+        "v60",
+        "prensa francesa",
+        "hamburguesas en dapa"
+      ],
+      "moods": [
+        "cafe",
+        "brunch",
+        "comer rico",
+        "plan tranqui",
+        "antojo",
+        "algo especial"
+      ],
+      "is_active": true,
+      "is_featured": false,
+      "created_at": "2026-04-02T18:16:16.33289+00:00",
+      "updated_at": "2026-04-18T04:20:00.000000+00:00"
+    },
+    {
+      "id": 442,
+      "type": "place",
+      "slug": "cafe-gardenia",
+      "name": "Cafe Gardenia",
+      "short_description": "Café y brunch con panadería de masa madre, pastelería, waffles, sandwiches y bowls de açaí. También ofrece hamburguesas y opciones vegetarianas.",
+      "cover_image_url": "/place-media/cafe-gardenia/instagram-20260904-1.jpg",
+      "gallery_urls": [
+        "/place-media/cafe-gardenia/instagram-20260904-1.jpg",
+        "/place-media/cafe-gardenia/instagram-20260904-0.jpg"
+      ],
+      "category": "Comida",
+      "subcategories": [
+        "Café",
+        "Brunch",
+        "Pastelería",
+        "Panadería",
+        "Desayuno",
+        "Almuerzo",
+        "Sandwiches",
+        "Bowls",
+        "Vegetariana",
+        "Postres",
+        "Waffles",
+        "Hamburguesas",
+        "Açaí"
+      ],
+      "city": "Cali",
+      "likes": "0",
+      "tags": [
+        "cafe",
+        "brunch",
+        "pasteleria",
+        "postres",
+        "desayuno",
+        "opciones vegetarianas",
+        "opciones veganas",
+        "masa madre",
+        "bowls",
+        "sandwiches",
+        "waffles",
+        "hamburguesas",
+        "acai"
+      ],
+      "moods": [
+        "cafe",
+        "brunch",
+        "comer rico",
+        "plan tranqui",
+        "antojo"
+      ],
+      "is_active": true,
+      "is_featured": false,
+      "created_at": "2026-04-01T15:49:20.545129+00:00",
+      "updated_at": "2026-04-01T15:49:20.545129+00:00"
+    }
+  ],
+  "sources": [
+    "gardenia-granada-menu-2026-09-04.json",
+    "gardenia-rio-menu-saved-2026-09-04.json",
+    "san-camilo-menu-partial-2026-09-04.json"
+  ],
+  "changes": [
+    "Gardenia: descripcion y metadata ajustadas a menus, anadidas Waffles, Hamburguesas y Açaí.",
+    "San Camilo: descripcion y metadata ajustadas a secciones leidas; oferta Dapa diferenciada, sin generalizar hamburguesas como subcategoria."
+  ],
+  "preserved": [
+    "Presupuestos, sedes, horarios, contactos y fotos existentes."
+  ],
+  "validation": [
+    "JSON leido del catalogo real y comparado con cambio esperado.",
+    "Todas las referencias locales de fotos de ambos lugares existen."
+  ],
+  "pending": [
+    "Lote 4 no cerrado; no aumentar reviewedIds.",
+    "Gardenia: discrepancias de horarios, reserva y posible sede duplicada.",
+    "San Camilo: secciones pendientes de menu e Instagram/Maps por sede.",
+    "Cafe Pintado y Cafe Quindio: fotos reales y corroboracion completa.",
+    "Portal fiweex de Quindio abierto: solo web, contacto y encuesta; no menu.",
+    "Dos paginas San Camilo calientes/frias sin cafe fallaron en web; no se declaran leidas.",
+    "No se comprobo la app en esta ejecucion."
+  ],
+  "newPhotos": 0
+}

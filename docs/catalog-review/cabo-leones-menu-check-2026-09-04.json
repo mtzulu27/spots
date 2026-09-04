@@ -1,0 +1,22 @@
+{
+  "spot_id": 3541,
+  "status": "partial_review_not_complete",
+  "source": "https://www.mezzy.co/r/cabo-leones/menu",
+  "sections_read": ["Tardeo", "Cocteleria", "Carta", "Licor", "Bebidas", "Vinos", "Otros"],
+  "findings": {
+    "category": "La carta respalda Tomar algo y Cocktails. No agregar Cena automaticamente por ofrecer platos.",
+    "search_candidates": ["cocteleria de autor", "cocteles sin alcohol", "vino por copa", "cerveza", "sangria", "cafe", "ceviche", "hamburguesas", "opciones vegetarianas"],
+    "prices_cop": {
+      "mocktails": 25000,
+      "beer_from": 14900,
+      "wine_by_glass": 40000,
+      "signature_cocktails_range": [50000, 82000],
+      "savory_sharing_dishes_range": [39000, 79000],
+      "desserts": 25000
+    }
+  },
+  "preserved": "Presupuesto existente 50000-200000 sin reemplazarlo por precios de botellas. Fotos locales existentes conservadas.",
+  "pending": ["Corroborar Instagram y Google Business", "Validar subcategorias existentes antes de asignarlas", "Guardar cambios y JSON final al completar la revision"],
+  "catalog_changed": false,
+  "progress_changed": false
+}

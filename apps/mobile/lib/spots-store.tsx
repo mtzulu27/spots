@@ -1,8 +1,10 @@
 import {
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from 'react';
@@ -17,6 +19,9 @@ const staticCatalogPath = '/spots-catalog.json';
 type SpotRow = {
   id: number;
   type: 'place' | 'event';
+  starts_at?: string | null;
+  ends_at?: string | null;
+  ticket_price?: number | null;
   slug: string;
   name: string;
   short_description: string;
@@ -87,6 +92,7 @@ type SpotsStoreValue = {
   backendEnabled: boolean;
   error: string | null;
   refresh: () => Promise<void>;
+  refreshIfStale: () => Promise<void>;
 };
 
 const SpotsStoreContext = createContext<SpotsStoreValue>({
@@ -95,6 +101,7 @@ const SpotsStoreContext = createContext<SpotsStoreValue>({
   backendEnabled: false,
   error: null,
   refresh: async () => {},
+  refreshIfStale: async () => {},
 });
 
 const autoImportedPrioritySlugs = new Set([
@@ -180,7 +187,7 @@ function getPrimarySpotImage(
     (url) => typeof url === 'string' && url.trim().length > 0,
   )?.trim();
 
-  return firstGalleryImage || coverImageUrl || '';
+  return coverImageUrl?.trim() || firstGalleryImage || '';
 }
 
 function normalizeSpotSubcategories(values: string[] | null | undefined) {
@@ -259,6 +266,9 @@ function mapRowsToSpots(spotRows: SpotRow[], branchRows: BranchRow[], branchHour
         updatedAt: spot.updated_at,
         likeTargetId: String(spot.id),
         type: spot.type,
+        startsAt: spot.starts_at,
+        endsAt: spot.ends_at,
+        ticketPrice: spot.ticket_price,
         name: spot.name,
         brandName: spot.name,
         branchName: '',
@@ -324,6 +334,9 @@ function mapRowsToSpots(spotRows: SpotRow[], branchRows: BranchRow[], branchHour
         updatedAt: spot.updated_at,
         likeTargetId: String(spot.id),
         type: spot.type,
+        startsAt: spot.starts_at,
+        endsAt: spot.ends_at,
+        ticketPrice: spot.ticket_price,
         name: spot.name,
         brandName: spot.name,
         branchName: normalizedNeighborhood,
@@ -750,20 +763,43 @@ export function SpotsStoreProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(shouldUseCatalog && !(cachedSpots && cachedSpots.length > 0));
   const [error, setError] = useState<string | null>(null);
 
-  async function refresh() {
+  const inFlight = useRef<Promise<void> | null>(null);
+  const lastAttempt = useRef<number | null>(null);
+  const lastContent = useRef<string | null>(null);
+
+  const refresh = useCallback((): Promise<void> => {
+    if (!shouldUseCatalog) return Promise.resolve();
+    if (inFlight.current) return inFlight.current;
+    lastAttempt.current = Date.now();
+    const request = (async () => {
     try {
       const snapshot = await fetchStaticCatalog();
-      const nextSpots = mapRowsToSpots(snapshot.spots, snapshot.branches, snapshot.branchHours);
-      setSpots(nextSpots);
-      writeCachedSpots(nextSpots);
+      const content = JSON.stringify(snapshot);
+      if (content !== lastContent.current) {
+        const nextSpots = mapRowsToSpots(snapshot.spots, snapshot.branches, snapshot.branchHours);
+        setSpots(nextSpots);
+        writeCachedSpots(nextSpots);
+        lastContent.current = content;
+      }
       setError(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'No pudimos cargar Spots');
       throw err;
     } finally {
+      inFlight.current = null;
       setLoading(false);
     }
-  }
+    })();
+    inFlight.current = request;
+    return request;
+  }, [shouldUseCatalog]);
+
+  const refreshIfStale = useCallback(() => {
+    if (inFlight.current) return inFlight.current;
+    // Throttle failures too, so navigating offline does not repeatedly retry.
+    if (lastAttempt.current !== null && Date.now() - lastAttempt.current < 60_000) return Promise.resolve();
+    return refresh();
+  }, [refresh]);
 
   useEffect(() => {
     if (Platform.OS !== 'web') {
@@ -772,35 +808,8 @@ export function SpotsStoreProvider({ children }: { children: ReactNode }) {
       return;
     }
 
-    let active = true;
-
-    async function load() {
-      try {
-        const snapshot = await fetchStaticCatalog();
-        if (active) {
-          const nextSpots = mapRowsToSpots(snapshot.spots, snapshot.branches, snapshot.branchHours);
-          setSpots(nextSpots);
-          writeCachedSpots(nextSpots);
-          setError(null);
-        }
-      } catch (err) {
-        if (active) {
-          setError(err instanceof Error ? err.message : 'No pudimos cargar Spots');
-          setSpots(readCachedSpots() ?? []);
-        }
-      } finally {
-        if (active) {
-          setLoading(false);
-        }
-      }
-    }
-
-    load();
-
-    return () => {
-      active = false;
-    };
-  }, []);
+    void refreshIfStale().catch(() => {});
+  }, [refreshIfStale]);
 
   const value = useMemo(
     () => ({
@@ -809,8 +818,9 @@ export function SpotsStoreProvider({ children }: { children: ReactNode }) {
       backendEnabled: false,
       error,
       refresh,
+      refreshIfStale,
     }),
-    [spots, loading, error],
+    [spots, loading, error, refresh, refreshIfStale],
   );
 
   return (

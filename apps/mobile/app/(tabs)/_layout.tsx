@@ -2,6 +2,7 @@ import { Redirect, Tabs } from 'expo-router';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { appColors } from '@/components/app-ui';
 import { useAuthStore } from '@/lib/auth-store';
+import { localPreviewEnabled } from '@/lib/local-preview';
 
 export default function TabsLayout() {
   const { loading, user } = useAuthStore();
@@ -14,7 +15,7 @@ export default function TabsLayout() {
     );
   }
 
-  if (!user) {
+  if (!user && !localPreviewEnabled) {
     return <Redirect href="/(auth)/login" />;
   }
 
@@ -30,7 +31,7 @@ function TabsNavigator() {
       }}
     >
       <Tabs.Screen name="explore" options={{ title: 'Explorar' }} />
-      <Tabs.Screen name="today" options={{ title: 'Qué hacer hoy' }} />
+      <Tabs.Screen name="today" options={{ title: 'Parches' }} />
       <Tabs.Screen name="account" options={{ title: 'Mi cuenta' }} />
     </Tabs>
   );

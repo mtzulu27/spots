@@ -2,10 +2,15 @@ import { Redirect } from 'expo-router';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { appColors } from '@/components/app-ui';
 import { useAuthStore } from '@/lib/auth-store';
+import { localPreviewEnabled } from '@/lib/local-preview';
 
 export default function Home() {
   const { loading, user, profileCompleted, interests, onboardingCompleted } =
     useAuthStore();
+
+  if (localPreviewEnabled) {
+    return <Redirect href="/(tabs)/explore" />;
+  }
 
   if (loading) {
     return (

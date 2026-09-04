@@ -1,0 +1,204 @@
+{
+  "date": "2026-09-04",
+  "batch": 3,
+  "status": "partial",
+  "reviewedIds": [
+    119
+  ],
+  "pendingIds": [
+    3638,
+    3664,
+    3634,
+    3557
+  ],
+  "reviews": [
+    {
+      "spotId": 119,
+      "name": "Bomberry",
+      "sources": [
+        "https://www.instagram.com/bomberry.co/",
+        "https://wa.link/qasswf",
+        "https://drive.google.com/file/d/1I-fyIW2AHTJzxPhnF9JTzHW6yfJ3YWmK/view",
+        "https://www.google.com/maps/search/Bomberry+Puerto+125/"
+      ],
+      "menuCoverage": "Seis de seis paginas del PDF enlazado directamente en Google Maps leidas.",
+      "changes": [
+        "Descripcion y tags precisos para fresas con crema, helado de yogur, chocolate, batidos y granizados.",
+        "Telefono 3166919300 agregado: coincide entre Maps y el PDF.",
+        "Coordenadas actualizadas al pin especifico de Bomberry: 3.3382354,-76.5353034."
+      ],
+      "budget": {
+        "status": "estimated_from_published_menu",
+        "min": 9900,
+        "max": 20900,
+        "basis": "Granizado 9900; fresas con crema super 17900 mas adicion 3000. PDF sin fecha de vigencia, actualmente enlazado en Maps; no es precio garantizado."
+      },
+      "retained": [
+        "Subcategorias Helado y Postres, estado activo y dos fotos locales validas.",
+        "WhatsApp 573197024264 confirmado al resolver enlace actual del perfil (Heladeria Bomberry).",
+        "Horario semanal detallado de Maps y direccion de Puerto 125 conservados; la biografia IG solo resume 15:00-21:00."
+      ],
+      "pending": [
+        "Conflicto de horarios: Instagram resume 15-21, Google amplia jueves/viernes/sabado y abre antes domingo. No se aplica el resumen a todos los dias sin corroboracion.",
+        "Instagram anuncia sede Jamundi Cra 11 #7-05, 14-19. No agregada aun: falta contraste especifico de ubicacion, dias y datos propios.",
+        "El menu enlazado no tiene fecha; presupuestos son estimaciones del PDF, pendientes de confirmacion de vigencia."
+      ]
+    }
+  ],
+  "beforeRecords": {
+    "spots": [
+      {
+        "id": 119,
+        "type": "place",
+        "slug": "bomberry",
+        "name": "Bomberry",
+        "short_description": "Fresas con crema, helados y postres para parche dulce en Puerto 125.",
+        "cover_image_url": "/place-media/bomberry/instagram-20260904-0.jpg",
+        "gallery_urls": [
+          "/place-media/bomberry/instagram-20260904-0.jpg",
+          "/place-media/bomberry/instagram-20260904-1.jpg"
+        ],
+        "category": "Comida",
+        "city": "Cali",
+        "likes": "0",
+        "tags": [
+          "helado",
+          "postres",
+          "fresas con crema",
+          "pance",
+          "puerto 125",
+          "restaurantes",
+          "comida",
+          "comer",
+          "dulce"
+        ],
+        "moods": [
+          "dulce",
+          "fresco",
+          "antojo",
+          "comer rico"
+        ],
+        "is_active": true,
+        "is_featured": false,
+        "created_at": "2026-04-01T05:36:12.51655+00:00",
+        "updated_at": "2026-04-01T05:36:12.51655+00:00",
+        "subcategories": [
+          "Helado",
+          "Postres"
+        ]
+      }
+    ],
+    "branches": [
+      {
+        "id": 136,
+        "spot_id": 119,
+        "slug": "bomberry-puerto-125",
+        "neighborhood": "Pance",
+        "mall": "Puerto 125",
+        "hours": "Lun-Mie 15:00-21:00 · Jue 15:00-22:00 · Vie 15:00-22:30 · Sab 14:30-23:00 · Dom 14:00-21:00",
+        "holiday_mode": "inherit",
+        "holiday_open_time": null,
+        "holiday_close_time": null,
+        "holiday_split_open_time": null,
+        "holiday_split_close_time": null,
+        "address": "Zona comercial Puerto 125, Cra 125 con Cl. 16A, Pance, Cali, Valle del Cauca",
+        "min_budget": 12000,
+        "max_budget": 0,
+        "max_people": 4,
+        "menu_url": "https://drive.google.com/file/d/1I-fyIW2AHTJzxPhnF9JTzHW6yfJ3YWmK/view",
+        "whatsapp": "https://wa.me/573197024264",
+        "phone": "",
+        "instagram": "https://instagram.com/bomberry.co/",
+        "latitude": 3.3382619,
+        "longitude": -76.5351225,
+        "is_active": true,
+        "sort_order": 10,
+        "created_at": "2026-04-01T05:36:20.504402+00:00",
+        "updated_at": "2026-04-01T05:36:20.504402+00:00"
+      }
+    ],
+    "branchHours": [],
+    "hours": []
+  },
+  "finalRecords": {
+    "spots": [
+      {
+        "id": 119,
+        "type": "place",
+        "slug": "bomberry",
+        "name": "Bomberry",
+        "short_description": "Fresas con crema o helado de yogur, fresas cubiertas de chocolate y batidos para un antojo dulce en Puerto 125.",
+        "cover_image_url": "/place-media/bomberry/instagram-20260904-0.jpg",
+        "gallery_urls": [
+          "/place-media/bomberry/instagram-20260904-0.jpg",
+          "/place-media/bomberry/instagram-20260904-1.jpg"
+        ],
+        "category": "Comida",
+        "city": "Cali",
+        "likes": "0",
+        "tags": [
+          "helado de yogur",
+          "postres",
+          "fresas con crema",
+          "fresas con chocolate",
+          "batidos",
+          "granizados",
+          "pance",
+          "puerto 125"
+        ],
+        "moods": [
+          "antojo",
+          "comer rico",
+          "plan tranqui",
+          "con amigos"
+        ],
+        "is_active": true,
+        "is_featured": false,
+        "created_at": "2026-04-01T05:36:12.51655+00:00",
+        "updated_at": "2026-09-04T08:06:58.000Z",
+        "subcategories": [
+          "Helado",
+          "Postres"
+        ]
+      }
+    ],
+    "branches": [
+      {
+        "id": 136,
+        "spot_id": 119,
+        "slug": "bomberry-puerto-125",
+        "neighborhood": "Pance",
+        "mall": "Puerto 125",
+        "hours": "Lun-Mie 15:00-21:00 · Jue 15:00-22:00 · Vie 15:00-22:30 · Sab 14:30-23:00 · Dom 14:00-21:00",
+        "holiday_mode": "inherit",
+        "holiday_open_time": null,
+        "holiday_close_time": null,
+        "holiday_split_open_time": null,
+        "holiday_split_close_time": null,
+        "address": "Zona comercial Puerto 125, Cra 125 con Cl. 16A, Pance, Cali, Valle del Cauca",
+        "min_budget": 9900,
+        "max_budget": 20900,
+        "max_people": 4,
+        "menu_url": "https://drive.google.com/file/d/1I-fyIW2AHTJzxPhnF9JTzHW6yfJ3YWmK/view",
+        "whatsapp": "https://wa.me/573197024264",
+        "phone": "316 6919300",
+        "instagram": "https://instagram.com/bomberry.co/",
+        "latitude": 3.3382354,
+        "longitude": -76.5353034,
+        "is_active": true,
+        "sort_order": 10,
+        "created_at": "2026-04-01T05:36:20.504402+00:00",
+        "updated_at": "2026-09-04T08:06:58.000Z"
+      }
+    ],
+    "branchHours": [],
+    "hours": []
+  },
+  "validation": {
+    "jsonParse": true,
+    "expectedRecordsMatch": true,
+    "localMediaExist": true,
+    "diffCheckScoped": true,
+    "appCheck": "Bomberry muestra descripcion, telefono y presupuesto 9900 actualizados en la ficha local."
+  }
+}

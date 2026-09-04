@@ -19,6 +19,7 @@ import {
 } from '@/components/auth-wireframe';
 import { useRelayoutSubscription } from '@/lib/relayout';
 import { useAuthStore } from '@/lib/auth-store';
+import { enterLocalPreview, localPreviewAvailable } from '@/lib/local-preview';
 
 const spotsLogo = require('../../assets/logo_spots_blanco.png');
 const welcomeBackground = require('../../assets/auth_welcome_bg.png');
@@ -59,7 +60,7 @@ export default function LoginScreen() {
       : 'La contraseña debe tener al menos 8 caracteres';
   }, [password]);
 
-  const canSubmit = isValidEmail(email.trim()) && password.length >= 8 && !submitting;
+  const canSubmit = (localPreviewAvailable || (isValidEmail(email.trim()) && password.length >= 8)) && !submitting;
   const isCompactHeight = height < 780;
   const collapsedStageHeight = isCompactHeight ? 182 : 198;
   const expandedStageHeight = isCompactHeight ? 300 : 320;
@@ -91,6 +92,7 @@ export default function LoginScreen() {
   }, [formProgress, showEmailForm]);
 
   async function handleEmailContinue() {
+    if (enterLocalPreview()) return;
     if (!canSubmit) {
       setEmailTouched(true);
       setPasswordTouched(true);
@@ -137,6 +139,7 @@ export default function LoginScreen() {
   }
 
   async function handleSocial(provider: 'google' | 'apple') {
+    if (enterLocalPreview()) return;
     if (submitting) return;
 
     setSubmitting(true);
@@ -276,7 +279,9 @@ export default function LoginScreen() {
 
               <Pressable
                 style={[styles.providerButton, styles.emailButton]}
-                onPress={() => setShowEmailForm(true)}
+                onPress={() => {
+                  if (!enterLocalPreview()) setShowEmailForm(true);
+                }}
               >
                 <View style={styles.providerContent}>
                   <Ionicons name="mail-outline" size={18} color="#ffffff" />

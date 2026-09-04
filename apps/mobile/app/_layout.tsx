@@ -1,4 +1,4 @@
-import { Stack } from 'expo-router';
+import { Stack, usePathname } from 'expo-router';
 import { useFonts } from 'expo-font';
 import { StatusBar } from 'expo-status-bar';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -10,6 +10,7 @@ import { BookmarksStoreProvider } from '@/lib/bookmarks-store';
 import { LikesStoreProvider } from '@/lib/likes-store';
 import { LocationStoreProvider } from '@/lib/location-store';
 import { emitRelayout } from '@/lib/relayout';
+import { PlaceUpdatesProvider } from '@/lib/place-updates-store';
 import { SpotsStoreProvider } from '@/lib/spots-store';
 import { applyGlobalTypographyDefaults, MONTSERRAT_FONTS } from '@/lib/typography';
 import { registerWebPushServiceWorker } from '@/lib/web-push';
@@ -47,6 +48,16 @@ function isKeyboardFocusActive() {
 }
 
 export default function RootLayout() {
+  const pathname = usePathname();
+  const darkChrome = pathname === '/' || /login|signup|welcome|profile-setup|onboarding/.test(pathname);
+  useEffect(() => {
+    if (Platform.OS !== 'web') return;
+    const color = darkChrome ? '#050305' : '#f5f5f7';
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', color);
+    document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]')?.setAttribute('content', darkChrome ? 'black' : 'default');
+    document.documentElement.style.backgroundColor = color;
+    document.body.style.backgroundColor = color;
+  }, [darkChrome]);
   const [fontsLoaded] = useFonts(MONTSERRAT_FONTS);
   const frameRef = useRef<number | null>(null);
   const timeoutRefs = useRef<Array<ReturnType<typeof setTimeout>>>([]);
@@ -584,6 +595,7 @@ export default function RootLayout() {
     <ErrorBoundary>
       <AuthStoreProvider>
         <SpotsStoreProvider>
+          <PlaceUpdatesProvider>
           <LocationStoreProvider>
             <LikesStoreProvider>
               <BookmarksStoreProvider>
@@ -607,7 +619,7 @@ export default function RootLayout() {
                       }}
                     />
                   ) : null}
-                  <StatusBar style="light" translucent backgroundColor="transparent" />
+                  <StatusBar style={darkChrome ? "light" : "dark"} translucent backgroundColor="transparent" />
                   <Stack
                     screenOptions={{
                       headerShown: false,
@@ -621,6 +633,7 @@ export default function RootLayout() {
               </BookmarksStoreProvider>
             </LikesStoreProvider>
           </LocationStoreProvider>
+        </PlaceUpdatesProvider>
         </SpotsStoreProvider>
       </AuthStoreProvider>
     </ErrorBoundary>

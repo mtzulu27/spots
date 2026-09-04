@@ -1,0 +1,14 @@
+{
+  "spot_id": 442,
+  "branch_id": 529,
+  "status": "partial",
+  "source": "https://www.google.com/maps/search/Cafe+Gardenia+Rio+Cali/",
+  "confirmed": {
+    "address": "Casa Obeso Mejia - Plazoleta Torrelavega, Av. 4 Oe. #4-59, Cali",
+    "latitude": 3.451047,
+    "longitude": -76.5454095,
+    "maps_hours": "Lun-Mie 08-20; Jue 08-21; Vie-Sab 08-22; Dom 08-21"
+  },
+  "comparison": "Direccion y coordenadas coinciden. Google cierra una hora mas tarde viernes, sabado y domingo que el catalogo; conservar hasta contrastar horarios oficiales.",
+  "catalog_changed": false
+}

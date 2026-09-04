@@ -1,0 +1,122 @@
+{
+  "spot_id": 3664,
+  "status": "partial_verified_metadata_saved",
+  "sources": [
+    "https://lnk.bio/brunchshouse",
+    "https://storage2.me-qr.com/pdf/80990d4e-cd0f-48e0-ad85-132a2ce19c2f.pdf",
+    "https://storage2.me-qr.com/pdf/3bf132d1-6176-410d-9e60-1586a193eb85.pdf"
+  ],
+  "evidence": "Cartas completas extraidas: Santa Elena 9 paginas y Bio Mall 17 paginas; ambas modificadas 2026-08-31 segun PDF. Pagina 8 Bio Mall cotejada visualmente.",
+  "preserved": "Presupuesto, horarios, direcciones, contactos y fotografias no modificados. Cena no agregada.",
+  "pending": [
+    "Contraste Instagram y Google Maps",
+    "Fotos locales",
+    "Validacion en app",
+    "Resto del lote"
+  ],
+  "before": {
+    "id": 3664,
+    "type": "place",
+    "slug": "brunch-house",
+    "name": "Brunch’s house",
+    "short_description": "Brunch’s house va por desayunos largos, brunch y comida estilo americano en un formato casual que sirve bien para arrancar el día sin afán. Entre café, antojos de brunch y plan de sentarse con calma, funciona muy bien para parche suave, desayuno en pareja o mesa tranquila con amigos en el sur de Cali.",
+    "cover_image_url": "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/brunch-house/cover/brunch-house-cover-1-1776127060576.jpg",
+    "gallery_urls": [
+      "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/brunch-house/gallery/brunch-house-gallery-1-1776127061831.jpg",
+      "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/brunch-house/gallery/brunch-house-gallery-2-1776127062414.jpg",
+      "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/brunch-house/gallery/brunch-house-gallery-3-1776127063435.jpg",
+      "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/brunch-house/gallery/brunch-house-gallery-4-1776127063946.jpg",
+      "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/brunch-house/gallery/brunch-house-gallery-5-1776127064335.jpg",
+      "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/brunch-house/gallery/brunch-house-gallery-6-1776127064869.jpg",
+      "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/brunch-house/gallery/brunch-house-gallery-7-1776127065375.jpg",
+      "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/brunch-house/gallery/brunch-house-gallery-8-1776127066095.jpg"
+    ],
+    "category": "Comida",
+    "subcategories": [
+      "Desayuno",
+      "Brunch",
+      "Almuerzo",
+      "Café",
+      "Saludable",
+      "Americana"
+    ],
+    "city": "Cali",
+    "likes": "0",
+    "tags": [
+      "brunch",
+      "desayuno",
+      "café",
+      "almuerzo",
+      "saludable",
+      "americana"
+    ],
+    "moods": [
+      "brunch",
+      "desayuno",
+      "plan tranqui"
+    ],
+    "is_active": true,
+    "is_featured": false,
+    "created_at": "2026-04-08T09:15:00.000000+00:00",
+    "updated_at": "2026-04-14T00:37:47.120Z",
+    "editorial_badge": "Recién añadido"
+  },
+  "finalRecord": {
+    "id": 3664,
+    "type": "place",
+    "slug": "brunch-house",
+    "name": "Brunch’s house",
+    "short_description": "Desayunos americanos, pancakes, waffles de pandebono y sandwiches. La carta de Bio Mall suma hamburguesas, burritos y opciones vegetarianas y keto; Santa Elena mantiene una selección más corta.",
+    "cover_image_url": "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/brunch-house/cover/brunch-house-cover-1-1776127060576.jpg",
+    "gallery_urls": [
+      "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/brunch-house/gallery/brunch-house-gallery-1-1776127061831.jpg",
+      "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/brunch-house/gallery/brunch-house-gallery-2-1776127062414.jpg",
+      "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/brunch-house/gallery/brunch-house-gallery-3-1776127063435.jpg",
+      "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/brunch-house/gallery/brunch-house-gallery-4-1776127063946.jpg",
+      "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/brunch-house/gallery/brunch-house-gallery-5-1776127064335.jpg",
+      "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/brunch-house/gallery/brunch-house-gallery-6-1776127064869.jpg",
+      "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/brunch-house/gallery/brunch-house-gallery-7-1776127065375.jpg",
+      "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/brunch-house/gallery/brunch-house-gallery-8-1776127066095.jpg"
+    ],
+    "category": "Comida",
+    "subcategories": [
+      "Desayuno",
+      "Brunch",
+      "Almuerzo",
+      "Café",
+      "Saludable",
+      "Americana",
+      "Sandwiches",
+      "Waffles",
+      "Postres",
+      "Hamburguesas",
+      "Vegetariana"
+    ],
+    "city": "Cali",
+    "likes": "0",
+    "tags": [
+      "brunch",
+      "desayuno",
+      "café",
+      "almuerzo",
+      "saludable",
+      "americana",
+      "pancakes",
+      "waffles de pandebono",
+      "sandwiches",
+      "hamburguesas en bio mall",
+      "opciones vegetarianas en bio mall",
+      "opciones keto en bio mall"
+    ],
+    "moods": [
+      "brunch",
+      "desayuno",
+      "plan tranqui"
+    ],
+    "is_active": true,
+    "is_featured": false,
+    "created_at": "2026-04-08T09:15:00.000000+00:00",
+    "updated_at": "2026-04-14T00:37:47.120Z",
+    "editorial_badge": "Recién añadido"
+  }
+}

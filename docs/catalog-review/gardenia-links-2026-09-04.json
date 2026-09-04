@@ -1,0 +1,17 @@
+{
+  "spot_id": 442,
+  "status": "partial",
+  "sources": ["https://www.instagram.com/cafegardenia.cali/", "https://linktr.ee/cafegardenia"],
+  "official_branches": ["Rio: Casa Obeso Mejia", "Granada: Calle 20N #8N-40"],
+  "current_menu_links": {
+    "Granada": "https://app.menupp.co/menu/cafegardenia",
+    "Rio": "https://menupp.co/cafegardenia/venue/jhrwkzhvyLVbD964a0TQ/menu/92178aa6-6d81-4dee-895d-9c7db2bc0c72"
+  },
+  "current_reservations_links": {
+    "Granada": "https://walink.co/228193",
+    "Rio": "https://wa.link/smky4l"
+  },
+  "finding": "Sedes 528 y 1841 comparten direccion y WhatsApp; posible duplicado Granada/Santa Monica. No borrar ni fusionar sin revisar referencias y Google Business.",
+  "pending": ["Leer menus completos", "Resolver reservas", "Contrastar Google Business", "Actualizar enlaces del catalogo tras comprobar destinos"],
+  "catalog_changed": false
+}

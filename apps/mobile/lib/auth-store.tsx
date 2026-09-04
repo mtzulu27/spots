@@ -8,6 +8,7 @@ import {
 } from 'react';
 import type { Session, User } from '@supabase/supabase-js';
 import { Platform } from 'react-native';
+import { localPreviewEnabled } from '@/lib/local-preview';
 import { oauthRedirectUrl, supabase, supabaseUrl } from '@/lib/supabase';
 
 type UserMetadata = {
@@ -344,7 +345,9 @@ export function AuthStoreProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const metadata = (user?.user_metadata ?? {}) as UserMetadata;
-  const avatarUrl = getUserAvatarUrl(user, session?.user ?? null);
+  const avatarUrl = localPreviewEnabled
+    ? '/mateo-avatar.png'
+    : getUserAvatarUrl(user, session?.user ?? null);
 
   const value = useMemo<AuthStoreValue>(
     () => ({

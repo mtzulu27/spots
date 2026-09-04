@@ -1,0 +1,9 @@
+{
+  "spot_id": 3638,
+  "status": "reviewed_with_identity_unresolved",
+  "catalog_changed": false,
+  "sources_checked": ["Busqueda web con nombre del lugar, Cali e Instagram"],
+  "finding": "No se encontro una coincidencia confiable para Brunch Duquesa. Los resultados apuntan principalmente a Restaurante Duquesa Gastrobar, pero no hay evidencia suficiente para afirmar que es el mismo registro.",
+  "preserved": "El spot y su sede generica se mantienen inactivos, sin fotos, horarios, direccion ni presupuesto inventados.",
+  "pending": ["Identidad oficial", "Instagram oficial", "Google Business", "Direccion exacta", "Menu"]
+}

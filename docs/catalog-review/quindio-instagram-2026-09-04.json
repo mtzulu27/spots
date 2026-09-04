@@ -1,0 +1,11 @@
+{
+  "spot_id": 3488,
+  "status": "partial",
+  "sources": ["https://www.cafequindio.com.co/", "https://www.instagram.com/cafequindio.co/"],
+  "change": "Instagram oficial agregado a las seis sedes existentes; antes estaba vacio.",
+  "branch_ids": [4703, 4704, 4705, 4706, 4707, 4708],
+  "before_instagram": "",
+  "after_instagram": "https://www.instagram.com/cafequindio.co/",
+  "pending": ["Menu de consumo en local: no usar precios de cafe empacado del ecommerce", "Google Business por sede", "Fotografias", "Metadata completa"],
+  "preserved": "Precios, horarios, direcciones y demas datos existentes."
+}

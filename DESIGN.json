@@ -1,0 +1,206 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-05-11T23:10:31Z",
+  "title": "Design System: Spots Probe V1",
+  "extensions": {
+    "colorMeta": {
+      "paper": {
+        "role": "neutral",
+        "displayName": "Warm Paper",
+        "canonical": "#fffaf6",
+        "tonalRamp": ["oklch(18% 0.01 50)", "oklch(28% 0.01 50)", "oklch(40% 0.01 50)", "oklch(52% 0.01 50)", "oklch(66% 0.01 50)", "oklch(78% 0.01 50)", "oklch(90% 0.01 50)", "oklch(97% 0.01 50)"]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Poster Ink",
+        "canonical": "#141417",
+        "tonalRamp": ["oklch(13% 0.01 285)", "oklch(22% 0.01 285)", "oklch(34% 0.01 285)", "oklch(46% 0.01 285)", "oklch(58% 0.01 285)", "oklch(70% 0.01 285)", "oklch(84% 0.01 285)", "oklch(94% 0.01 285)"]
+      },
+      "coral": {
+        "role": "primary",
+        "displayName": "Spots Coral",
+        "canonical": "#ff4e76",
+        "tonalRamp": ["oklch(18% 0.08 12)", "oklch(28% 0.12 12)", "oklch(40% 0.16 12)", "oklch(52% 0.2 12)", "oklch(64% 0.22 12)", "oklch(74% 0.16 12)", "oklch(86% 0.09 12)", "oklch(95% 0.04 12)"]
+      },
+      "tomato": {
+        "role": "secondary",
+        "displayName": "Tomato Card",
+        "canonical": "#ff5a2e",
+        "tonalRamp": ["oklch(18% 0.08 35)", "oklch(30% 0.13 35)", "oklch(42% 0.18 35)", "oklch(55% 0.21 35)", "oklch(67% 0.22 35)", "oklch(78% 0.15 35)", "oklch(88% 0.08 35)", "oklch(96% 0.03 35)"]
+      },
+      "butter": {
+        "role": "secondary",
+        "displayName": "Butter Card",
+        "canonical": "#ffd451",
+        "tonalRamp": ["oklch(18% 0.06 85)", "oklch(30% 0.09 85)", "oklch(43% 0.12 85)", "oklch(58% 0.15 85)", "oklch(72% 0.16 85)", "oklch(82% 0.12 85)", "oklch(90% 0.07 85)", "oklch(96% 0.03 85)"]
+      },
+      "acid-lime": {
+        "role": "secondary",
+        "displayName": "Acid Lime Card",
+        "canonical": "#cfff2f",
+        "tonalRamp": ["oklch(18% 0.07 125)", "oklch(30% 0.1 125)", "oklch(43% 0.13 125)", "oklch(58% 0.17 125)", "oklch(74% 0.2 125)", "oklch(84% 0.15 125)", "oklch(91% 0.09 125)", "oklch(96% 0.04 125)"]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Screen greetings, hero place names, mood headlines, and single-option decision moments."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Section titles, saved-list headers, result group titles, and bottom-sheet titles."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Card titles, place names, CTA labels, and primary chip groups."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Descriptions, editorial blurbs, and detail copy."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Pills, tags, distance, budget, open status, and compact metadata."
+      }
+    },
+    "shadows": [
+      {
+        "name": "floating-cta",
+        "value": "0 18px 42px rgba(20, 20, 23, 0.28)",
+        "purpose": "Sticky primary actions such as View More, Elegir este plan, or a bottom decision bar."
+      },
+      {
+        "name": "poster-lift",
+        "value": "0 12px 0 rgba(20, 20, 23, 0.10)",
+        "purpose": "Playful probe variants where the card should feel printed and stacked."
+      },
+      {
+        "name": "photo-overlay",
+        "value": "0 22px 56px rgba(8, 4, 8, 0.34)",
+        "purpose": "Image-heavy dark surfaces and login/onboarding compositions."
+      }
+    ],
+    "motion": [
+      {
+        "name": "press-down",
+        "value": "transform 140ms cubic-bezier(0.22, 1, 0.36, 1)",
+        "purpose": "Mobile press states scale to 0.98 and recover quickly."
+      },
+      {
+        "name": "float-up",
+        "value": "transform 180ms cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Hover or focused CTAs rise by 2px on web."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "mobile",
+        "value": "390px"
+      },
+      {
+        "name": "tablet",
+        "value": "768px"
+      },
+      {
+        "name": "desktop",
+        "value": "1024px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "A large tactile CTA for decisive actions.",
+      "html": "<button class=\"ds-btn-primary\">View More</button>",
+      "css": ".ds-btn-primary { background: #141417; color: #fffaf6; border: 2px solid #141417; border-radius: 999px; padding: 18px 34px; font-family: Montserrat, system-ui, sans-serif; font-size: 20px; font-weight: 800; letter-spacing: 0; box-shadow: 0 18px 42px rgba(20, 20, 23, 0.28); transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 180ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-btn-primary:hover { transform: translateY(-2px); box-shadow: 0 22px 48px rgba(20, 20, 23, 0.32); } .ds-btn-primary:focus-visible { outline: 3px solid #ff4e76; outline-offset: 3px; } .ds-btn-primary:active { transform: scale(0.98); }"
+    },
+    {
+      "name": "Outline Chip",
+      "kind": "chip",
+      "refersTo": "chip-outline",
+      "description": "A compact filter or metadata pill with visible structure.",
+      "html": "<span class=\"ds-chip-outline\">14 min</span>",
+      "css": ".ds-chip-outline { display: inline-flex; align-items: center; min-height: 28px; padding: 6px 12px; border: 2px solid #141417; border-radius: 999px; background: #fffaf6; color: #141417; font-family: Montserrat, system-ui, sans-serif; font-size: 13px; font-weight: 700; line-height: 1; }"
+    },
+    {
+      "name": "Spot Poster Card",
+      "kind": "card",
+      "refersTo": "spot-card",
+      "description": "The signature recommendation tile: color block, image, metadata, and bold occasion title.",
+      "html": "<article class=\"ds-spot-card\"><div class=\"ds-spot-card__top\"><span>Alto</span><span>14 min</span></div><div class=\"ds-spot-card__image\"></div><h3>Cocktail</h3></article>",
+      "css": ".ds-spot-card { width: 240px; background: #ffd451; color: #0b5a46; border: 2px solid #141417; border-radius: 22px; padding: 14px; font-family: Montserrat, system-ui, sans-serif; box-shadow: 0 12px 0 rgba(20, 20, 23, 0.10); } .ds-spot-card__top { display: flex; justify-content: space-between; align-items: center; gap: 12px; color: #0b5a46; font-size: 13px; font-weight: 700; } .ds-spot-card__top span:last-child { border: 1.5px solid currentColor; border-radius: 999px; padding: 3px 8px; } .ds-spot-card__image { height: 162px; margin-top: 12px; border-radius: 16px; border: 2px solid rgba(20, 20, 23, 0.18); background: linear-gradient(135deg, #0b5a46, #fffaf6); } .ds-spot-card h3 { margin: 16px 0 0; font-size: 34px; line-height: 0.95; font-weight: 900; letter-spacing: 0; }"
+    },
+    {
+      "name": "Image Recommendation Card",
+      "kind": "card",
+      "refersTo": "image-card",
+      "description": "A photo-led card for editorial place recommendations.",
+      "html": "<article class=\"ds-image-card\"><div class=\"ds-image-card__photo\"><span>Recommended</span><h3>The Art of Shorts</h3></div><div class=\"ds-image-card__footer\"><strong>Escape Corpo</strong><span>00:42:33 · lifestyle</span></div></article>",
+      "css": ".ds-image-card { width: 280px; overflow: hidden; border: 2px solid #141417; border-radius: 28px; background: #fffaf6; color: #141417; font-family: Montserrat, system-ui, sans-serif; box-shadow: 0 22px 56px rgba(8, 4, 8, 0.34); } .ds-image-card__photo { min-height: 320px; padding: 22px; display: flex; flex-direction: column; justify-content: flex-end; background: linear-gradient(180deg, rgba(20, 20, 23, 0.08), rgba(20, 20, 23, 0.86)), linear-gradient(135deg, #5f2e61, #0b5a46); color: #fffaf6; } .ds-image-card__photo span { align-self: flex-start; border: 1.5px solid rgba(255, 250, 246, 0.8); border-radius: 999px; padding: 6px 12px; background: rgba(255, 250, 246, 0.9); color: #141417; font-size: 11px; font-weight: 800; text-transform: uppercase; } .ds-image-card__photo h3 { margin: 140px 0 0; max-width: 210px; font-size: 38px; line-height: 0.88; font-weight: 900; letter-spacing: 0; text-transform: uppercase; } .ds-image-card__footer { margin: -52px 12px 12px; position: relative; border: 2px solid #141417; border-radius: 22px; padding: 16px; background: #9ab36a; color: #141417; } .ds-image-card__footer strong { display: block; font-size: 18px; font-weight: 900; text-transform: uppercase; } .ds-image-card__footer span { display: block; margin-top: 4px; font-size: 12px; font-weight: 700; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Pocket City Poster",
+    "overview": "Spots should feel like a stack of small city posters you can actually use. The UI borrows the confidence of printed gig flyers, the pace of swipeable consumer apps, and the clarity of iOS utility screens, but it stays useful enough to answer: why go, with whom, when, how much, and where.",
+    "keyCharacteristics": [
+      "High-contrast black outlines around cards, images, chips, and primary controls.",
+      "Warm off-white canvases instead of pure white.",
+      "Montserrat only, pushed through weight contrast rather than font switching.",
+      "Photo-first cards with saturated color containers.",
+      "Big, confident labels that name the occasion, not just the category.",
+      "Navigation and filters that feel tactile, compact, and direct.",
+      "Modular layouts that feel like a curated city deck, not a uniform card grid."
+    ],
+    "rules": [
+      {
+        "name": "The Poster Color Rule",
+        "body": "One saturated color may carry a card, but the screen should not become a rainbow grid. Keep each viewport to two dominant accents plus one small signal accent.",
+        "section": "colors"
+      },
+      {
+        "name": "The Black Spine Rule",
+        "body": "If a component is meant to be touched, selected, saved, opened, or compared, it gets structural black through outline, text, or icon.",
+        "section": "colors"
+      },
+      {
+        "name": "The Weight Ladder Rule",
+        "body": "Use 900 for identity and moment, 800 for decisions, 700 for controls, 500 for readable context. Avoid weak 400 labels inside cards.",
+        "section": "typography"
+      },
+      {
+        "name": "The No Tiny Cool Text Rule",
+        "body": "Metadata can be compact, but it must remain legible on top of images and color blocks. If a label needs to be 11px to fit, rewrite it.",
+        "section": "typography"
+      },
+      {
+        "name": "The Outline First Rule",
+        "body": "Reach for a 2px black outline before reaching for a shadow. Shadow without structure will make Spots feel like a generic marketplace.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do keep Montserrat as the only typeface and use weight contrast aggressively.",
+      "Do use warm off-white backgrounds instead of pure white.",
+      "Do make photography the main evidence for a place, with readable overlays and enough crop discipline.",
+      "Do give touchable cards a visible black structure: outline, icon stroke, or bold label.",
+      "Do let color communicate mood and category, but keep each viewport controlled.",
+      "Do make every place suggest an occasion, not only a category.",
+      "Do keep operational details close: distance, open status, budget, neighborhood, and reason to go.",
+      "Do design for a useful decision in 30 to 60 seconds.",
+      "Do vary module size and purpose so the screen feels curated rather than generated."
+    ],
+    "donts": [
+      "Don't make Spots feel like a generic directory, Google Maps clone, cold reservations app, institutional event listing, saturated marketplace, or endless grid with no point of view.",
+      "Don't use pure #000000 or #ffffff as the visual default in new probes. Use Poster Ink and Warm Paper.",
+      "Don't make cards depend on thin gray borders and soft shadows alone.",
+      "Don't overload the top of the screen with filters before the user has seen a recommendation.",
+      "Don't use tourist-cliche visual language, forced folklore, or caricatured local signals.",
+      "Don't use gradient text, decorative glassmorphism, side-stripe accent borders, or repeated identical card grids.",
+      "Don't hide legibility behind photography. Text over images needs a real scrim, solid chip, or relocation.",
+      "Don't let probe color become chaos. Bold does not mean every card gets a different loud color in the same viewport.",
+      "Don't make the default explore screen a uniform grid of cards."
+    ]
+  }
+}

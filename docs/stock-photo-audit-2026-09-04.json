@@ -1,0 +1,303 @@
+{
+  "unique_images_reviewed": 63,
+  "reviewed_stock_places": 86,
+  "changes": [
+    {
+      "id": 3528,
+      "name": "Montallegro Gelateria Italiana",
+      "before": "https://images.unsplash.com/photo-1511497584788-876760111969?auto=format&fit=crop&w=1600&q=80",
+      "after": "https://images.unsplash.com/photo-1563805042-7684c019e1cb?auto=format&fit=crop&w=1200&q=80",
+      "source": "https://images.unsplash.com/photo-1563805042-7684c019e1cb?auto=format&fit=crop&w=1200&q=80",
+      "reason": "Sustitución por imagen temática revisada visualmente",
+      "kind": "illustrative_stock"
+    },
+    {
+      "id": 3525,
+      "name": "Pizza Della Madonna",
+      "before": "https://images.unsplash.com/photo-1520201163981-8cc95007dd2e?auto=format&fit=crop&w=1600&q=80",
+      "after": "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=1200&q=80",
+      "source": "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=1200&q=80",
+      "reason": "Sustitución por imagen temática revisada visualmente",
+      "kind": "illustrative_stock"
+    },
+    {
+      "id": 3524,
+      "name": "Nuevo Leon",
+      "before": "https://images.unsplash.com/photo-1557872943-16a5ac26437e?auto=format&fit=crop&w=1600&q=80",
+      "after": "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?auto=format&fit=crop&w=1200&q=80",
+      "source": "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?auto=format&fit=crop&w=1200&q=80",
+      "reason": "Sustitución por imagen temática revisada visualmente",
+      "kind": "illustrative_stock"
+    },
+    {
+      "id": 3521,
+      "name": "Sonoma Restaurante Peruano",
+      "before": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=600&q=80';",
+      "after": "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1200&q=80",
+      "source": "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1200&q=80",
+      "reason": "Sustitución por imagen temática revisada visualmente",
+      "kind": "illustrative_stock"
+    },
+    {
+      "id": 3519,
+      "name": "Amasijo Cocina",
+      "before": "https://images.unsplash.com/photo-1447933601403-0c6688de566e?auto=format&fit=crop&w=1200&q=80",
+      "after": "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=1200&q=80",
+      "source": "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=1200&q=80",
+      "reason": "Sustitución por imagen temática revisada visualmente",
+      "kind": "illustrative_stock"
+    },
+    {
+      "id": 3517,
+      "name": "Gente Común",
+      "before": "https://images.unsplash.com/photo-1527477396000-e27163b481c2?auto=format&fit=crop&w=1600&q=80",
+      "after": "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1200&q=80",
+      "source": "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1200&q=80",
+      "reason": "Sustitución por imagen temática revisada visualmente",
+      "kind": "illustrative_stock"
+    },
+    {
+      "id": 3516,
+      "name": "Furtivo",
+      "before": "https://images.unsplash.com/photo-1608039755401-742074f0548d?auto=format&fit=crop&w=1600&q=80",
+      "after": "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=1200&q=80",
+      "source": "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=1200&q=80",
+      "reason": "Sustitución por imagen temática revisada visualmente",
+      "kind": "illustrative_stock"
+    },
+    {
+      "id": 3514,
+      "name": "Sonido Central",
+      "before": "https://images.unsplash.com/photo-1460306855393-0410f61241c7?auto=format&fit=crop&w=1200&q=80",
+      "after": "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=1200&q=80",
+      "source": "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=1200&q=80",
+      "reason": "Sustitución por imagen temática revisada visualmente",
+      "kind": "illustrative_stock"
+    },
+    {
+      "id": 3513,
+      "name": "Bengala & Bandolero",
+      "before": "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=1200&q=80",
+      "after": "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=1200&q=80",
+      "source": "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=1200&q=80",
+      "reason": "Sustitución por imagen temática revisada visualmente",
+      "kind": "illustrative_stock"
+    },
+    {
+      "id": 3511,
+      "name": "Kora Vibes",
+      "before": "https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&w=1600&q=80",
+      "after": "https://images.unsplash.com/photo-1470337458703-46ad1756a187?auto=format&fit=crop&w=1200&q=80",
+      "source": "https://images.unsplash.com/photo-1470337458703-46ad1756a187?auto=format&fit=crop&w=1200&q=80",
+      "reason": "Sustitución por imagen temática revisada visualmente",
+      "kind": "illustrative_stock"
+    },
+    {
+      "id": 3509,
+      "name": "Cantina La 15",
+      "before": "https://images.unsplash.com/photo-1496024840928-4c417adf211d?auto=format&fit=crop&w=1600&q=80",
+      "after": "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=1200&q=80",
+      "source": "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=1200&q=80",
+      "reason": "Sustitución por imagen temática revisada visualmente",
+      "kind": "illustrative_stock"
+    },
+    {
+      "id": 3508,
+      "name": "Crepes & Waffles",
+      "before": "https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=1600&q=80",
+      "after": "https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=1200&q=80",
+      "source": "https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=1200&q=80",
+      "reason": "Sustitución por imagen temática revisada visualmente",
+      "kind": "illustrative_stock"
+    },
+    {
+      "id": 3506,
+      "name": "Huna Huna Social Club",
+      "before": "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&w=1600&q=80",
+      "after": "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=1200&q=80",
+      "source": "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=1200&q=80",
+      "reason": "Sustitución por imagen temática revisada visualmente",
+      "kind": "illustrative_stock"
+    },
+    {
+      "id": 3504,
+      "name": "Penélope Martini",
+      "before": "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=1600&q=80",
+      "after": "https://images.unsplash.com/photo-1470337458703-46ad1756a187?auto=format&fit=crop&w=1200&q=80",
+      "source": "https://images.unsplash.com/photo-1470337458703-46ad1756a187?auto=format&fit=crop&w=1200&q=80",
+      "reason": "Sustitución por imagen temática revisada visualmente",
+      "kind": "illustrative_stock"
+    },
+    {
+      "id": 3502,
+      "name": "Lengua de Mariposa",
+      "before": "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?auto=format&fit=crop&w=1600&q=80",
+      "after": "https://images.unsplash.com/photo-1563805042-7684c019e1cb?auto=format&fit=crop&w=1200&q=80",
+      "source": "https://images.unsplash.com/photo-1563805042-7684c019e1cb?auto=format&fit=crop&w=1200&q=80",
+      "reason": "Sustitución por imagen temática revisada visualmente",
+      "kind": "illustrative_stock"
+    },
+    {
+      "id": 3500,
+      "name": "Hacienda del Bosque",
+      "before": "https://images.unsplash.com/photo-1517457373958-b7bdd4587205?auto=format&fit=crop&w=1600&q=80",
+      "after": "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1200&q=80",
+      "source": "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1200&q=80",
+      "reason": "Sustitución por imagen temática revisada visualmente",
+      "kind": "illustrative_stock"
+    },
+    {
+      "id": 3499,
+      "name": "Ecoparque de la Biodiversidad",
+      "before": "https://images.unsplash.com/photo-1516934024742-b461fba47600?auto=format&fit=crop&w=1600&q=80",
+      "after": "https://images.unsplash.com/photo-1516557070061-c3d1653fa646?auto=format&fit=crop&w=1200&q=80",
+      "source": "https://images.unsplash.com/photo-1516557070061-c3d1653fa646?auto=format&fit=crop&w=1200&q=80",
+      "reason": "Sustitución por imagen temática revisada visualmente",
+      "kind": "illustrative_stock"
+    },
+    {
+      "id": 3498,
+      "name": "Saipan Airsoft",
+      "before": "https://images.unsplash.com/photo-1547347298-4074fc3086f0?auto=format&fit=crop&w=1600&q=80",
+      "after": "https://images.unsplash.com/photo-1677509118271-238fb1162828?auto=format&fit=crop&w=1200&q=80",
+      "source": "https://unsplash.com/photos/a-man-in-a-gas-mask-holding-a-machine-gun-5EPP5DYm5zY",
+      "reason": "Airsoft con protección facial y réplica deportiva",
+      "kind": "illustrative_stock"
+    },
+    {
+      "id": 3497,
+      "name": "Zorro Azul",
+      "before": "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=1600&q=80",
+      "after": "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1200&q=80",
+      "source": "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1200&q=80",
+      "reason": "Sustitución por imagen temática revisada visualmente",
+      "kind": "illustrative_stock"
+    },
+    {
+      "id": 3495,
+      "name": "Storia d’Amore",
+      "before": "https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1600&q=80",
+      "after": "https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?auto=format&fit=crop&w=1200&q=80",
+      "source": "https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?auto=format&fit=crop&w=1200&q=80",
+      "reason": "Sustitución por imagen temática revisada visualmente",
+      "kind": "illustrative_stock"
+    },
+    {
+      "id": 3494,
+      "name": "Karen's Pizza",
+      "before": "https://images.unsplash.com/photo-1511988617509-a57c8a288659?auto=format&fit=crop&w=1600&q=80",
+      "after": "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=1200&q=80",
+      "source": "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=1200&q=80",
+      "reason": "Sustitución por imagen temática revisada visualmente",
+      "kind": "illustrative_stock"
+    },
+    {
+      "id": 3493,
+      "name": "Mister Wings",
+      "before": "https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&w=1600&q=80",
+      "after": "https://images.unsplash.com/photo-1527477396000-e27163b481c2?auto=format&fit=crop&w=1200&q=80",
+      "source": "https://images.unsplash.com/photo-1527477396000-e27163b481c2?auto=format&fit=crop&w=1200&q=80",
+      "reason": "Sustitución por imagen temática revisada visualmente",
+      "kind": "illustrative_stock"
+    },
+    {
+      "id": 3492,
+      "name": "Space Jump",
+      "before": "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1600&q=80",
+      "after": "https://spacejump.com.co/wp-content/uploads/2023/12/Trampolines.webp",
+      "source": "https://spacejump.com.co/conocenos/",
+      "reason": "Trampolines del sitio oficial de Space Jump Cali",
+      "kind": "place_photo"
+    },
+    {
+      "id": 3491,
+      "name": "Greens Bolos Club",
+      "before": "https://images.unsplash.com/photo-1516557070061-c3d1653fa646?auto=format&fit=crop&w=1600&q=80",
+      "after": "https://images.unsplash.com/photo-1660129071377-da514fbfb5d3?auto=format&fit=crop&w=1200&q=80",
+      "source": "https://unsplash.com/de/fotos/ein-schwarz-weiss-foto-von-bowling-pins-aYM2gO3JBls",
+      "reason": "Pines de bolos",
+      "kind": "illustrative_stock"
+    },
+    {
+      "id": 3490,
+      "name": "La Fugitiva",
+      "before": "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&w=1600&q=80",
+      "after": "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=1200&q=80",
+      "source": "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=1200&q=80",
+      "reason": "Sustitución por imagen temática revisada visualmente",
+      "kind": "illustrative_stock"
+    },
+    {
+      "id": 3488,
+      "name": "Café Quindío",
+      "before": "https://images.unsplash.com/photo-1516997121675-4c2d1684aa3e?auto=format&fit=crop&w=1200&q=80",
+      "after": "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1200&q=80",
+      "source": "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1200&q=80",
+      "reason": "Sustitución por imagen temática revisada visualmente",
+      "kind": "illustrative_stock"
+    },
+    {
+      "id": 3487,
+      "name": "Platillos Voladores",
+      "before": "https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=1600&q=80",
+      "after": "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1200&q=80",
+      "source": "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1200&q=80",
+      "reason": "Sustitución por imagen temática revisada visualmente",
+      "kind": "illustrative_stock"
+    },
+    {
+      "id": 987,
+      "name": "Ultimate Padel",
+      "before": "https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?auto=format&fit=crop&w=1200&q=80",
+      "after": "https://images.unsplash.com/photo-1743456110628-6508997cf730?auto=format&fit=crop&w=1200&q=80",
+      "source": "https://unsplash.com/s/photos/paddle-tennis",
+      "reason": "Jugador de pádel en cancha cerrada",
+      "kind": "illustrative_stock"
+    },
+    {
+      "id": 80,
+      "name": "Palo Mulata",
+      "before": "https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=1200&q=80",
+      "after": "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1200&q=80",
+      "source": "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1200&q=80",
+      "reason": "Sustitución por imagen temática revisada visualmente",
+      "kind": "illustrative_stock"
+    },
+    {
+      "id": 22,
+      "name": "Cristo Rey",
+      "before": "https://images.unsplash.com/photo-1511497584788-876760111969?auto=format&fit=crop&w=1200&q=80",
+      "after": "https://s3.amazonaws.com/rtvc-assets-canalinstitucional.tv/s3fs-public/inline-images/Cristo%20Rey%20Cali.jpg",
+      "source": "https://www.canalinstitucional.tv/top-5-monumentos-historicos-debes-visitar",
+      "reason": "Monumento Cristo Rey de Cali",
+      "kind": "place_photo"
+    },
+    {
+      "id": 20,
+      "name": "Jardin Botanico de Cali",
+      "before": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80",
+      "after": "https://images.unsplash.com/photo-1516557070061-c3d1653fa646?auto=format&fit=crop&w=1200&q=80",
+      "source": "https://images.unsplash.com/photo-1516557070061-c3d1653fa646?auto=format&fit=crop&w=1200&q=80",
+      "reason": "Sustitución por imagen temática revisada visualmente",
+      "kind": "illustrative_stock"
+    },
+    {
+      "id": 19,
+      "name": "Zoologico de Cali",
+      "before": "https://images.unsplash.com/photo-1549366021-9f761d040a94?auto=format&fit=crop&w=1200&q=80",
+      "after": "https://images.unsplash.com/photo-1516934024742-b461fba47600?auto=format&fit=crop&w=1200&q=80",
+      "source": "https://images.unsplash.com/photo-1516934024742-b461fba47600?auto=format&fit=crop&w=1200&q=80",
+      "reason": "Sustitución por imagen temática revisada visualmente",
+      "kind": "illustrative_stock"
+    },
+    {
+      "id": 6,
+      "name": "La Corteza",
+      "before": "https://images.unsplash.com/photo-1464306076886-da185f6a9d05?auto=format&fit=crop&w=1200&q=80",
+      "after": "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=1200&q=80",
+      "source": "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=1200&q=80",
+      "reason": "Sustitución por imagen temática revisada visualmente",
+      "kind": "illustrative_stock"
+    }
+  ]
+}

@@ -13,6 +13,9 @@ export type Spot = {
   updatedAt?: string | null
   likeTargetId: string
   type: SpotType
+  startsAt?: string | null
+  endsAt?: string | null
+  ticketPrice?: number | null
   name: string
   brandName: string
   branchName: string

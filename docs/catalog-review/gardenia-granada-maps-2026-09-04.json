@@ -1,0 +1,17 @@
+{
+  "spot_id": 442,
+  "branch_ids": [528, 1841],
+  "status": "partial",
+  "source": "https://www.google.com/maps/search/Cafe+Gardenia+Granada+Cali/",
+  "confirmed": {
+    "name": "Cafe Gardenia Granada",
+    "address": "Calle 20N#8N-40, Santa Monica Residential, Cali",
+    "phone": "3107794126",
+    "latitude": 3.4623639,
+    "longitude": -76.5323658,
+    "maps_hours": "Lunes a sabado 08:00-19:00; domingo 08:00-18:00"
+  },
+  "conflicts": ["Catalogo cierra una hora despues: 20:00 de lunes a sabado y 19:00 domingo.", "Dos registros activos apuntan a la misma direccion y contacto."],
+  "pending": ["Corroborar horario oficial antes de reemplazarlo", "Revisar referencias antes de consolidar duplicado", "Google Maps de sede Rio", "Menu Granada completo"],
+  "catalog_changed": false
+}

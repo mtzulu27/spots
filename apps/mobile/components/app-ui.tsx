@@ -6,6 +6,8 @@ import {
   Animated,
   Image,
   type LayoutChangeEvent,
+  type StyleProp,
+  type ViewStyle,
   Platform,
   Pressable,
   StyleSheet,
@@ -125,27 +127,42 @@ export function AppSegmentedTabs<T extends string>({
 
 export function AppIconButton({
   name,
+  accessibilityLabel,
   onPress,
   tone = 'light',
+  outlined = false,
+  iconColor,
+  size = 38,
 }: {
   name: keyof typeof Ionicons.glyphMap;
+  accessibilityLabel?: string;
   onPress?: () => void;
   tone?: 'light' | 'dark' | 'glass';
+  outlined?: boolean;
+  iconColor?: string;
+  size?: number;
 }) {
+  const resolvedColor =
+    iconColor ?? (tone === 'dark' || tone === 'glass' ? spotsUi.textPrimary : appColors.primaryDark);
+
   return (
     <Pressable
       onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={accessibilityLabel}
       style={[
         styles.iconButton,
         tone === 'dark' && styles.iconButtonDark,
         tone === 'glass' && styles.iconButtonGlass,
+        outlined && styles.iconButtonOutlined,
+        {
+          width: size,
+          height: size,
+          borderRadius: size / 2,
+        },
       ]}
     >
-      <Ionicons
-        name={name}
-        size={20}
-        color={tone === 'dark' || tone === 'glass' ? spotsUi.textPrimary : appColors.primaryDark}
-      />
+      <Ionicons name={name} size={20} color={resolvedColor} />
     </Pressable>
   );
 }
@@ -262,12 +279,20 @@ export function AppBookmarkButton({
   tone = 'light',
   activeColor = '#141417',
   inactiveColor,
+  outlined = false,
+  backgroundColor,
+  style,
+  iconSize = 20,
 }: {
   bookmarked: boolean;
   onPress?: (event?: any) => void;
   tone?: 'light' | 'dark' | 'glass';
   activeColor?: string;
   inactiveColor?: string;
+  outlined?: boolean;
+  backgroundColor?: string;
+  style?: StyleProp<ViewStyle>;
+  iconSize?: number;
 }) {
   const scale = useRef(new Animated.Value(1)).current;
   const mountedRef = useRef(false);
@@ -305,15 +330,21 @@ export function AppBookmarkButton({
     >
       <Pressable
         onPress={onPress}
+        accessibilityRole="button"
+        accessibilityLabel={bookmarked ? 'Quitar de guardados' : 'Guardar lugar'}
+        accessibilityState={{ selected: bookmarked }}
         style={[
           styles.iconButton,
           tone === 'dark' && styles.iconButtonDark,
           tone === 'glass' && styles.iconButtonGlass,
+          outlined && styles.iconButtonOutlined,
+          backgroundColor ? { backgroundColor } : null,
+          style,
         ]}
       >
         <Ionicons
           name={bookmarked ? 'bookmark' : 'bookmark-outline'}
-          size={20}
+          size={iconSize}
           color={bookmarked ? activeColor : inactiveColor ?? defaultColor}
         />
       </Pressable>
@@ -391,6 +422,9 @@ export function SearchField({
   showClearButton = false,
   variant = 'light',
   debounceMs = 0,
+  height,
+  backgroundColor,
+  autoFocus = false,
 }: {
   value: string;
   onChangeText: (value: string) => void;
@@ -401,6 +435,9 @@ export function SearchField({
   showClearButton?: boolean;
   variant?: 'light' | 'dark';
   debounceMs?: number;
+  height?: number;
+  backgroundColor?: string;
+  autoFocus?: boolean;
 }) {
   const inputRef = useRef<TextInput>(null);
   const debounceTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -443,7 +480,19 @@ export function SearchField({
   }
 
   return (
-    <View style={[styles.searchWrap, isDark && styles.searchWrapDark]}>
+    <View
+      style={[
+        styles.searchWrap,
+        isDark && styles.searchWrapDark,
+        backgroundColor ? { backgroundColor } : null,
+        typeof height === 'number'
+          ? {
+              height,
+              minHeight: height,
+            }
+          : null,
+      ]}
+    >
       <Ionicons name="search" size={18} color={isDark ? spotsUi.textHint : lightIcon} />
       <TextInput
         ref={inputRef}
@@ -452,6 +501,7 @@ export function SearchField({
         value={internalValue}
         onChangeText={handleChangeText}
         onFocus={onFocus}
+        autoFocus={autoFocus}
         onBlur={onBlur}
         selectionColor={isDark ? spotsUi.textPrimary : lightSelection}
         style={[
@@ -550,6 +600,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.92)',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  iconButtonOutlined: {
+    borderWidth: 2,
+    borderColor: '#141417',
   },
   iconButtonDark: {
     backgroundColor: 'rgba(255,255,255,0.16)',
@@ -662,8 +716,8 @@ const styles = StyleSheet.create({
   },
   searchWrap: {
     minHeight: 60,
-    borderRadius: 18,
-    backgroundColor: '#ffffff',
+    borderRadius: 999,
+    backgroundColor: '#f7f7f8',
     paddingHorizontal: 14,
     flexDirection: 'row',
     alignItems: 'center',

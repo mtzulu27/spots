@@ -1,0 +1,18 @@
+{
+  "spot_id": 3634,
+  "branch_id": 5120,
+  "status": "partial_review_not_complete",
+  "source": "https://lnk.bio/buleria.restaurante",
+  "evidence": "El enlace Menu de la seccion Sede Cali apunta a https://menu.apparta.co/buleria/7170/. La pagina abre y presenta tres cartas PDF.",
+  "changes": {
+    "menu_url": {
+      "before": "https://menu.apparta.co/buleria",
+      "after": "https://menu.apparta.co/buleria/7170/"
+    }
+  },
+  "pending": [
+    "Leer las tres cartas PDF completas antes de modificar presupuestos o subcategorias.",
+    "Contrastar horarios y contacto de WhatsApp con Google Business e Instagram."
+  ],
+  "preserved": "Precios, horarios, contactos, categorias y fotos existentes. No se marca el lugar como completamente revisado."
+}

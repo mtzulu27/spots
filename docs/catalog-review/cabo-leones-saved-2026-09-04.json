@@ -1,0 +1,163 @@
+{
+  "spot_id": 3541,
+  "status": "reviewed_with_pending",
+  "sources": [
+    "https://www.instagram.com/caboleones/",
+    "https://www.google.com/maps/search/Cabo+Leones+Cali/",
+    "https://www.mezzy.co/r/cabo-leones/menu"
+  ],
+  "coverage": "Biografia Instagram, ficha y horario semanal Maps, siete secciones del menu.",
+  "preserved": "Telefono, direccion, horarios, presupuesto 50000-200000 y dos fotos locales existentes. No se agrega Cena.",
+  "pending": [
+    "Historias destacadas no inspeccionadas",
+    "Nuevo enlace de reservas app.caboleones.com pendiente de inspeccion",
+    "Presupuesto conservado, no recalculado"
+  ],
+  "beforeRecords": {
+    "spots": [
+      {
+        "id": 3541,
+        "type": "place",
+        "slug": "cabo-leones",
+        "name": "Cabo Leones",
+        "short_description": "Bar en Granada con brisa, buenos cocteles y reservas activas para plan de tardeo y noche en Cali.",
+        "cover_image_url": "/place-media/cabo-leones/instagram-recovered-20260904-0.jpg",
+        "gallery_urls": [
+          "/place-media/cabo-leones/instagram-recovered-20260904-0.jpg",
+          "/place-media/cabo-leones/instagram-recovered-20260904-1.jpg"
+        ],
+        "category": "Tomar algo",
+        "city": "Cali",
+        "likes": "0",
+        "tags": [
+          "cocteleria",
+          "granada",
+          "terraza",
+          "brisa",
+          "bar",
+          "tardeo"
+        ],
+        "moods": [
+          "noche",
+          "con amigos",
+          "algo especial",
+          "tomar algo"
+        ],
+        "is_active": true,
+        "is_featured": false,
+        "created_at": "2026-04-02T18:26:29.198612+00:00",
+        "updated_at": "2026-04-02T18:26:29.198612+00:00",
+        "subcategories": [
+          "Cocktails"
+        ]
+      }
+    ],
+    "branches": [
+      {
+        "id": 5107,
+        "spot_id": 3541,
+        "slug": "cabo-leones-granada",
+        "neighborhood": "Granada",
+        "mall": "",
+        "hours": "Mar-Mie 16:00-23:00 · Jue 16:00-00:00 · Vie-Sab 16:00-02:00 · Dom 16:00-23:00 · Lun cerrado",
+        "holiday_mode": "inherit",
+        "holiday_open_time": null,
+        "holiday_close_time": null,
+        "holiday_split_open_time": null,
+        "holiday_split_close_time": null,
+        "address": "Av 9N # 9N - 10, Tercer Piso, Granada, Cali",
+        "min_budget": 50000,
+        "max_budget": 200000,
+        "max_people": 8,
+        "menu_url": "https://www.mezzy.co/r/cabo-leones/menu",
+        "whatsapp": "https://api.whatsapp.com/send/?phone=573125931270&text&type=phone_number&app_absent=0",
+        "phone": "3125931270",
+        "instagram": "https://www.instagram.com/caboleones/",
+        "latitude": null,
+        "longitude": null,
+        "is_active": true,
+        "sort_order": 10,
+        "created_at": "2026-04-04T19:26:02.648Z",
+        "updated_at": "2026-04-04T19:26:02.648Z"
+      }
+    ]
+  },
+  "finalRecords": {
+    "spots": [
+      {
+        "id": 3541,
+        "type": "place",
+        "slug": "cabo-leones",
+        "name": "Cabo Leones",
+        "short_description": "Cocktail bar en Granada con cócteles de autor y sin alcohol, vinos por copa y platos para compartir. También ofrece café y antojos de tardeo.",
+        "cover_image_url": "/place-media/cabo-leones/instagram-recovered-20260904-0.jpg",
+        "gallery_urls": [
+          "/place-media/cabo-leones/instagram-recovered-20260904-0.jpg",
+          "/place-media/cabo-leones/instagram-recovered-20260904-1.jpg"
+        ],
+        "category": "Tomar algo",
+        "city": "Cali",
+        "likes": "0",
+        "tags": [
+          "cocteleria",
+          "granada",
+          "terraza",
+          "brisa",
+          "bar",
+          "tardeo",
+          "cocteleria de autor",
+          "cocteles sin alcohol",
+          "vino por copa",
+          "sangria",
+          "cerveza",
+          "ceviche",
+          "cafe"
+        ],
+        "moods": [
+          "noche",
+          "con amigos",
+          "algo especial",
+          "tomar algo"
+        ],
+        "is_active": true,
+        "is_featured": false,
+        "created_at": "2026-04-02T18:26:29.198612+00:00",
+        "updated_at": "2026-04-02T18:26:29.198612+00:00",
+        "subcategories": [
+          "Cocktails",
+          "Vino",
+          "Cerveza"
+        ]
+      }
+    ],
+    "branches": [
+      {
+        "id": 5107,
+        "spot_id": 3541,
+        "slug": "cabo-leones-granada",
+        "neighborhood": "Granada",
+        "mall": "",
+        "hours": "Mar-Mie 16:00-23:00 · Jue 16:00-00:00 · Vie-Sab 16:00-02:00 · Dom 16:00-23:00 · Lun cerrado",
+        "holiday_mode": "inherit",
+        "holiday_open_time": null,
+        "holiday_close_time": null,
+        "holiday_split_open_time": null,
+        "holiday_split_close_time": null,
+        "address": "Av 9N # 9N - 10, Tercer Piso, Granada, Cali",
+        "min_budget": 50000,
+        "max_budget": 200000,
+        "max_people": 8,
+        "menu_url": "https://www.mezzy.co/r/cabo-leones/menu",
+        "whatsapp": "https://api.whatsapp.com/send/?phone=573125931270&text&type=phone_number&app_absent=0",
+        "phone": "3125931270",
+        "instagram": "https://www.instagram.com/caboleones/",
+        "latitude": 3.4560099,
+        "longitude": -76.5372538,
+        "is_active": true,
+        "sort_order": 10,
+        "created_at": "2026-04-04T19:26:02.648Z",
+        "updated_at": "2026-04-04T19:26:02.648Z"
+      }
+    ]
+  }
+}

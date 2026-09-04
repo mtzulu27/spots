@@ -1,0 +1,206 @@
+{
+  "date": "2026-09-04",
+  "status": "partial_saved",
+  "spot_id": 113,
+  "before": {
+    "spot": {
+      "id": 113,
+      "type": "place",
+      "slug": "cafe-pintado",
+      "name": "Cafe Pintado",
+      "short_description": "Cafe, arte y postres para una pausa suave en distintas zonas de Cali.",
+      "cover_image_url": "https://images.unsplash.com/photo-1498804103079-a6351b050096?auto=format&fit=crop&w=1200&q=80",
+      "gallery_urls": [],
+      "category": "Comida",
+      "city": "Cali",
+      "likes": "0",
+      "tags": [
+        "cafe",
+        "postres",
+        "arte",
+        "cali",
+        "malls",
+        "restaurantes",
+        "comida",
+        "comer",
+        "cafeteria",
+        "dulce",
+        "pintar",
+        "pintura",
+        "ceramica",
+        "manualidades"
+      ],
+      "moods": [
+        "cafe",
+        "tranqui",
+        "hablar",
+        "comer rico",
+        "plan tranqui",
+        "antojo",
+        "algo especial"
+      ],
+      "is_active": true,
+      "is_featured": false,
+      "created_at": "2026-04-01T05:36:11.568889+00:00",
+      "updated_at": "2026-04-01T05:36:11.568889+00:00"
+    },
+    "branch": {
+      "id": 124,
+      "spot_id": 113,
+      "slug": "cafe-pintado-puerto-125",
+      "neighborhood": "Pance",
+      "mall": "Puerto 125",
+      "hours": "Lun-Vie 13:30-21:00 · Sab-Dom-Fest 11:00-22:00",
+      "holiday_mode": "inherit",
+      "holiday_open_time": null,
+      "holiday_close_time": null,
+      "holiday_split_open_time": null,
+      "holiday_split_close_time": null,
+      "address": "Carrera 125 con Calle 16A, Puerto 125, Pance, Cali",
+      "min_budget": 10000,
+      "max_budget": 0,
+      "max_people": 4,
+      "menu_url": "https://heyzine.com/flip-book/391a0570bc.html?utm_source=ig&utm_medium=social&utm_content=link_in_bio&fbclid=PAZXh0bgNhZW0CMTEAc3J0YwZhcHBfaWQMMjU2MjgxMDQwNTU4AAGnwJ_cKbMYDtLhnLmi3bIcRGrAAMnVy7Vjn2BYeBUXsYxqBcrZF6TzYUu9VlY_aem_fSuz2pR0yOT4K_VrO6D0XA",
+      "whatsapp": "",
+      "phone": "",
+      "instagram": "https://instagram.com/cafepintado/",
+      "latitude": 3.3382619,
+      "longitude": -76.5351225,
+      "is_active": true,
+      "sort_order": 10,
+      "created_at": "2026-04-01T05:36:18.522851+00:00",
+      "updated_at": "2026-04-01T05:36:18.522851+00:00"
+    }
+  },
+  "finalRecords": {
+    "spot": {
+      "id": 113,
+      "type": "place",
+      "slug": "cafe-pintado",
+      "name": "Cafe Pintado",
+      "short_description": "Café para pintar cerámica mientras compartes una bebida y algo dulce. La carta incluye café, granizados, tortas, mini waffles de pandebono y empanadas.",
+      "cover_image_url": "https://images.unsplash.com/photo-1498804103079-a6351b050096?auto=format&fit=crop&w=1200&q=80",
+      "gallery_urls": [],
+      "category": "Comida",
+      "city": "Cali",
+      "likes": "0",
+      "tags": [
+        "cafe",
+        "pintar ceramica",
+        "pintura",
+        "manualidades",
+        "arte",
+        "postres",
+        "tortas",
+        "waffles de pandebono",
+        "empanadas",
+        "granizados",
+        "te chai"
+      ],
+      "moods": [
+        "cafe",
+        "tranqui",
+        "hablar",
+        "comer rico",
+        "plan tranqui",
+        "antojo",
+        "algo especial"
+      ],
+      "is_active": true,
+      "is_featured": false,
+      "created_at": "2026-04-01T05:36:11.568889+00:00",
+      "updated_at": "2026-04-01T05:36:11.568889+00:00",
+      "subcategories": [
+        "Café",
+        "Pastelería",
+        "Postres",
+        "Waffles"
+      ]
+    },
+    "branch": {
+      "id": 124,
+      "spot_id": 113,
+      "slug": "cafe-pintado-puerto-125",
+      "neighborhood": "Pance",
+      "mall": "Puerto 125",
+      "hours": "Lun-Vie 13:30-21:00 · Sab-Dom-Fest 11:00-22:00",
+      "holiday_mode": "inherit",
+      "holiday_open_time": null,
+      "holiday_close_time": null,
+      "holiday_split_open_time": null,
+      "holiday_split_close_time": null,
+      "address": "Carrera 125 con Calle 16A, Puerto 125, Pance, Cali",
+      "min_budget": 10000,
+      "max_budget": 0,
+      "max_people": 4,
+      "menu_url": "https://heyzine.com/flip-book/391a0570bc.html?utm_source=ig&utm_medium=social&utm_content=link_in_bio&fbclid=PAZXh0bgNhZW0CMTEAc3J0YwZhcHBfaWQMMjU2MjgxMDQwNTU4AAGnwJ_cKbMYDtLhnLmi3bIcRGrAAMnVy7Vjn2BYeBUXsYxqBcrZF6TzYUu9VlY_aem_fSuz2pR0yOT4K_VrO6D0XA",
+      "whatsapp": "",
+      "phone": "3233682909",
+      "instagram": "https://instagram.com/cafepintado/",
+      "latitude": 3.338577,
+      "longitude": -76.5350406,
+      "is_active": true,
+      "sort_order": 10,
+      "created_at": "2026-04-01T05:36:18.522851+00:00",
+      "updated_at": "2026-04-01T05:36:18.522851+00:00"
+    }
+  },
+  "sources": [
+    "https://www.instagram.com/cafepintado/",
+    "https://heyzine.com/flip-book/391a0570bc.html",
+    "https://cdnm.heyzine.com/files/uploaded/391a0570bc2f227bcf5286b2a49d11bad00a2453.pdf",
+    "https://www.google.com/maps/place/Caf%C3%A9+Pintado+Puerto+125/@3.338577,-76.5350406,17z/data=!3m1!4b1!4m6!3m5!1s0x8e30a196f83343d1:0x866ce2134b4356fd!8m2!3d3.338577!4d-76.5350406!16s%2Fg%2F11j7wh43n3"
+  ],
+  "menu": {
+    "pages_read": 2,
+    "method": "PDF completo pdftotext y primera pagina visual en navegador",
+    "offering": [
+      "cafe",
+      "aromaticas",
+      "granizados",
+      "jugos",
+      "te chai",
+      "chocolate",
+      "milo",
+      "cerveza",
+      "mini waffles de pandebono",
+      "empanadas",
+      "tortas de banano, zanahoria y chocolate"
+    ],
+    "pricesCOP": {
+      "espresso": 6000,
+      "americano": 7900,
+      "latte": 11000,
+      "tortas": 9900,
+      "mini_waffles": 13000,
+      "empanada": 7000
+    },
+    "budget": "Conservado 10000; menu no incluye costo de ceramicas. Maps informa 40000-60000 por visitantes, no tarifa oficial."
+  },
+  "maps": {
+    "branch_id": 124,
+    "phone": "3233682909",
+    "coordinates": [
+      3.338577,
+      -76.5350406
+    ],
+    "hours_observed": "Lun-Jue 13:30-21:00; Vie 13:30-22:00; Sab-Dom 10:00-22:30",
+    "hours_preserved_pending": "Conflicto con horario existente; falta contrastar destacado oficial y festivos."
+  },
+  "photos": {
+    "downloaded": 0,
+    "candidate": "https://www.instagram.com/cafepintado/p/DWpX7FwlgZH/",
+    "result": "Publicacion contiene video/promocion Semana Santa, no se uso como foto. Unsplash existente conservada pendiente de reemplazo."
+  },
+  "pending": [
+    "Horarios oficiales y festivos",
+    "Maps demas sedes",
+    "Fotos reales para reemplazar Unsplash y galeria",
+    "No comprobado en app",
+    "Lote 4 sin cerrar"
+  ],
+  "validation": [
+    "Catalogo JSON releido, coincidencia exacta con cambios esperados",
+    "No cambios de presupuesto, WhatsApp, otras sedes, PWA, auth, UI ni deploy"
+  ]
+}

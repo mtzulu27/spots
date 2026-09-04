@@ -10,10 +10,11 @@
     "web": "expo start --web",
     "build:catalog": "node scripts/build-static-catalog.mjs",
     "sync:catalog:local": "node scripts/sync-local-catalog.mjs",
-    "export:web": "expo export --platform web && node scripts/patch-web-output.mjs",
+    "export:web": "pnpm build:updates && expo export --platform web && node scripts/patch-web-output.mjs",
     "deploy:web": "pnpm export:web && node scripts/deploy-hostinger.mjs",
     "lint": "expo lint",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "build:updates": "node scripts/build-place-updates.mjs"
   },
   "dependencies": {
     "@expo-google-fonts/montserrat": "^0.4.2",

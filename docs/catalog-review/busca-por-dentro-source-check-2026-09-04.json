@@ -1,0 +1,17 @@
+{
+  "spot_id": 3557,
+  "status": "partial_review_not_complete",
+  "source": "https://www.instagram.com/buscapordentrosanantonio/",
+  "confirmed": {
+    "reservation_numbers": ["3243577445", "3148304718"],
+    "contact_note": "La biografia publica indica SOLO WhatsApp. Los dos contactos existentes no son necesariamente contradictorios."
+  },
+  "menu_attempt": {
+    "url": "https://1drv.ms/b/s!AuCnj_0kHHQtgYdx9BUW268JPbyJgw?e=mOhzML",
+    "result": "El enlace oficial abre OneDrive pero muestra que no se puede acceder al documento. No se agrega un menu inaccesible al catalogo."
+  },
+  "preserved": "Se mantienen contactos, presupuesto, horarios y fotografias actuales. No se infiere vigencia del negocio de publicaciones antiguas.",
+  "pending": ["Consulta directa de Google Business", "Menu completo accesible", "Horarios e informacion reciente"],
+  "catalog_changed": false,
+  "progress_changed": false
+}

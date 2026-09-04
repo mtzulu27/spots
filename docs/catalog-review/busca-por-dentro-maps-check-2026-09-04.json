@@ -1,0 +1,159 @@
+{
+  "status": "partial_review_with_verified_changes",
+  "spot_id": 3557,
+  "sources": [
+    "https://www.instagram.com/buscapordentrosanantonio/",
+    "https://www.google.com/maps?cid=8798322002261481124"
+  ],
+  "changes": [
+    "Coordenadas del pin de Google Maps incorporadas.",
+    "Descripcion depurada: eliminada afirmacion editorial de alta senal de operacion reciente."
+  ],
+  "pending": [
+    "Horario sabado: Google indica 10-20 frente al catalogo 09-22; falta confirmar con fuente oficial.",
+    "Direccion Google Cl.4 #602 frente al catalogo Calle4 #6-10; conservada hasta resolver.",
+    "Menu oficial OneDrive inaccesible; no modificar presupuesto ni ampliar subcategorias."
+  ],
+  "beforeRecords": {
+    "spots": [
+      {
+        "id": 3557,
+        "type": "place",
+        "slug": "busca-por-dentro",
+        "name": "Busca Por Dentro",
+        "short_description": "Restaurante en San Antonio con cocina casera, brunch y alta señal de operacion reciente.",
+        "cover_image_url": "/place-media/busca-por-dentro/cover.webp",
+        "gallery_urls": [
+          "/place-media/busca-por-dentro/gallery-1.jpg",
+          "/place-media/busca-por-dentro/gallery-2.webp",
+          "/place-media/busca-por-dentro/gallery-3.webp",
+          "/place-media/busca-por-dentro/gallery-4.webp",
+          "/place-media/busca-por-dentro/gallery-5.webp",
+          "/place-media/busca-por-dentro/gallery-6.webp",
+          "/place-media/busca-por-dentro/gallery-7.webp"
+        ],
+        "category": "Comida",
+        "city": "Cali",
+        "likes": "0",
+        "tags": [
+          "san antonio",
+          "brunch",
+          "almuerzos",
+          "cocina casera",
+          "cafe"
+        ],
+        "moods": [
+          "tranqui",
+          "comer rico",
+          "plan de dia"
+        ],
+        "is_active": true,
+        "is_featured": false,
+        "created_at": "2026-04-02T18:39:10.423777+00:00",
+        "updated_at": "2026-04-18T02:50:00.000000+00:00"
+      }
+    ],
+    "branches": [
+      {
+        "id": 4803,
+        "spot_id": 3557,
+        "slug": "busca-por-dentro-san-antonio",
+        "neighborhood": "San Antonio",
+        "mall": "",
+        "hours": "Lun-Vie 10:00-20:00 · Sáb 09:00-22:00 · Dom Cerrado",
+        "holiday_mode": "inherit",
+        "holiday_open_time": null,
+        "holiday_close_time": null,
+        "holiday_split_open_time": null,
+        "holiday_split_close_time": null,
+        "address": "Calle 4 # 6-10, Santiago de Cali 76001",
+        "min_budget": 30000,
+        "max_budget": 0,
+        "max_people": 6,
+        "menu_url": "",
+        "whatsapp": "https://wa.me/573243577445",
+        "phone": "3148304718 (solo WhatsApp)",
+        "instagram": "https://instagram.com/buscapordentrosanantonio/",
+        "latitude": null,
+        "longitude": null,
+        "is_active": true,
+        "sort_order": 10,
+        "created_at": "2026-04-02T18:39:11.577162+00:00",
+        "updated_at": "2026-04-18T02:50:00.000000+00:00"
+      }
+    ],
+    "branchHours": [],
+    "hours": []
+  },
+  "expectedRecords": {
+    "spots": [
+      {
+        "id": 3557,
+        "type": "place",
+        "slug": "busca-por-dentro",
+        "name": "Busca Por Dentro",
+        "short_description": "Restaurante y café en San Antonio para una pausa de día y una comida tranquila.",
+        "cover_image_url": "/place-media/busca-por-dentro/cover.webp",
+        "gallery_urls": [
+          "/place-media/busca-por-dentro/gallery-1.jpg",
+          "/place-media/busca-por-dentro/gallery-2.webp",
+          "/place-media/busca-por-dentro/gallery-3.webp",
+          "/place-media/busca-por-dentro/gallery-4.webp",
+          "/place-media/busca-por-dentro/gallery-5.webp",
+          "/place-media/busca-por-dentro/gallery-6.webp",
+          "/place-media/busca-por-dentro/gallery-7.webp"
+        ],
+        "category": "Comida",
+        "city": "Cali",
+        "likes": "0",
+        "tags": [
+          "san antonio",
+          "brunch",
+          "almuerzos",
+          "cocina casera",
+          "cafe"
+        ],
+        "moods": [
+          "tranqui",
+          "comer rico",
+          "plan de dia"
+        ],
+        "is_active": true,
+        "is_featured": false,
+        "created_at": "2026-04-02T18:39:10.423777+00:00",
+        "updated_at": "2026-04-18T02:50:00.000000+00:00"
+      }
+    ],
+    "branches": [
+      {
+        "id": 4803,
+        "spot_id": 3557,
+        "slug": "busca-por-dentro-san-antonio",
+        "neighborhood": "San Antonio",
+        "mall": "",
+        "hours": "Lun-Vie 10:00-20:00 · Sáb 09:00-22:00 · Dom Cerrado",
+        "holiday_mode": "inherit",
+        "holiday_open_time": null,
+        "holiday_close_time": null,
+        "holiday_split_open_time": null,
+        "holiday_split_close_time": null,
+        "address": "Calle 4 # 6-10, Santiago de Cali 76001",
+        "min_budget": 30000,
+        "max_budget": 0,
+        "max_people": 6,
+        "menu_url": "",
+        "whatsapp": "https://wa.me/573243577445",
+        "phone": "3148304718 (solo WhatsApp)",
+        "instagram": "https://instagram.com/buscapordentrosanantonio/",
+        "latitude": 3.4477343,
+        "longitude": -76.5379562,
+        "is_active": true,
+        "sort_order": 10,
+        "created_at": "2026-04-02T18:39:11.577162+00:00",
+        "updated_at": "2026-04-18T02:50:00.000000+00:00"
+      }
+    ],
+    "branchHours": [],
+    "hours": []
+  }
+}

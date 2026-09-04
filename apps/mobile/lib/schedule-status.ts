@@ -70,6 +70,7 @@ export function matchesScheduleForDayTime(schedule: string, dayCode: string, tar
   }
 
   const directives = getRegularDirectives(cleaned)
+  if (isWithinPreviousDayCarryover(cleaned, dayCode, targetMinutes)) return true
   let matchedDay = false
 
   for (const directive of directives) {
@@ -153,10 +154,20 @@ export function hasScheduleAvailabilityForDay(schedule: string, dayCode: string)
   return false
 }
 
+function getDisplayedScheduleDate(schedule: string, now: Date) {
+  const date = new Date(now)
+  // Highlight the opening day of an ongoing shift, not just the calendar day.
+  if (!isColombianHoliday(now) && isWithinPreviousDayCarryover(schedule, dayIndexToCode(now.getDay()), getCurrentMinutes(now))) {
+    date.setDate(date.getDate() - 1)
+  }
+  return date
+}
+
 export function getScheduleDayRows(schedule: string, now = new Date()): ScheduleDayRow[] {
   const cleaned = getScheduleLabel(schedule)
-  const todayCode = dayIndexToCode(now.getDay())
-  const festiveToday = isColombianHoliday(now)
+  const displayDate = getDisplayedScheduleDate(cleaned, now)
+  const todayCode = dayIndexToCode(displayDate.getDay())
+  const festiveToday = isColombianHoliday(displayDate)
   const holidayDirective = festiveToday ? getHolidayDirective(cleaned) : null
   const todayLabel = getTodayScheduleLabel(schedule, now)
 
@@ -204,13 +215,18 @@ export function getTodayScheduleLabel(schedule: string, now = new Date()) {
     return ''
   }
 
-  const todayCode = dayIndexToCode(now.getDay())
-  const holidayDirective = isColombianHoliday(now) ? getHolidayDirective(cleaned) : null
+  const displayDate = getDisplayedScheduleDate(cleaned, now)
+  const todayCode = dayIndexToCode(displayDate.getDay())
+  const holidayDirective = isColombianHoliday(displayDate) ? getHolidayDirective(cleaned) : null
   return getHolidayLabelForToday(cleaned, holidayDirective) || getScheduleLabelForDay(cleaned, todayCode)
 }
 
 function getStatusForDay(schedule: string, dayCode: string, currentMinutes: number): ScheduleStatus | null {
   const directives = getRegularDirectives(schedule)
+  // A closed day can still contain the end of yesterday's overnight shift.
+  if (isWithinPreviousDayCarryover(schedule, dayCode, currentMinutes)) {
+    return { label: 'Abierto ahora', tone: 'open' }
+  }
   let matchedDay = false
 
   for (const directive of directives) {
@@ -361,10 +377,11 @@ function parseTimeRanges(value: string) {
 function isWithinRanges(value: number, ranges: Array<{ start: number; end: number }>) {
   return ranges.some((range) => {
     if (range.end >= range.start) {
-      return value >= range.start && value <= range.end
+      return value >= range.start && value < range.end
     }
 
-    return value >= range.start || value <= range.end
+    // The after-midnight portion belongs to the following calendar day.
+    return value >= range.start
   })
 }
 
@@ -378,7 +395,7 @@ function isWithinPreviousDayCarryover(schedule: string, dayCode: string, current
     }
 
     const hasCarryover = directive.ranges.some(
-      (range) => range.end < range.start && currentMinutes <= range.end,
+      (range) => range.end < range.start && currentMinutes < range.end,
     )
     if (hasCarryover) {
       return true

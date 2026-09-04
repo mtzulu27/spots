@@ -1,0 +1,13 @@
+{
+  "spot_id": 3531,
+  "status": "partial",
+  "sources_read": ["https://san-camilo.com/menu-san-camilo/brunch/", "https://san-camilo.com/menu-san-camilo/croissants/", "https://san-camilo.com/menu-san-camilo/pasteleria/"],
+  "confirmed_offering": ["brunch", "desayunos", "bagels y croissants rellenos", "bowls de acai, fruta y granola", "pancakes", "sandwich caprese", "panaderia", "pasteleria"],
+  "additional_sources_read": ["https://san-camilo.com/menu-san-camilo/calientes-con-cafe/", "https://san-camilo.com/menu-san-camilo/frias-con-cafe/"],
+  "coffee_findings": ["Metodos Chemex, prensa francesa y V60", "Espresso y bebidas con leche", "Cold brew", "Affogato", "Granizados y sodas con cafe"],
+  "pending_sections": ["calientes sin cafe", "frias sin cafe", "cafe para preparar", "menu infantil", "BON BRGR DAPA", "Especiales Dapa"],
+  "note": "No extender automaticamente productos exclusivos Dapa al resto de sedes. Las dos paginas Dapa abrieron correctamente en navegador; se leyeron nombres y precios visibles, faltan descripciones Ver mas.",
+  "dapa_visible_items": {"American brgr": 40000, "Blue brgr": 43000, "BON BRGR truffada": 35000, "Cheese brgr": 35000, "Guava brgr": 33000, "Langostino Salvaje Roll": 40000, "Picada Mixta": 90000, "Picada Valluna": 40000},
+  "catalog_changed": false,
+  "pending": ["Instagram", "Google Maps por sede", "Fotos", "Comparacion completa antes de cerrar ficha"]
+}

@@ -1,0 +1,8 @@
+{
+  "spot_id": 113,
+  "status": "photo_search_incomplete",
+  "inspected": [{"url": "https://www.instagram.com/cafepintado/p/DawO861nMzB/", "decision": "rejected_for_gallery", "reason": "Publicacion de piezas de la semana con textos promocionales; no usar como foto limpia del lugar."}],
+  "pending": "Encontrar fotografias limpias de ambiente, actividad o productos y reemplazar portada Unsplash; galeria actual vacia.",
+  "downloaded": 0,
+  "catalog_changed": false
+}

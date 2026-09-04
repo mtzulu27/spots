@@ -1,0 +1,821 @@
+{
+  "batch": 1,
+  "date": "2026-09-04",
+  "changes": [
+    {
+      "table": "spots",
+      "id": 3546,
+      "fields": [
+        "short_description",
+        "cover_image_url",
+        "gallery_urls",
+        "tags",
+        "subcategories"
+      ]
+    },
+    {
+      "table": "spots",
+      "id": 3542,
+      "fields": [
+        "short_description",
+        "tags",
+        "subcategories"
+      ]
+    },
+    {
+      "table": "spots",
+      "id": 3519,
+      "fields": [
+        "tags",
+        "subcategories"
+      ]
+    },
+    {
+      "table": "spots",
+      "id": 1523,
+      "fields": [
+        "tags",
+        "moods"
+      ]
+    },
+    {
+      "table": "spots",
+      "id": 1517,
+      "fields": [
+        "short_description",
+        "cover_image_url",
+        "gallery_urls",
+        "tags",
+        "subcategories"
+      ]
+    },
+    {
+      "table": "branches",
+      "id": 1931,
+      "fields": [
+        "hours",
+        "min_budget",
+        "max_budget",
+        "phone",
+        "latitude",
+        "longitude"
+      ]
+    },
+    {
+      "table": "branches",
+      "id": 1937,
+      "fields": [
+        "address",
+        "phone",
+        "latitude",
+        "longitude"
+      ]
+    },
+    {
+      "table": "branches",
+      "id": 4762,
+      "fields": [
+        "latitude",
+        "longitude"
+      ]
+    },
+    {
+      "table": "branches",
+      "id": 5098,
+      "fields": [
+        "hours",
+        "min_budget",
+        "max_budget",
+        "latitude",
+        "longitude"
+      ]
+    },
+    {
+      "table": "branches",
+      "id": 5105,
+      "fields": [
+        "hours",
+        "min_budget",
+        "max_budget",
+        "latitude",
+        "longitude"
+      ]
+    },
+    {
+      "table": "branches",
+      "id": 5106,
+      "fields": [
+        "hours",
+        "address",
+        "min_budget",
+        "max_budget",
+        "phone",
+        "latitude",
+        "longitude"
+      ]
+    },
+    {
+      "table": "branchHours",
+      "id": 524,
+      "fields": [
+        "open_time"
+      ]
+    },
+    {
+      "table": "branchHours",
+      "id": 525,
+      "fields": [
+        "open_time"
+      ]
+    },
+    {
+      "table": "branchHours",
+      "id": 569,
+      "fields": [
+        "close_time"
+      ]
+    },
+    {
+      "table": "branchHours",
+      "id": 570,
+      "fields": [
+        "close_time"
+      ]
+    },
+    {
+      "table": "branchHours",
+      "id": 571,
+      "fields": [
+        "close_time"
+      ]
+    },
+    {
+      "table": "branchHours",
+      "id": 572,
+      "fields": [
+        "is_closed",
+        "open_time",
+        "close_time"
+      ]
+    },
+    {
+      "table": "branchHours",
+      "id": 573,
+      "fields": [
+        "open_time",
+        "close_time"
+      ]
+    },
+    {
+      "table": "branchHours",
+      "id": 579,
+      "fields": [
+        "is_closed",
+        "open_time",
+        "close_time"
+      ]
+    },
+    {
+      "table": "branchHours",
+      "id": 580,
+      "fields": [
+        "open_time",
+        "close_time"
+      ]
+    }
+  ],
+  "notes": [
+    "Se navegaron los cinco perfiles de Instagram y sus fichas de Google Maps directamente.",
+    "Agave: carta PDF completa de seis paginas. Tacos 37.000, burgers 39.000-45.000, cortes 75.000-96.000, bebidas desde 6.000. Presupuesto estimado 45.000-110.000, no promedio certificado. Jueves cierra 23:00 y domingo abre 16:00.",
+    "ALMA: menu completo Menupp; pizzas/pastas desde 35.000, limonada 9.000, carnes hasta 80.000, cocteles 45.000-52.000. Presupuesto estimado 45.000-130.000. Maps actualizado por negocio hace 6 semanas confirma sabado 14:00 y domingo 13:00.",
+    "Antaño: ambas cartas leidas; cerveza vaso 19.000, burgers 26.500-39.500 y cocteles 30.000-40.000. Presupuesto estimado 20.000-80.000 por persona para plan de bar. Ambas sedes abren viernes 17:30-01:30. No se clasifica como cena.",
+    "Amasijo: Instagram dice CERRADOS, Google muestra horarios. Se conserva inactivo, presupuestos/horarios antiguos no revalidados. Coordenadas corregidas.",
+    "Artesapan: Instagram EN LINEA, Maps mantiene Lago Verde y horario 07:30-19:30 diario. Telefono y direccion de Maps agregados. Menupp sin carta; presupuesto heredado conservado, no verificado.",
+    "Fotos: 2 nuevas de Agave y 3 de ALMA descargadas de perfiles Instagram. Artesapan conserva las 2 fotos locales recuperadas. Antaño sin nueva seleccion adecuada; Amasijo pendiente por cierre.",
+    "Pendientes: WhatsApp no derivado de telefonos, capacidades no corroboradas, reapertura Amasijo y operacion presencial Artesapan no confirmadas."
+  ],
+  "sources": [
+    "https://www.instagram.com/agaveazul.cocinabar/",
+    "https://drive.google.com/file/d/1tmuCUf5brKCmAJrVvrtV-7QKQiSZd4J4/view",
+    "https://www.google.com/maps/search/Agave+Azul+Cali+Lago+Verde/",
+    "https://www.instagram.com/alma.restaurante_cali/",
+    "https://alma-restaurante.com/",
+    "https://menupp.co/almarestaurante/venue/PFu3xJrjDvj0joI39t1q/menu/mDLSquxScA91MzdP5YEx",
+    "https://www.google.com/maps/search/ALMA+Restaurante+Cali+Cristo+Rey/",
+    "https://www.instagram.com/amasijococina/",
+    "https://www.google.com/maps/search/Amasijo+Cocina+Cali/",
+    "https://www.instagram.com/antano_ca/",
+    "https://menupp.co/antanoca/venue/P3JMw6BYBjuNHYvmPdUl/menu/96449756-bb5c-4ac0-a6d8-e75f497b8997",
+    "https://menupp.co/antanoca/venue/8vAmtfdEXA3akFauFQmv/menu/frg8mukHZls4v3k9BNQk",
+    "https://www.google.com/maps/search/Antaño+Cerveceria+Cali/",
+    "https://www.instagram.com/artesapangourmet/",
+    "https://menupp.co/artesapan",
+    "https://www.google.com/maps/search/Artesapan+Gourmet+Cali/"
+  ],
+  "finalCatalog": {
+    "spots": [
+      {
+        "id": 3546,
+        "type": "place",
+        "slug": "alma",
+        "name": "ALMA",
+        "short_description": "Pizzas napolitanas, pastas y sabores vallecaucanos con vista a Cristo Rey. Coctelería de autor, juegos de mesa y pintura de cerámica; admite mascotas.",
+        "cover_image_url": "/place-media/alma/revision-az-20260904-0.jpg",
+        "gallery_urls": [
+          "/place-media/alma/revision-az-20260904-0.jpg",
+          "/place-media/alma/revision-az-20260904-1.jpg",
+          "/place-media/alma/revision-az-20260904-2.jpg"
+        ],
+        "category": "Comida",
+        "city": "Cali",
+        "likes": "0",
+        "tags": [
+          "pizza napolitana",
+          "pastas",
+          "cocina italiana",
+          "fusion vallecaucana",
+          "cocteleria de autor",
+          "pet friendly",
+          "vista a cristo rey",
+          "juegos de mesa",
+          "pintar ceramica"
+        ],
+        "moods": [
+          "algo especial",
+          "comer rico",
+          "con amigos",
+          "cita"
+        ],
+        "is_active": true,
+        "is_featured": false,
+        "created_at": "2026-04-02T18:32:24.556088+00:00",
+        "updated_at": "2026-04-02T18:32:24.556088+00:00",
+        "subcategories": [
+          "Italiana",
+          "Pizza",
+          "Pasta",
+          "Fusión",
+          "Vegetariana",
+          "Cena",
+          "Tardear"
+        ]
+      },
+      {
+        "id": 3542,
+        "type": "place",
+        "slug": "antano-cerveceria",
+        "name": "Antaño Cervecería",
+        "short_description": "Cervecería artesanal caleña con sedes en Granada y Limonar. Cervezas clásicas, frutales y de temporada, cócteles, hamburguesas y picadas para compartir.",
+        "cover_image_url": "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/antano/cover/antano-cover-1-1775330175695.jpg",
+        "gallery_urls": [
+          "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/antano/cover/antano-cover-1-1775330175695.jpg",
+          "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/antano/gallery/antano-gallery-2-1775330177192.jpg",
+          "https://ljbvymacuqknpzoefkmw.supabase.co/storage/v1/object/public/spots-media/antano/gallery/antano-gallery-3-1775330177612.jpg"
+        ],
+        "category": "Tomar algo",
+        "city": "Cali",
+        "likes": "0",
+        "tags": [
+          "cerveza artesanal",
+          "cervezas frutales",
+          "ipa",
+          "stout",
+          "cocteles",
+          "hamburguesas",
+          "picadas",
+          "limonar",
+          "granada"
+        ],
+        "moods": [
+          "noche",
+          "con amigos",
+          "casual",
+          "tomar algo"
+        ],
+        "is_active": true,
+        "is_featured": false,
+        "created_at": "2026-04-02T18:26:29.534013+00:00",
+        "updated_at": "2026-04-02T18:26:29.534013+00:00",
+        "subcategories": [
+          "Cerveza",
+          "Cerveza artesanal",
+          "Cocktails"
+        ]
+      },
+      {
+        "id": 3519,
+        "type": "place",
+        "slug": "amasijo-cocina",
+        "name": "Amasijo Cocina",
+        "short_description": "Panadería y cocina colombiana en San Antonio. Su perfil oficial informa que está cerrado; reapertura pendiente de confirmar.",
+        "cover_image_url": "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=1200&q=80",
+        "gallery_urls": [],
+        "category": "Comida",
+        "city": "Cali",
+        "likes": "0",
+        "tags": [
+          "panaderia",
+          "pasteleria",
+          "cocina colombiana",
+          "san antonio"
+        ],
+        "moods": [
+          "brunch",
+          "cafe",
+          "tranqui",
+          "comer rico",
+          "plan tranqui",
+          "antojo"
+        ],
+        "is_active": false,
+        "is_featured": false,
+        "created_at": "2026-04-02T17:28:51.705141+00:00",
+        "updated_at": "2026-04-02T17:28:51.705141+00:00",
+        "subcategories": [
+          "Colombiana",
+          "Panadería",
+          "Pastelería"
+        ]
+      },
+      {
+        "id": 1523,
+        "type": "place",
+        "slug": "artesapan-gourmet",
+        "name": "Artesapan Gourmet",
+        "short_description": "Panadería artesanal en Cali con panes de masa madre y ciabatta. Actualmente se presenta en Instagram como panadería en línea; atención en sede física por confirmar.",
+        "cover_image_url": "/place-media/artesapan-gourmet/instagram-recovered-20260904-0.jpg",
+        "gallery_urls": [
+          "/place-media/artesapan-gourmet/instagram-recovered-20260904-0.jpg",
+          "/place-media/artesapan-gourmet/instagram-recovered-20260904-1.jpg"
+        ],
+        "category": "Comida",
+        "city": "Cali",
+        "likes": "0",
+        "tags": [
+          "panaderia artesanal",
+          "masa madre",
+          "ciabatta",
+          "croissant",
+          "panes",
+          "venta en linea"
+        ],
+        "moods": [
+          "antojo",
+          "comer rico",
+          "plan tranqui"
+        ],
+        "is_active": true,
+        "is_featured": false,
+        "created_at": "2026-04-01T22:31:16.044565+00:00",
+        "updated_at": "2026-04-01T22:31:16.044565+00:00",
+        "subcategories": [
+          "Panadería"
+        ]
+      },
+      {
+        "id": 1517,
+        "type": "place",
+        "slug": "agave-azul-cocina-bar",
+        "name": "Agave Azul",
+        "short_description": "Cocina mexicana al horno en Lago Verde: tacos, quesadillas, hamburguesas y cortes de carne. Cócteles y mocktails para acompañar una cena entre amigos.",
+        "cover_image_url": "/place-media/agave-azul-cocina-bar/revision-az-20260904-0.jpg",
+        "gallery_urls": [
+          "/place-media/agave-azul-cocina-bar/revision-az-20260904-0.jpg",
+          "/place-media/agave-azul-cocina-bar/revision-az-20260904-1.jpg"
+        ],
+        "category": "Comida",
+        "city": "Cali",
+        "likes": "0",
+        "tags": [
+          "mexicano",
+          "tacos",
+          "birria",
+          "quesadillas",
+          "hamburguesas",
+          "costillas",
+          "cortes de carne",
+          "cocteles",
+          "mocktails",
+          "cocina al horno",
+          "lago verde",
+          "pance"
+        ],
+        "moods": [
+          "tomar algo",
+          "con amigos",
+          "noche",
+          "comer rico",
+          "antojo"
+        ],
+        "is_active": true,
+        "is_featured": false,
+        "created_at": "2026-04-01T22:31:15.084863+00:00",
+        "updated_at": "2026-04-01T22:31:15.084863+00:00",
+        "subcategories": [
+          "Mexicana",
+          "Tacos",
+          "Hamburguesas",
+          "Cena"
+        ]
+      }
+    ],
+    "branches": [
+      {
+        "id": 1931,
+        "spot_id": 1517,
+        "slug": "agave-azul-cocina-bar-lago-verde",
+        "neighborhood": "Pance",
+        "mall": "Lago Verde",
+        "hours": "Lun-Mie 17:00-22:00 · Jue 17:00-23:00 · Vie-Sab 17:00-02:00 · Dom 16:00-21:00",
+        "holiday_mode": "inherit",
+        "holiday_open_time": null,
+        "holiday_close_time": null,
+        "holiday_split_open_time": null,
+        "holiday_split_close_time": null,
+        "address": "Cl. 16A #122-70, Lago Verde, Pance, Cali",
+        "min_budget": 45000,
+        "max_budget": 110000,
+        "max_people": 6,
+        "menu_url": "https://drive.google.com/file/d/1tmuCUf5brKCmAJrVvrtV-7QKQiSZd4J4/view",
+        "whatsapp": "",
+        "phone": "3113737310",
+        "instagram": "https://instagram.com/agaveazul.cocinabar/",
+        "latitude": 3.3427218,
+        "longitude": -76.5352484,
+        "is_active": true,
+        "sort_order": 10,
+        "created_at": "2026-04-01T22:31:27.150301+00:00",
+        "updated_at": "2026-04-01T22:31:27.150301+00:00"
+      },
+      {
+        "id": 1937,
+        "spot_id": 1523,
+        "slug": "artesapan-gourmet-lago-verde",
+        "neighborhood": "Pance",
+        "mall": "Lago Verde",
+        "hours": "Lun-Dom 07:30-19:30",
+        "holiday_mode": "inherit",
+        "holiday_open_time": null,
+        "holiday_close_time": null,
+        "holiday_split_open_time": null,
+        "holiday_split_close_time": null,
+        "address": "Parque Empresarial Lagoverde, Cl. 16a #122 70 Burbuja 1, Barrio Pance, Pance, Cali, Valle del Cauca",
+        "min_budget": 8000,
+        "max_budget": 0,
+        "max_people": 4,
+        "menu_url": "https://menupp.co/artesapan",
+        "whatsapp": "",
+        "phone": "3106227722",
+        "instagram": "https://instagram.com/artesapangourmet/",
+        "latitude": 3.342525,
+        "longitude": -76.535473,
+        "is_active": true,
+        "sort_order": 10,
+        "created_at": "2026-04-01T22:31:28.191511+00:00",
+        "updated_at": "2026-04-01T22:31:28.191511+00:00"
+      },
+      {
+        "id": 4762,
+        "spot_id": 3519,
+        "slug": "amasijo-cocina-san-antonio",
+        "neighborhood": "San Antonio",
+        "mall": "",
+        "hours": "Lun-Jue 08:00-19:00 · Vie-Sab 08:00-23:00 · Dom 09:00-19:00",
+        "holiday_mode": "inherit",
+        "holiday_open_time": null,
+        "holiday_close_time": null,
+        "holiday_split_open_time": null,
+        "holiday_split_close_time": null,
+        "address": "Cra 5 #3-45, Cali",
+        "min_budget": 22000,
+        "max_budget": 0,
+        "max_people": 6,
+        "menu_url": "https://www.rappi.com.co/restaurantes/900409925-amasijo-cocina",
+        "whatsapp": "",
+        "phone": "3023439748",
+        "instagram": "https://www.instagram.com/amasijococina/",
+        "latitude": 3.4485205,
+        "longitude": -76.5382836,
+        "is_active": false,
+        "sort_order": 10,
+        "created_at": "2026-04-02T17:28:53.853447+00:00",
+        "updated_at": "2026-04-02T17:28:53.853447+00:00"
+      },
+      {
+        "id": 5098,
+        "spot_id": 3546,
+        "slug": "alma-cristo-rey",
+        "neighborhood": "Los Cristales Tejares",
+        "mall": "",
+        "hours": "Lun-Mar Cerrado · Mie-Vie 17:00-22:00 · Sab 14:00-22:00 · Dom 13:00-21:00",
+        "holiday_mode": "inherit",
+        "holiday_open_time": null,
+        "holiday_close_time": null,
+        "holiday_split_open_time": null,
+        "holiday_split_close_time": null,
+        "address": "KM 6 Vía Cristo Rey, Los Cristales Tejares, Cali",
+        "min_budget": 45000,
+        "max_budget": 130000,
+        "max_people": 6,
+        "menu_url": "https://menupp.co/almarestaurante/venue/PFu3xJrjDvj0joI39t1q/menu/mDLSquxScA91MzdP5YEx",
+        "whatsapp": "https://wa.me/573105570048",
+        "phone": "3105570048",
+        "instagram": "https://www.instagram.com/alma.restaurante_cali/",
+        "latitude": 3.4309261,
+        "longitude": -76.5714441,
+        "is_active": true,
+        "sort_order": 10,
+        "created_at": "2026-04-04T02:57:07.843711+00:00",
+        "updated_at": "2026-04-04T02:57:07.843711+00:00"
+      },
+      {
+        "id": 5105,
+        "spot_id": 3542,
+        "slug": "antano-cerveceria-limonar",
+        "neighborhood": "El Limonar",
+        "mall": "",
+        "hours": "Mar-Jue 17:00-00:00 · Vie-Sab 17:30-01:30 · Lun y Dom cerrado",
+        "holiday_mode": "inherit",
+        "holiday_open_time": null,
+        "holiday_close_time": null,
+        "holiday_split_open_time": null,
+        "holiday_split_close_time": null,
+        "address": "Cra. 66 #12-26, Comuna 17, Cali, Valle del Cauca",
+        "min_budget": 20000,
+        "max_budget": 80000,
+        "max_people": 6,
+        "menu_url": "https://menupp.co/antanoca/venue/P3JMw6BYBjuNHYvmPdUl/menu/96449756-bb5c-4ac0-a6d8-e75f497b8997",
+        "whatsapp": "",
+        "phone": "3187125692",
+        "instagram": "https://www.instagram.com/antano_ca/",
+        "latitude": 3.3979526,
+        "longitude": -76.5386945,
+        "is_active": true,
+        "sort_order": 10,
+        "created_at": "2026-04-04T19:17:31.833Z",
+        "updated_at": "2026-04-04T19:17:31.833Z"
+      },
+      {
+        "id": 5106,
+        "spot_id": 3542,
+        "slug": "antano-cerveceria-granada",
+        "neighborhood": "Granada",
+        "mall": "",
+        "hours": "Mar-Jue 17:00-00:00 · Vie-Sab 17:30-01:30 · Lun y Dom cerrado",
+        "holiday_mode": "inherit",
+        "holiday_open_time": null,
+        "holiday_close_time": null,
+        "holiday_split_open_time": null,
+        "holiday_split_close_time": null,
+        "address": "Av 9N, Cl. 15a Nte. #35, Santa Monica Residential, Cali, Valle del Cauca",
+        "min_budget": 20000,
+        "max_budget": 80000,
+        "max_people": 6,
+        "menu_url": "https://menupp.co/antanoca/venue/8vAmtfdEXA3akFauFQmv/menu/frg8mukHZls4v3k9BNQk",
+        "whatsapp": "",
+        "phone": "3152353583",
+        "instagram": "https://www.instagram.com/antano_ca/",
+        "latitude": 3.4601703,
+        "longitude": -76.5337374,
+        "is_active": true,
+        "sort_order": 20,
+        "created_at": "2026-04-04T19:17:31.833Z",
+        "updated_at": "2026-04-04T19:17:31.833Z"
+      }
+    ],
+    "branchHours": [
+      {
+        "id": 519,
+        "branch_id": 5098,
+        "day_of_week": 1,
+        "is_closed": true,
+        "open_time": null,
+        "close_time": null,
+        "split_open_time": null,
+        "split_close_time": null,
+        "sort_order": 10
+      },
+      {
+        "id": 520,
+        "branch_id": 5098,
+        "day_of_week": 2,
+        "is_closed": true,
+        "open_time": null,
+        "close_time": null,
+        "split_open_time": null,
+        "split_close_time": null,
+        "sort_order": 20
+      },
+      {
+        "id": 521,
+        "branch_id": 5098,
+        "day_of_week": 3,
+        "is_closed": false,
+        "open_time": "17:00:00",
+        "close_time": "22:00:00",
+        "split_open_time": null,
+        "split_close_time": null,
+        "sort_order": 30
+      },
+      {
+        "id": 522,
+        "branch_id": 5098,
+        "day_of_week": 4,
+        "is_closed": false,
+        "open_time": "17:00:00",
+        "close_time": "22:00:00",
+        "split_open_time": null,
+        "split_close_time": null,
+        "sort_order": 40
+      },
+      {
+        "id": 523,
+        "branch_id": 5098,
+        "day_of_week": 5,
+        "is_closed": false,
+        "open_time": "17:00:00",
+        "close_time": "22:00:00",
+        "split_open_time": null,
+        "split_close_time": null,
+        "sort_order": 50
+      },
+      {
+        "id": 524,
+        "branch_id": 5098,
+        "day_of_week": 6,
+        "is_closed": false,
+        "open_time": "14:00:00",
+        "close_time": "22:00:00",
+        "split_open_time": null,
+        "split_close_time": null,
+        "sort_order": 60
+      },
+      {
+        "id": 525,
+        "branch_id": 5098,
+        "day_of_week": 0,
+        "is_closed": false,
+        "open_time": "13:00:00",
+        "close_time": "21:00:00",
+        "split_open_time": null,
+        "split_close_time": null,
+        "sort_order": 70
+      },
+      {
+        "id": 568,
+        "branch_id": 5105,
+        "day_of_week": 1,
+        "is_closed": true,
+        "open_time": null,
+        "close_time": null,
+        "split_open_time": null,
+        "split_close_time": null,
+        "sort_order": 10
+      },
+      {
+        "id": 569,
+        "branch_id": 5105,
+        "day_of_week": 2,
+        "is_closed": false,
+        "open_time": "17:00:00",
+        "close_time": "00:00:00",
+        "split_open_time": null,
+        "split_close_time": null,
+        "sort_order": 20
+      },
+      {
+        "id": 570,
+        "branch_id": 5105,
+        "day_of_week": 3,
+        "is_closed": false,
+        "open_time": "17:00:00",
+        "close_time": "00:00:00",
+        "split_open_time": null,
+        "split_close_time": null,
+        "sort_order": 30
+      },
+      {
+        "id": 571,
+        "branch_id": 5105,
+        "day_of_week": 4,
+        "is_closed": false,
+        "open_time": "17:00:00",
+        "close_time": "00:00:00",
+        "split_open_time": null,
+        "split_close_time": null,
+        "sort_order": 40
+      },
+      {
+        "id": 572,
+        "branch_id": 5105,
+        "day_of_week": 5,
+        "is_closed": false,
+        "open_time": "17:30:00",
+        "close_time": "01:30:00",
+        "split_open_time": null,
+        "split_close_time": null,
+        "sort_order": 50
+      },
+      {
+        "id": 573,
+        "branch_id": 5105,
+        "day_of_week": 6,
+        "is_closed": false,
+        "open_time": "17:30:00",
+        "close_time": "01:30:00",
+        "split_open_time": null,
+        "split_close_time": null,
+        "sort_order": 60
+      },
+      {
+        "id": 574,
+        "branch_id": 5105,
+        "day_of_week": 0,
+        "is_closed": true,
+        "open_time": null,
+        "close_time": null,
+        "split_open_time": null,
+        "split_close_time": null,
+        "sort_order": 70
+      },
+      {
+        "id": 575,
+        "branch_id": 5106,
+        "day_of_week": 1,
+        "is_closed": true,
+        "open_time": null,
+        "close_time": null,
+        "split_open_time": null,
+        "split_close_time": null,
+        "sort_order": 10
+      },
+      {
+        "id": 576,
+        "branch_id": 5106,
+        "day_of_week": 2,
+        "is_closed": false,
+        "open_time": "17:00:00",
+        "close_time": "00:00:00",
+        "split_open_time": null,
+        "split_close_time": null,
+        "sort_order": 20
+      },
+      {
+        "id": 577,
+        "branch_id": 5106,
+        "day_of_week": 3,
+        "is_closed": false,
+        "open_time": "17:00:00",
+        "close_time": "00:00:00",
+        "split_open_time": null,
+        "split_close_time": null,
+        "sort_order": 30
+      },
+      {
+        "id": 578,
+        "branch_id": 5106,
+        "day_of_week": 4,
+        "is_closed": false,
+        "open_time": "17:00:00",
+        "close_time": "00:00:00",
+        "split_open_time": null,
+        "split_close_time": null,
+        "sort_order": 40
+      },
+      {
+        "id": 579,
+        "branch_id": 5106,
+        "day_of_week": 5,
+        "is_closed": false,
+        "open_time": "17:30:00",
+        "close_time": "01:30:00",
+        "split_open_time": null,
+        "split_close_time": null,
+        "sort_order": 50
+      },
+      {
+        "id": 580,
+        "branch_id": 5106,
+        "day_of_week": 6,
+        "is_closed": false,
+        "open_time": "17:30:00",
+        "close_time": "01:30:00",
+        "split_open_time": null,
+        "split_close_time": null,
+        "sort_order": 60
+      },
+      {
+        "id": 581,
+        "branch_id": 5106,
+        "day_of_week": 0,
+        "is_closed": true,
+        "open_time": null,
+        "close_time": null,
+        "split_open_time": null,
+        "split_close_time": null,
+        "sort_order": 70
+      }
+    ],
+    "hours": []
+  }
+}

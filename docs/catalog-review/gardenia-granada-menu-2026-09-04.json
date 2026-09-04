@@ -1,0 +1,11 @@
+{
+  "spot_id": 442,
+  "branch_id": 528,
+  "status": "menu_review_complete_other_checks_pending",
+  "source": "https://menupp.co/cafegardenia/venue/drS8Lo1fStnmA19QdNuF/menu/d7d2da4a-c0f3-46ce-9947-abf122da2de6",
+  "coverage": "Todas las secciones de productos leidas hasta adiciones, impuestos y propina.",
+  "confirmed": ["brunch", "panaderia de masa madre", "pasteleria", "sandwiches", "bowls", "opciones vegetarianas", "pan de banano vegano", "waffles", "hamburguesas", "acai"],
+  "cautions": ["Coffee Tonic figura como mocktail pero su descripcion menciona licor de almendra: no garantizar ausencia de alcohol.", "Tarta de queso y pistacho muestra 26 sin formato monetario completo: no usar para estimar presupuesto.", "No usar productos marcados agotados como oferta garantizada."],
+  "pending": ["Resolver reservas y horario oficial", "Aplicar metadata verificada", "Consolidacion de posible duplicado"],
+  "catalog_changed": false
+}

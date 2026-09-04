@@ -49,9 +49,9 @@ if (existsSync(placeMediaSourcePath)) {
 
 const headInjection = `
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover" />
-    <meta name="theme-color" content="#050305" />
+    <meta name="theme-color" content="#f5f5f7" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="Spots" />
     <meta name="mobile-web-app-capable" content="yes" />
     <link rel="manifest" href="/manifest.json" />
@@ -60,6 +60,11 @@ const headInjection = `
     <link rel="icon" href="/favicon.ico" />`;
 
 const viewportScript = `(function () {
+  var authChrome = window.location.pathname === '/' || /login|signup|welcome|profile-setup|onboarding/.test(window.location.pathname);
+  var chromeColor = authChrome ? '#050305' : '#f5f5f7';
+  document.querySelector('meta[name="theme-color"]').setAttribute('content', chromeColor);
+  document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]').setAttribute('content', authChrome ? 'black' : 'default');
+  document.documentElement.style.backgroundColor = chromeColor;
   var stableHeight = 0;
   var pendingShrinkHeight = null;
   var rootReady = false;
@@ -115,8 +120,7 @@ const viewportScript = `(function () {
     var nextHeight = readAppHeight();
     var allowShrink = options && options.allowShrink && !isKeyboardFocusActive();
 
-    // iOS PWA: visualViewport.height can report a wrong smaller value after
-    // OAuth return. Use screen.height if the gap is suspiciously large in portrait.
+    // Preserve the existing iOS standalone full-screen height recovery.
     if (window.navigator && window.navigator.standalone && window.screen && window.screen.height) {
       var screenH = window.screen.height;
       var orient = (window.screen.orientation && window.screen.orientation.angle) || window.orientation || 0;
@@ -243,7 +247,7 @@ html, body, #root {
   width: 100%;
   height: var(--app-height);
   min-height: var(--app-height);
-  background: #050305;
+  background: #f5f5f7;
   font-family: 'Montserrat', 'Segoe UI', sans-serif;
   -webkit-text-size-adjust: 100%;
   overflow: hidden;
@@ -285,6 +289,9 @@ html[data-app-height-ready='true'] body {
 
 let indexHtml = readFileSync(distIndexPath, 'utf8');
 
+// Expo can emit its own theme meta. Keep one authoritative PWA theme.
+indexHtml = indexHtml.replace(/<meta name="theme-color"[^>]*>/g, '');
+
 indexHtml = indexHtml.replace('<html lang="en">', '<html lang="es">');
 indexHtml = indexHtml.replace(
   /<meta name="viewport"[^>]*\/>/,
@@ -316,8 +323,8 @@ manifest.display_override = ['standalone'];
 manifest.orientation = 'portrait';
 manifest.start_url = '/';
 manifest.scope = '/';
-manifest.background_color = '#050305';
-manifest.theme_color = '#050305';
+manifest.background_color = '#f5f5f7';
+manifest.theme_color = '#f5f5f7';
 manifest.icons = [
   {
     src: '/apple-touch-icon-v2.png',
