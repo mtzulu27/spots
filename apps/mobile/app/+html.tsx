@@ -9,9 +9,9 @@ export default function RootHtml({ children }: PropsWithChildren) {
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
         <meta
           name="viewport"
-          content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"
+          content="width=device-width, initial-scale=1, viewport-fit=cover, shrink-to-fit=no"
         />
-        <meta name="theme-color" content="#050305" />
+        <meta name="theme-color" content="#000000" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content="Spots" />
@@ -27,21 +27,64 @@ export default function RootHtml({ children }: PropsWithChildren) {
         <link rel="apple-touch-icon-precomposed" sizes="180x180" href="/apple-touch-icon-v2.png" />
         <link rel="icon" href="/favicon.ico" />
         <title>Spots</title>
+        <style dangerouslySetInnerHTML={{ __html: `
+  html, body, #root {
+    min-height: 100%;
+    box-sizing: border-box;
+  }
+  *, *::before, *::after {
+    box-sizing: inherit;
+  }
+  :root {
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-left: env(safe-area-inset-left, 0px);
+    --safe-right: env(safe-area-inset-right, 0px);
+  }
+  body {
+    padding-bottom: var(--safe-bottom);
+    padding-left: var(--safe-left);
+    padding-right: var(--safe-right);
+    background: #f5f5f7;
+  }
+  html.spot-detail,
+  html.spot-detail body,
+  html.spot-detail #root {
+    background: transparent !important;
+  }
+  .test-safe-area {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 99999;
+    width: 100%;
+    height: var(--safe-top);
+    background: red;
+    color: white;
+    padding: 8px;
+    pointer-events: none;
+  }
+  .test-safe-area::after {
+    content: "safe top";
+  }
+` }} />
         <ScrollViewStyleReset />
         <script
           dangerouslySetInnerHTML={{
             __html: `
               (function () {
-                var stableHeight = 0;
+                var isPlaceDetail = window.location.pathname.indexOf('/spot/') === 0;
+                document.documentElement.classList.toggle('spot-detail', isPlaceDetail);
+                var authChrome = window.location.pathname === '/' || /login|signup|welcome|profile-setup|onboarding/.test(window.location.pathname);
+                var debugChrome = window.location.pathname === '/debug';
+                var chromeColor = debugChrome ? '#1687ff' : authChrome ? '#050305' : isPlaceDetail ? 'transparent' : '#f5f5f7';
+  document.querySelector('meta[name="theme-color"]').setAttribute('content', chromeColor);
+  document.documentElement.style.backgroundColor = chromeColor;
+  var stableHeight = 0;
                 var pendingShrinkHeight = null;
                 var rootReady = false;
                 var resumeTimer = null;
                 var skipHeightUpdate = false;
-                var justReloaded = false;
-                try {
-                  justReloaded = window.localStorage.getItem('spots-layout-reload') === '1';
-                  if (justReloaded) window.localStorage.removeItem('spots-layout-reload');
-                } catch (e) {}
 
                 function isEditableElement(element) {
                   if (!element || !element.tagName) {
@@ -91,16 +134,6 @@ export default function RootHtml({ children }: PropsWithChildren) {
                     skipHeightUpdate = false;
                     resumeTimer = null;
                     scheduleAppHeightSync({ allowShrink: true });
-                    if (window.navigator && window.navigator.standalone && !justReloaded) {
-                      window.setTimeout(function () {
-                        var measured = stableHeight;
-                        var screenH = window.screen && window.screen.height;
-                        if (measured && screenH && (screenH - measured) > 30) {
-                          try { window.localStorage.setItem('spots-layout-reload', '1'); } catch (e) {}
-                          window.location.reload();
-                        }
-                      }, 900);
-                    }
                   }, 600);
                 }
 
@@ -155,6 +188,7 @@ export default function RootHtml({ children }: PropsWithChildren) {
 
                 function bootstrapAppHeight() {
                   setAppHeight({ allowShrink: true });
+                  revealBody();
                   afterFrames(function () {
                     setAppHeight({ allowShrink: true });
                     revealBody();
@@ -180,17 +214,6 @@ export default function RootHtml({ children }: PropsWithChildren) {
                 window.__spotsUpdateAppHeight = scheduleAppHeightSync;
 
                 bootstrapAppHeight();
-
-                if (window.navigator && window.navigator.standalone && !justReloaded) {
-                  window.setTimeout(function () {
-                    var measured = stableHeight;
-                    var screenH = window.screen && window.screen.height;
-                    if (measured && screenH && (screenH - measured) > 30) {
-                      try { window.localStorage.setItem('spots-layout-reload', '1'); } catch (e) {}
-                      window.location.reload();
-                    }
-                  }, 1200);
-                }
                 window.addEventListener('resize', function () {
                   scheduleAppHeightSync({ allowShrink: true });
                 });
@@ -205,8 +228,10 @@ export default function RootHtml({ children }: PropsWithChildren) {
                     scheduleAppHeightSync({ allowShrink: true });
                   }, 80);
                 });
-                window.addEventListener('pageshow', function () {
-                  scheduleAppHeightSyncAfterResume();
+                window.addEventListener('pageshow', function (event) {
+                  if (event.persisted) {
+                    scheduleAppHeightSyncAfterResume();
+                  }
                 });
                 document.addEventListener('visibilitychange', function () {
                   if (document.visibilityState === 'visible') {
@@ -239,7 +264,7 @@ export default function RootHtml({ children }: PropsWithChildren) {
                 width: 100%;
                 height: var(--app-height);
                 min-height: var(--app-height);
-                background: #050305;
+                background: #f5f5f7;
                 font-family: 'Montserrat', 'Segoe UI', sans-serif;
                 -webkit-text-size-adjust: 100%;
                 overflow: hidden;

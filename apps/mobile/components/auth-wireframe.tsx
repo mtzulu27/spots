@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import type { ComponentProps } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { topContentInset } from '@/lib/layout-insets';
 import { useRelayoutSubscription } from '@/lib/relayout';
 
 type AuthLayoutProps = {
@@ -78,7 +79,7 @@ export function AuthLayout({
         contentContainerStyle={[
           styles.content,
           {
-            paddingTop: insets.top + 36,
+            paddingTop: topContentInset(insets),
             paddingBottom: 40 + insets.bottom,
             flexGrow: 1,
           },

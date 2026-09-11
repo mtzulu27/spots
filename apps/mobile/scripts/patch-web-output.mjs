@@ -48,28 +48,31 @@ if (existsSync(placeMediaSourcePath)) {
 }
 
 const headInjection = `
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover" />
-    <meta name="theme-color" content="#050305" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, shrink-to-fit=no" />
+    <meta name="theme-color" content="#000000" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Spots" />
     <meta name="mobile-web-app-capable" content="yes" />
+    <style>:root { --safe-top: env(safe-area-inset-top, 0px); --safe-bottom: env(safe-area-inset-bottom, 0px); --safe-left: env(safe-area-inset-left, 0px); --safe-right: env(safe-area-inset-right, 0px); }</style>
     <link rel="manifest" href="/manifest.json" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon-v2.png" />
     <link rel="apple-touch-icon-precomposed" sizes="180x180" href="/apple-touch-icon-v2.png" />
     <link rel="icon" href="/favicon.ico" />`;
 
 const viewportScript = `(function () {
+  var authChrome = window.location.pathname === '/' || /login|signup|welcome|profile-setup|onboarding/.test(window.location.pathname);
+  var debugChrome = window.location.pathname === '/debug';
+  var isPlaceDetail = window.location.pathname.indexOf('/spot/') === 0;
+  document.documentElement.classList.toggle('spot-detail', isPlaceDetail);
+  var chromeColor = debugChrome ? '#1687ff' : authChrome ? '#050305' : isPlaceDetail ? 'transparent' : '#f5f5f7';
+  document.querySelector('meta[name="theme-color"]').setAttribute('content', chromeColor);
+  document.documentElement.style.backgroundColor = chromeColor;
   var stableHeight = 0;
   var pendingShrinkHeight = null;
   var rootReady = false;
   var resumeTimer = null;
   var skipHeightUpdate = false;
-  var justReloaded = false;
-  try {
-    justReloaded = window.localStorage.getItem('spots-layout-reload') === '1';
-    if (justReloaded) window.localStorage.removeItem('spots-layout-reload');
-  } catch (e) {}
 
   function readAppHeight() {
     return (
@@ -102,16 +105,6 @@ const viewportScript = `(function () {
       skipHeightUpdate = false;
       resumeTimer = null;
       scheduleAppHeightSync({ allowShrink: true });
-      if (window.navigator && window.navigator.standalone && !justReloaded) {
-        window.setTimeout(function () {
-          var measured = stableHeight;
-          var screenH = window.screen && window.screen.height;
-          if (measured && screenH && (screenH - measured) > 30) {
-            try { window.localStorage.setItem('spots-layout-reload', '1'); } catch (e) {}
-            window.location.reload();
-          }
-        }, 900);
-      }
     }, 600);
   }
 
@@ -130,8 +123,7 @@ const viewportScript = `(function () {
     var nextHeight = readAppHeight();
     var allowShrink = options && options.allowShrink && !isKeyboardFocusActive();
 
-    // iOS PWA: visualViewport.height can report a wrong smaller value after
-    // OAuth return. Use screen.height if the gap is suspiciously large in portrait.
+    // Preserve the existing iOS standalone full-screen height recovery.
     if (window.navigator && window.navigator.standalone && window.screen && window.screen.height) {
       var screenH = window.screen.height;
       var orient = (window.screen.orientation && window.screen.orientation.angle) || window.orientation || 0;
@@ -187,6 +179,7 @@ const viewportScript = `(function () {
 
   function bootstrapAppHeight() {
     setAppHeight({ allowShrink: true });
+    revealBody();
     afterFrames(function () {
       setAppHeight({ allowShrink: true });
       revealBody();
@@ -212,17 +205,6 @@ const viewportScript = `(function () {
   window.__spotsUpdateAppHeight = scheduleAppHeightSync;
 
   bootstrapAppHeight();
-
-  if (window.navigator && window.navigator.standalone && !justReloaded) {
-    window.setTimeout(function () {
-      var measured = stableHeight;
-      var screenH = window.screen && window.screen.height;
-      if (measured && screenH && (screenH - measured) > 30) {
-        try { window.localStorage.setItem('spots-layout-reload', '1'); } catch (e) {}
-        window.location.reload();
-      }
-    }, 1200);
-  }
   window.addEventListener('resize', function () {
     scheduleAppHeightSync({ allowShrink: true });
   });
@@ -237,8 +219,10 @@ const viewportScript = `(function () {
       scheduleAppHeightSync({ allowShrink: true });
     }, 80);
   });
-  window.addEventListener('pageshow', function () {
-    scheduleAppHeightSyncAfterResume();
+  window.addEventListener('pageshow', function (event) {
+    if (event.persisted) {
+      scheduleAppHeightSyncAfterResume();
+    }
   });
   document.addEventListener('visibilitychange', function () {
     if (document.visibilityState === 'visible') {
@@ -266,10 +250,14 @@ html, body, #root {
   width: 100%;
   height: var(--app-height);
   min-height: var(--app-height);
-  background: #050305;
+  background: #f5f5f7;
   font-family: 'Montserrat', 'Segoe UI', sans-serif;
   -webkit-text-size-adjust: 100%;
   overflow: hidden;
+}
+
+html.spot-detail, html.spot-detail body, html.spot-detail #root {
+  background: transparent !important;
 }
 
 input,
@@ -308,6 +296,9 @@ html[data-app-height-ready='true'] body {
 
 let indexHtml = readFileSync(distIndexPath, 'utf8');
 
+// Expo can emit its own theme meta. Keep one authoritative PWA theme.
+indexHtml = indexHtml.replace(/<meta name="theme-color"[^>]*>/g, '');
+
 indexHtml = indexHtml.replace('<html lang="en">', '<html lang="es">');
 indexHtml = indexHtml.replace(
   /<meta name="viewport"[^>]*\/>/,
@@ -339,8 +330,8 @@ manifest.display_override = ['standalone'];
 manifest.orientation = 'portrait';
 manifest.start_url = '/';
 manifest.scope = '/';
-manifest.background_color = '#050305';
-manifest.theme_color = '#050305';
+manifest.background_color = '#f5f5f7';
+manifest.theme_color = '#f5f5f7';
 manifest.icons = [
   {
     src: '/apple-touch-icon-v2.png',

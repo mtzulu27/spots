@@ -6,6 +6,8 @@ import {
   Animated,
   Image,
   type LayoutChangeEvent,
+  type StyleProp,
+  type ViewStyle,
   Platform,
   Pressable,
   StyleSheet,
@@ -13,17 +15,18 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import { accountUi } from '@/lib/account-ui';
 
 export const appColors = {
-  background: '#f7f3f0',
-  surface: '#ffffff',
-  surfaceMuted: '#f4edf1',
-  text: '#2d1830',
-  textMuted: '#7f7480',
+  background: accountUi.bg,
+  surface: accountUi.surface,
+  surfaceMuted: accountUi.surfaceMuted,
+  text: accountUi.text,
+  textMuted: accountUi.textSecondary,
   primary: '#ff4e76',
-  primaryDark: '#5f2e61',
+  primaryDark: accountUi.text,
   primarySoft: '#f8d7df',
-  border: '#e7dce3',
+  border: accountUi.border,
   yellow: '#f6c01e',
   darkSurface: '#171115',
 };
@@ -125,27 +128,45 @@ export function AppSegmentedTabs<T extends string>({
 
 export function AppIconButton({
   name,
+  accessibilityLabel,
   onPress,
   tone = 'light',
+  outlined = false,
+  iconColor,
+  size = 38,
+  selected,
 }: {
   name: keyof typeof Ionicons.glyphMap;
+  accessibilityLabel?: string;
   onPress?: () => void;
   tone?: 'light' | 'dark' | 'glass';
+  outlined?: boolean;
+  iconColor?: string;
+  size?: number;
+  selected?: boolean;
 }) {
+  const resolvedColor =
+    iconColor ?? (tone === 'dark' || tone === 'glass' ? spotsUi.textPrimary : appColors.primaryDark);
+
   return (
     <Pressable
       onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={accessibilityLabel}
+      accessibilityState={selected === undefined ? undefined : { selected }}
       style={[
         styles.iconButton,
         tone === 'dark' && styles.iconButtonDark,
         tone === 'glass' && styles.iconButtonGlass,
+        outlined && styles.iconButtonOutlined,
+        {
+          width: size,
+          height: size,
+          borderRadius: size / 2,
+        },
       ]}
     >
-      <Ionicons
-        name={name}
-        size={20}
-        color={tone === 'dark' || tone === 'glass' ? spotsUi.textPrimary : appColors.primaryDark}
-      />
+      <Ionicons name={name} size={20} color={resolvedColor} />
     </Pressable>
   );
 }
@@ -262,12 +283,22 @@ export function AppBookmarkButton({
   tone = 'light',
   activeColor = '#141417',
   inactiveColor,
+  outlined = false,
+  backgroundColor,
+  style,
+  containerStyle,
+  iconSize = 20,
 }: {
   bookmarked: boolean;
   onPress?: (event?: any) => void;
   tone?: 'light' | 'dark' | 'glass';
   activeColor?: string;
   inactiveColor?: string;
+  outlined?: boolean;
+  backgroundColor?: string;
+  style?: StyleProp<ViewStyle>;
+  containerStyle?: StyleProp<ViewStyle>;
+  iconSize?: number;
 }) {
   const scale = useRef(new Animated.Value(1)).current;
   const mountedRef = useRef(false);
@@ -299,12 +330,80 @@ export function AppBookmarkButton({
 
   return (
     <Animated.View
-      style={{
-        transform: [{ scale }],
-      }}
+      style={[{ transform: [{ scale }] }, containerStyle]}
     >
       <Pressable
         onPress={onPress}
+        accessibilityRole="button"
+        accessibilityLabel={bookmarked ? 'Quitar de Me gusta' : 'Marcar como Me gusta'}
+        accessibilityState={{ selected: bookmarked }}
+        style={[
+          styles.iconButton,
+          tone === 'dark' && styles.iconButtonDark,
+          tone === 'glass' && styles.iconButtonGlass,
+          outlined && styles.iconButtonOutlined,
+          backgroundColor ? { backgroundColor } : null,
+          style,
+        ]}
+      >
+        <Ionicons
+          name={bookmarked ? 'heart' : 'heart-outline'}
+          size={iconSize}
+          color={bookmarked ? activeColor : inactiveColor ?? defaultColor}
+        />
+      </Pressable>
+    </Animated.View>
+  );
+}
+
+export function AppVisitedButton({
+  visited,
+  onPress,
+  tone = 'light',
+  activeColor = '#EF3857',
+  inactiveColor,
+}: {
+  visited: boolean;
+  onPress?: () => void;
+  tone?: 'light' | 'dark' | 'glass';
+  activeColor?: string;
+  inactiveColor?: string;
+}) {
+  const scale = useRef(new Animated.Value(1)).current;
+  const mountedRef = useRef(false);
+
+  useEffect(() => {
+    if (!mountedRef.current) {
+      mountedRef.current = true;
+      return;
+    }
+
+    Animated.sequence([
+      Animated.timing(scale, {
+        toValue: visited ? 1.12 : 0.92,
+        duration: 90,
+        useNativeDriver: true,
+      }),
+      Animated.spring(scale, {
+        toValue: 1,
+        damping: 12,
+        stiffness: 240,
+        mass: 0.88,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, [scale, visited]);
+
+  const defaultColor =
+    tone === 'dark' || tone === 'glass' ? spotsUi.textPrimary : appColors.primaryDark;
+
+  return (
+    <Animated.View style={{ transform: [{ scale }] }}>
+      <Pressable
+        onPress={onPress}
+        accessibilityRole="button"
+        accessibilityLabel={visited ? 'Quitar lugar de visitados' : 'Marcar lugar como visitado'}
+        accessibilityState={{ selected: visited }}
         style={[
           styles.iconButton,
           tone === 'dark' && styles.iconButtonDark,
@@ -312,9 +411,9 @@ export function AppBookmarkButton({
         ]}
       >
         <Ionicons
-          name={bookmarked ? 'bookmark' : 'bookmark-outline'}
+          name={visited ? 'checkmark-circle' : 'checkmark-circle-outline'}
           size={20}
-          color={bookmarked ? activeColor : inactiveColor ?? defaultColor}
+          color={visited ? activeColor : inactiveColor ?? defaultColor}
         />
       </Pressable>
     </Animated.View>
@@ -391,6 +490,9 @@ export function SearchField({
   showClearButton = false,
   variant = 'light',
   debounceMs = 0,
+  height,
+  backgroundColor,
+  autoFocus = false,
 }: {
   value: string;
   onChangeText: (value: string) => void;
@@ -401,6 +503,9 @@ export function SearchField({
   showClearButton?: boolean;
   variant?: 'light' | 'dark';
   debounceMs?: number;
+  height?: number;
+  backgroundColor?: string;
+  autoFocus?: boolean;
 }) {
   const inputRef = useRef<TextInput>(null);
   const debounceTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -443,7 +548,19 @@ export function SearchField({
   }
 
   return (
-    <View style={[styles.searchWrap, isDark && styles.searchWrapDark]}>
+    <View
+      style={[
+        styles.searchWrap,
+        isDark && styles.searchWrapDark,
+        backgroundColor ? { backgroundColor } : null,
+        typeof height === 'number'
+          ? {
+              height,
+              minHeight: height,
+            }
+          : null,
+      ]}
+    >
       <Ionicons name="search" size={18} color={isDark ? spotsUi.textHint : lightIcon} />
       <TextInput
         ref={inputRef}
@@ -452,6 +569,7 @@ export function SearchField({
         value={internalValue}
         onChangeText={handleChangeText}
         onFocus={onFocus}
+        autoFocus={autoFocus}
         onBlur={onBlur}
         selectionColor={isDark ? spotsUi.textPrimary : lightSelection}
         style={[
@@ -547,9 +665,13 @@ const styles = StyleSheet.create({
     width: 38,
     height: 38,
     borderRadius: 19,
-    backgroundColor: 'rgba(255,255,255,0.92)',
+    backgroundColor: accountUi.surface,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  iconButtonOutlined: {
+    borderWidth: 2,
+    borderColor: accountUi.text,
   },
   iconButtonDark: {
     backgroundColor: 'rgba(255,255,255,0.16)',
@@ -627,7 +749,7 @@ const styles = StyleSheet.create({
     width: '100%',
     padding: 4,
     borderRadius: 18,
-    backgroundColor: '#ededf0',
+    backgroundColor: accountUi.surfaceMuted,
     position: 'relative',
   },
   segmentedTabsThumb: {
@@ -636,7 +758,7 @@ const styles = StyleSheet.create({
     bottom: 4,
     left: 4,
     borderRadius: 14,
-    backgroundColor: '#ffffff',
+    backgroundColor: accountUi.surface,
     shadowColor: '#000000',
     shadowOpacity: 0.04,
     shadowRadius: 8,
@@ -655,15 +777,15 @@ const styles = StyleSheet.create({
   segmentedTabsLabel: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#5f5f67',
+    color: accountUi.textSecondary,
   },
   segmentedTabsLabelActive: {
     color: '#141417',
   },
   searchWrap: {
     minHeight: 60,
-    borderRadius: 18,
-    backgroundColor: '#ffffff',
+    borderRadius: 999,
+    backgroundColor: '#f7f7f8',
     paddingHorizontal: 14,
     flexDirection: 'row',
     alignItems: 'center',

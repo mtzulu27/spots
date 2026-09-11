@@ -1,0 +1,24 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+import { validateCatalog } from '/Users/mateo/.codex/skills/spots-crear-actualizar-lugar/scripts/validate-place.mjs';
+
+const path = 'apps/mobile/public/spots-catalog.json';
+const original = fs.readFileSync(path, 'utf8');
+const before = JSON.parse(original);
+assert(!before.spots.some(s => /buddies/i.test(s.name)), 'Buddies already exists');
+assert(!before.branches.some(b => /buddiesburgers_/i.test(b.instagram || '')), 'Instagram already exists');
+const next = structuredClone(before);
+const id = Math.max(...before.spots.map(s => Number(s.id))) + 1;
+const branchId = Math.max(...before.branches.map(b => Number(b.id))) + 1;
+const now = new Date().toISOString();
+const missing = ['hours', 'holiday_hours', 'neighborhood', 'menu_items', 'budget', 'whatsapp', 'cover_image_url', 'logo_url', 'gallery_urls'];
+next.spots.push({ id, type: 'place', slug: 'buddies-burger', name: 'Buddies Burger', short_description: 'Cae por una hamburguesa en la calle 44 Norte y armá el parche para comer con amigos. También tienen domicilios.', category: 'Comida', subcategories: ['Hamburguesas'], city: 'Cali', tags: ['hamburguesas', 'domicilios'], moods: ['con amigos'], cover_image_url: null, logo_url: null, gallery_urls: [], likes: '0', is_active: false, is_featured: false, catalog_status: 'needs_info', missing_fields: missing, created_at: now, updated_at: now });
+next.branches.push({ id: branchId, spot_id: id, slug: 'buddies-burger-calle-44-norte', neighborhood: '', mall: '', address: 'Calle 44 Norte #3E-125, local 2, Cali', latitude: 3.4799796, longitude: -76.521141, instagram: 'https://www.instagram.com/buddiesburgers_/', phone: '+573114118367', whatsapp: '', google_maps_url: 'https://maps.google.com/?cid=6473523083012526047', website_url: '', menu_url: '', menu_items: [], hours: 'Horario por confirmar', holiday_mode: null, holiday_open_time: null, holiday_close_time: null, min_budget: null, max_budget: null, typical_budget: null, max_people: null, is_active: false, sort_order: 10, created_at: now, updated_at: now });
+assert.deepEqual({ ...next, spots: next.spots.filter(s => s.id !== id), branches: next.branches.filter(b => b.id !== branchId) }, before);
+const validation = validateCatalog(next, 'buddies-burger-calle-44-norte');
+assert.equal(validation.errors.length, 0, JSON.stringify(validation));
+assert.equal(fs.readFileSync(path, 'utf8'), original, 'Concurrent catalog edit');
+fs.writeFileSync(path, JSON.stringify(next, null, 2) + '\n');
+assert.deepEqual(JSON.parse(fs.readFileSync(path, 'utf8')), next);
+fs.writeFileSync('docs/catalog-review/buddies-burgers-2026-09-06/integration.json', JSON.stringify({ checkedAt: now, id, branchId, status: 'needs_info', visible: false, missing, validation, sources: ['https://www.instagram.com/buddiesburgers_/', 'google-places.json'], note: 'User authorized incomplete local creation. Google hours remain evidence only, not verified weekly hours. No existing records changed.' }, null, 2) + '\n');
+console.log(JSON.stringify({ id, branchId, validation }));

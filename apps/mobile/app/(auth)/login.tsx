@@ -13,12 +13,14 @@ import {
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { topContentInset } from '@/lib/layout-insets';
 import {
   PrimaryAction,
   WireframeField,
 } from '@/components/auth-wireframe';
 import { useRelayoutSubscription } from '@/lib/relayout';
 import { useAuthStore } from '@/lib/auth-store';
+import { startLocalGuest } from '@/lib/local-guest';
 
 const spotsLogo = require('../../assets/logo_spots_blanco.png');
 const welcomeBackground = require('../../assets/auth_welcome_bg.png');
@@ -193,7 +195,7 @@ export default function LoginScreen() {
         style={[
           styles.content,
           {
-            paddingTop: Math.max(insets.top, 16) + 12,
+            paddingTop: topContentInset(insets),
             paddingBottom: Math.max(insets.bottom, 16) + 20,
           },
           isCompactHeight ? styles.contentCompact : null,
@@ -276,7 +278,13 @@ export default function LoginScreen() {
 
               <Pressable
                 style={[styles.providerButton, styles.emailButton]}
-                onPress={() => setShowEmailForm(true)}
+                onPress={() => {
+                  if (startLocalGuest()) {
+                    router.replace('/explore');
+                    return;
+                  }
+                  setShowEmailForm(true);
+                }}
               >
                 <View style={styles.providerContent}>
                   <Ionicons name="mail-outline" size={18} color="#ffffff" />

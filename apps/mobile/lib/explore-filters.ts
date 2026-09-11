@@ -126,6 +126,95 @@ const semanticStopWords = new Set([
   'ver',
   'y',
 ]);
+const spotInterestSignalsCache = new WeakMap<Spot, Set<string>>();
+const structuredInterestGroups = [
+  {
+    primary: 'Arte y cultura',
+    aliases: ['Arte y cultura'],
+    subcategories: ['Museos', 'Galerías', 'Cine alternativo', 'Tertulias', 'Monumentos', 'Teatro', 'Standup', 'Comediantes', 'Danza', 'Poesía'],
+  },
+  {
+    primary: 'Tomar algo',
+    aliases: ['Tomar algo', 'Bares y noche'],
+    subcategories: ['Cerveza', 'Cocktails', 'Vino', 'Cerveza artesanal', 'Pub', 'Speakeasy', 'After office'],
+  },
+  {
+    primary: 'Vida nocturna',
+    aliases: ['Vida nocturna', 'Bares y noche'],
+    subcategories: ['Salsa', 'Reggaetón', 'Techno', 'Disco', 'Dancehall', 'Crossover', 'Karaoke', 'Shows en vivo'],
+  },
+  {
+    primary: 'Comida',
+    aliases: ['Comida', 'Restaurantes y cafés'],
+    subcategories: [
+      'Desayuno',
+      'Brunch',
+      'Almuerzo',
+      'Tardear',
+      'Cena',
+      'Postres',
+      'Café',
+      'Panadería',
+      'Pastelería',
+      'Waffles',
+      'Pancakes',
+      'Bowls',
+      'Sandwiches',
+      'Huevos',
+      'Tostadas',
+      'Açaí',
+      'Fruta',
+      'Jugos',
+      'Saludable',
+      'Vegana',
+      'Vegetariana',
+      'Colombiana',
+      'Americana',
+      'Mediterránea',
+      'Mimosas',
+      'Italiana',
+      'Mexicana',
+      'Japonesa',
+      'Nikkei',
+      'Asiática',
+      'Fusión',
+      'Pizza',
+      'Pasta',
+      'Sushi',
+      'Tacos',
+      'Ramen',
+      'Poke',
+      'Pitas',
+      'Hamburguesas',
+      'Pollo frito',
+      'Parrilla',
+      'Mariscos',
+      'Tapas',
+      'Helado',
+      'Galletas',
+      'Tortas',
+      'Cheesecake',
+      'Brownies',
+      'Donas',
+      'Chocolatería',
+    ],
+  },
+  {
+    primary: 'Bienestar',
+    aliases: ['Bienestar', 'Deporte y bienestar'],
+    subcategories: ['Yoga', 'Pilates', 'Spa', 'Masajes', 'Gym', 'Running', 'Hiking', 'Meditación'],
+  },
+  {
+    primary: 'Familiar',
+    aliases: ['Familiar'],
+    subcategories: ['Parques infantiles', 'Juegos', 'Manualidades', 'Pintar', 'Cerámica', 'Plan familiar', 'Animales', 'Diversión'],
+  },
+  {
+    primary: 'Al aire libre',
+    aliases: ['Al aire libre', 'Naturaleza y aire libre'],
+    subcategories: ['Parques', 'Miradores', 'Caminatas', 'Montañas', 'Running', 'Hiking', 'Picnic', 'Camping'],
+  },
+] as const;
 
 export const DEFAULT_FILTERS: ExploreFilters = {
   interests: [],
@@ -210,13 +299,22 @@ export function formatBudget(value: number) {
   return new Intl.NumberFormat('es-CO').format(value);
 }
 
-export function formatApproxBudgetPerPersonLabel(minBudget: number, maxBudget: number) {
-  if (minBudget <= 0 && maxBudget <= 0) {
-    return 'Por definir';
-  }
+function getDisplayedBudget(minBudget: number, maxBudget: number, typicalBudget?: number) {
+  if (typeof typicalBudget === 'number' && Number.isFinite(typicalBudget) && typicalBudget > 0) return Math.round(typicalBudget);
+  if (Number.isFinite(minBudget) && minBudget > 0) return minBudget;
+  if (Number.isFinite(maxBudget) && maxBudget > 0) return maxBudget;
+  return 0;
+}
 
-  const baseBudget = minBudget > 0 ? minBudget : maxBudget;
-  return `~$${formatBudget(baseBudget)} COP / pers.`;
+export function formatApproxBudgetPerPersonLabel(minBudget: number, maxBudget: number, typicalBudget?: number, budgetPilot = false, budgetBasis?: string, includePilotName = true) {
+  if (/\bgratis\b|acceso gratuito|sin costo/i.test(budgetBasis ?? '')) return 'Gratis';
+  if (budgetPilot) {
+    if ((typicalBudget ?? minBudget) <= 0) return 'Presupuesto por confirmar';
+    const label = `~$${formatBudget(typicalBudget ?? minBudget)} COP / pers.`;
+    return includePilotName ? `${label} · Parche tranqui` : label;
+  }
+  const budget = getDisplayedBudget(minBudget, maxBudget, typicalBudget);
+  return budget > 0 ? `~$${formatBudget(budget)} COP / pers.` : 'Por definir';
 }
 
 export function isFiltersActive(filters: ExploreFilters) {
@@ -235,8 +333,38 @@ export function isFiltersActive(filters: ExploreFilters) {
   );
 }
 
+// Presentation only: never replace the stored primary category or pricing mode.
+export function getContextualSpotCategory(spot: Spot, selected: string[] = [], query = ''): string {
+  if (spot.type === 'event') return spot.category;
+  const queryInterests = parseQueryIntent(query).filters.interests;
+  const normalizedQuery = ` ${normalizeSearchText(query)} `;
+  const requested = new Set([...selected, ...queryInterests].map(normalizeSearchText));
+  const catalogSignals = getSpotCatalogSignals(spot);
+  const interestSignals = getSpotInterestSignals(spot);
+  const candidates = structuredInterestGroups.filter(group => {
+    const names = [...group.aliases, ...group.subcategories];
+    const relevant = names.filter(name => requested.has(normalizeSearchText(name)) ||
+      normalizedQuery.includes(` ${normalizeSearchText(name)} `));
+    return relevant.length > 0 && relevant.some(name =>
+      matchesStructuredInterestFilters([name], catalogSignals, interestSignals));
+  });
+  const primary = candidates.find(group => group.aliases.some(alias =>
+    normalizeSearchText(alias) === normalizeSearchText(spot.category)));
+  // A mixed/ambiguous query keeps the primary rather than choosing by array order.
+  return primary?.primary ?? (candidates.length === 1 ? candidates[0].primary : spot.category);
+}
+
 export function matchesSpotToFilters(
   spot: Spot,
+  filters: ExploreFilters,
+  query: string,
+  userLocation?: UserLocation | null,
+) {
+  return createSpotFilter(filters, query, userLocation)(spot);
+}
+
+// Parse the query once for the entire catalog, not once per place.
+export function createSpotFilter(
   filters: ExploreFilters,
   query: string,
   userLocation?: UserLocation | null,
@@ -244,22 +372,21 @@ export function matchesSpotToFilters(
   const { residualQuery, filters: queryIntentFilters } = parseQueryIntent(query);
   const mergedFilters = mergeFiltersWithQueryIntent(filters, queryIntentFilters);
   const normalizedQuery = normalizeSearchText(residualQuery);
-  const matchesQuery = matchesSemanticQuery(
-    spot,
-    normalizedQuery,
-    queryIntentFilters.requiredTerms,
+  const queryGroups = normalizedQuery ? buildSemanticGroups(normalizedQuery, queryIntentFilters.requiredTerms) : [];
+  return (spot: Spot) => {
+  if (queryGroups.length) {
+    const name = normalizeSearchText(spot.brandName || spot.name || '');
+    // Text search is intentionally name-only. Descriptions, tags, menus and
+    // locations must not make a place appear for an unrelated query.
+    if (!queryGroups.every(group => group.some(term => name.includes(term)))) return false;
+  }
+  const spotCatalogSignals = getSpotCatalogSignals(spot);
+  const spotInterestSignals = getSpotInterestSignals(spot);
+  const matchesInterests = matchesStructuredInterestFilters(
+    mergedFilters.interests,
+    spotCatalogSignals,
+    spotInterestSignals,
   );
-  const matchesInterests =
-    mergedFilters.interests.length === 0 ||
-    mergedFilters.interests.some((interest) => {
-      const normalizedInterest = normalizeSearchText(interest);
-      return (
-        spot.interests.includes(interest) ||
-        normalizeSearchText(spot.category) === normalizedInterest ||
-        spot.tags.some((tag) => normalizeSearchText(tag) === normalizedInterest) ||
-        spot.moods.some((mood) => normalizeSearchText(mood) === normalizedInterest)
-      );
-    });
   const matchesPeople = mergedFilters.people === 0 || spot.maxPeople >= mergedFilters.people;
   const matchesHubName = matchesSpotLocationFilters(spot, mergedFilters.hubName);
   const activeDayFilters = mergedFilters.days.length > 0 ? mergedFilters.days : ['Any'];
@@ -292,7 +419,6 @@ export function matchesSpotToFilters(
   const matchesManualAdjusted = !mergedFilters.hideManuallyAdjusted || !spot.manuallyAdjusted;
 
   return (
-    matchesQuery &&
     matchesInterests &&
     matchesHubName &&
     matchesPeople &&
@@ -302,6 +428,73 @@ export function matchesSpotToFilters(
     matchesBudget &&
     matchesOpenNow &&
     matchesManualAdjusted
+  );
+  };
+}
+
+function matchesStructuredInterestFilters(
+  selectedInterests: string[],
+  spotCatalogSignals: Set<string>,
+  spotInterestSignals: Set<string>,
+) {
+  if (selectedInterests.length === 0) {
+    return true;
+  }
+
+  const normalizedSelections = selectedInterests
+    .map((interest) => normalizeSearchText(interest))
+    .filter(Boolean);
+
+  if (normalizedSelections.length === 0) {
+    return true;
+  }
+
+  const remainingSelections = new Set(normalizedSelections);
+
+  for (const group of structuredInterestGroups) {
+    const primarySelected = remainingSelections.has(normalizeSearchText(group.primary));
+    const selectedSubcategories = group.subcategories
+      .map((subcategory) => normalizeSearchText(subcategory))
+      .filter((subcategory) => remainingSelections.has(subcategory));
+
+    if (!primarySelected && selectedSubcategories.length === 0) {
+      continue;
+    }
+
+    remainingSelections.delete(normalizeSearchText(group.primary));
+    group.aliases.forEach((alias) => remainingSelections.delete(normalizeSearchText(alias)));
+    selectedSubcategories.forEach((subcategory) => remainingSelections.delete(subcategory));
+
+    if (primarySelected) {
+      const primaryMatches =
+        group.aliases.some((alias) => spotCatalogSignals.has(normalizeSearchText(alias))) ||
+        group.subcategories.some((subcategory) =>
+          spotCatalogSignals.has(normalizeSearchText(subcategory)),
+        );
+
+      if (!primaryMatches) {
+        return false;
+      }
+    }
+
+    if (
+      selectedSubcategories.length > 0 &&
+      !selectedSubcategories.some((subcategory) =>
+        spotCatalogSignals.has(subcategory) ||
+        getInterestMatchTerms(subcategory).some((term) => spotInterestSignals.has(term)),
+      )
+    ) {
+      return false;
+    }
+  }
+
+  if (remainingSelections.size === 0) {
+    return true;
+  }
+
+  return Array.from(remainingSelections).some((interest) =>
+    spotCatalogSignals.has(interest) ||
+    getInterestMatchTerms(interest).some((term) => spotInterestSignals.has(term)),
   );
 }
 
@@ -441,7 +634,7 @@ function parseQueryIntent(query: string) {
       /\bcomer\b|\bcomida\b|\balmorz(?:ar|o)\b|\bcen(?:ar|a)\b|\bdesayun(?:ar|o)\b|\bbrunch\b|\brestaurante?s?\b/g,
     )
   ) {
-    interests.add('Restaurantes y cafés');
+    interests.add('Comida');
     semanticHints.add('comer');
     semanticHints.add('comida');
     semanticHints.add('restaurante');
@@ -452,6 +645,7 @@ function parseQueryIntent(query: string) {
       /\btomar\b|\btrago\b|\btragos\b|\bcerveza\b|\bcervezas\b|\bpola\b|\bpolas\b|\bcoctel(?:es)?\b|\bcocktail(?:s)?\b|\bbar(?:es)?\b|\brumba\b|\bbailar\b|\bvino\b/g,
     )
   ) {
+    interests.add('Tomar algo');
     interests.add('Bares y noche');
     semanticHints.add('tomar algo');
     semanticHints.add('bar');
@@ -486,6 +680,7 @@ function parseQueryIntent(query: string) {
       /\bhiking\b|\bsenderismo\b|\btrekking\b|\bcaminar\b|\bmirador(?:es)?\b|\bplantas\b|\bjardin(?:es)?\b|\bjard[ií]n(?:es)?\b|\bbotanico\b|\bbot[aá]nico\b|\bnaturaleza\b|\baire libre\b|\bparque\b/g,
     )
   ) {
+    interests.add('Al aire libre');
     interests.add('Naturaleza y aire libre');
     semanticHints.add('naturaleza');
     semanticHints.add('aire libre');
@@ -503,6 +698,7 @@ function parseQueryIntent(query: string) {
       /\bdar bala\b|\bpaintball\b|\bairsoft\b|\bgotcha\b|\bdisparar\b|\btirotear\b/g,
     )
   ) {
+    interests.add('Bienestar');
     interests.add('Deporte y bienestar');
     semanticHints.add('paintball');
     semanticHints.add('airsoft');
@@ -642,12 +838,18 @@ export function sortSpots(
   sortBy: ExploreSort,
   getLikesCount?: (spotId: string | number) => number,
 ) {
+  const compareNamesDescending = (a: Spot, b: Spot) => {
+    const aName = (a.brandName || a.name || '').trim();
+    const bName = (b.brandName || b.name || '').trim();
+    return bName.localeCompare(aName, 'es', { sensitivity: 'base' });
+  };
+
   if (sortBy === 'relevance') {
     return [...spots]
       .map((spot, index) => ({ spot, index }))
       .sort((a, b) => {
-        const rankDiff = b.spot.feedPriorityRank - a.spot.feedPriorityRank;
-        return rankDiff !== 0 ? rankDiff : a.index - b.index;
+        const nameDiff = compareNamesDescending(a.spot, b.spot);
+        return nameDiff !== 0 ? nameDiff : a.index - b.index;
       })
       .map((item) => item.spot);
   }
@@ -656,31 +858,33 @@ export function sortSpots(
     .map((spot, index) => ({ spot, index }))
     .sort((a, b) => {
       if (sortBy === 'recent') {
-        const bIsNew = b.spot.editorialBadge === 'Recién añadido' ? 1 : 0;
-        const aIsNew = a.spot.editorialBadge === 'Recién añadido' ? 1 : 0;
-        const newDiff = bIsNew - aIsNew;
-        if (newDiff !== 0) {
-          return newDiff;
-        }
-
-        const bCreatedAt = Date.parse(b.spot.createdAt ?? '') || 0;
-        const aCreatedAt = Date.parse(a.spot.createdAt ?? '') || 0;
-        const createdDiff = bCreatedAt - aCreatedAt;
-        if (createdDiff !== 0) {
-          return createdDiff;
-        }
-
-        const diff = Number(b.spot.spotId ?? 0) - Number(a.spot.spotId ?? 0);
-        return diff !== 0 ? diff : a.index - b.index;
+        // Places are being added in A-Z order, so the default feed reverses
+        // that sequence and keeps the newest additions visible at the top.
+        const nameDiff = compareNamesDescending(a.spot, b.spot);
+        return nameDiff !== 0 ? nameDiff : a.index - b.index;
       }
 
       if (sortBy === 'priceAsc') {
-        const diff = getBudgetLowerBound(a.spot) - getBudgetLowerBound(b.spot);
+        const aBudget = getDisplayedBudget(a.spot.minBudget, a.spot.maxBudget, a.spot.typicalBudget);
+        const bBudget = getDisplayedBudget(b.spot.minBudget, b.spot.maxBudget, b.spot.typicalBudget);
+        const aUnknown = aBudget <= 0;
+        const bUnknown = bBudget <= 0;
+        if (aUnknown !== bUnknown) {
+          return aUnknown ? 1 : -1;
+        }
+        const diff = aBudget - bBudget;
         return diff !== 0 ? diff : a.index - b.index;
       }
 
       if (sortBy === 'priceDesc') {
-        const diff = getBudgetUpperBound(b.spot) - getBudgetUpperBound(a.spot);
+        const aBudget = getDisplayedBudget(a.spot.minBudget, a.spot.maxBudget, a.spot.typicalBudget);
+        const bBudget = getDisplayedBudget(b.spot.minBudget, b.spot.maxBudget, b.spot.typicalBudget);
+        const aUnknown = aBudget <= 0;
+        const bUnknown = bBudget <= 0;
+        if (aUnknown !== bUnknown) {
+          return aUnknown ? 1 : -1;
+        }
+        const diff = bBudget - aBudget;
         return diff !== 0 ? diff : a.index - b.index;
       }
 
@@ -813,31 +1017,79 @@ const semanticSearchMap: Record<string, string[]> = {
   terraza: ['terraza', 'rooftop', 'cocteles', 'vino'],
 };
 
-function matchesSemanticQuery(
-  spot: Spot,
-  normalizedQuery: string,
-  requiredTerms: string[] = [],
-) {
-  if (!normalizedQuery) return true;
+function getInterestMatchTerms(interest: string) {
+  const normalizedInterest = normalizeSearchText(interest);
 
-  const haystack = getSpotSearchDocument(spot);
+  switch (normalizedInterest) {
+    case 'comida':
+    case 'restaurantes y cafes':
+      return ['comida', 'restaurantes y cafes', 'restaurantes', 'cafe', 'desayuno', 'brunch', 'almuerzo', 'cena', 'postres'];
+    case 'tardear':
+      return ['tardear', 'cafe', 'postres', 'panaderia', 'waffles', 'pancakes'];
+    case 'tomar algo':
+      return ['tomar algo', 'bares y noche', 'bar', 'cocteles', 'cocktails', 'vino', 'cerveza', 'rooftop', 'terraza', 'pub', 'speakeasy', 'cafe', 'after office', 'tardear'];
+    case 'cocktails':
+      return ['cocktails', 'cocteles', 'bar', 'trago', 'tomar algo'];
+    case 'vida nocturna':
+      return ['vida nocturna', 'bares y noche', 'salsa', 'reggaeton', 'techno', 'disco', 'dancehall', 'crossover', 'karaoke', 'shows en vivo'];
+    case 'bienestar':
+      return ['bienestar', 'deporte y bienestar', 'yoga', 'pilates', 'spa', 'masajes', 'gym', 'running', 'hiking', 'meditacion'];
+    case 'al aire libre':
+      return ['al aire libre', 'naturaleza y aire libre', 'naturaleza', 'miradores', 'caminatas', 'parques', 'montanas', 'hiking', 'running', 'picnic', 'camping'];
+    default:
+      return [normalizedInterest];
+  }
+}
 
-  const queryGroups = buildSemanticGroups(normalizedQuery, requiredTerms);
-  return queryGroups.every((group) => group.some((term) => haystack.includes(term)));
+export function getSpotCatalogSignals(spot: Spot) {
+  const signals = new Set<string>();
+
+  const addSignal = (value: string) => {
+    const normalized = normalizeSearchText(value);
+    if (normalized) {
+      signals.add(normalized);
+    }
+  };
+
+  addSignal(spot.category);
+  spot.subcategories.forEach(addSignal);
+  spot.interests.forEach(addSignal);
+  spot.tags.forEach(addSignal);
+  spot.moods.forEach(addSignal);
+
+  return signals;
+}
+
+function getSpotInterestSignals(spot: Spot) {
+  const cached = spotInterestSignalsCache.get(spot);
+  if (cached) {
+    return cached;
+  }
+
+  const signals = new Set<string>(getSpotCatalogSignals(spot));
+
+  getSpotSearchAliases(spot).forEach((value) => {
+    const normalized = normalizeSearchText(value);
+    if (normalized) signals.add(normalized);
+  });
+
+  spotInterestSignalsCache.set(spot, signals);
+  return signals;
 }
 
 function getSpotSearchAliases(spot: Spot) {
   const aliases = new Set<string>();
 
   switch (spot.category) {
+    case 'Comida':
     case 'Restaurantes y cafés':
     case 'Restaurantes':
-      ['comer', 'comida', 'almuerzo', 'cena', 'restaurante', 'restaurantes', 'algo rico'].forEach((value) =>
+      ['comer', 'comida', 'almuerzo', 'cena', 'desayuno', 'brunch', 'tardear', 'postres', 'restaurante', 'restaurantes', 'algo rico'].forEach((value) =>
         aliases.add(value),
       );
       break;
     case 'Bares y noche':
-      ['bar', 'cocteles', 'cocktails', 'cerveza', 'trago', 'tomar algo', 'rumba'].forEach((value) =>
+      ['bar', 'cocteles', 'cocktails', 'cerveza', 'trago', 'tomar algo', 'rumba', 'vida nocturna', 'discoteca', 'bailar'].forEach((value) =>
         aliases.add(value),
       );
       break;
@@ -845,7 +1097,7 @@ function getSpotSearchAliases(spot: Spot) {
       ['familia', 'familiar', 'ninos', 'plan familiar'].forEach((value) => aliases.add(value));
       break;
     case 'Naturaleza y aire libre':
-      ['aire libre', 'naturaleza', 'caminar', 'parque', 'mirador'].forEach((value) =>
+      ['aire libre', 'al aire libre', 'naturaleza', 'caminar', 'parque', 'mirador'].forEach((value) =>
         aliases.add(value),
       );
       break;
@@ -861,7 +1113,7 @@ function getSpotSearchAliases(spot: Spot) {
       ['cine', 'peliculas', 'pelicula', 'arte y cultura', 'cultura'].forEach((value) => aliases.add(value));
       break;
     case 'Deporte y bienestar':
-      ['deporte', 'bienestar', 'entrenar', 'mover el cuerpo'].forEach((value) => aliases.add(value));
+      ['deporte', 'bienestar', 'entrenar', 'mover el cuerpo', 'yoga', 'pilates', 'spa', 'masajes', 'gym'].forEach((value) => aliases.add(value));
       break;
   }
 
@@ -924,6 +1176,7 @@ function getSpotSearchDocument(spot: Spot) {
     branch.hubName,
     branch.address,
     branch.hours,
+    ...branch.subcategories,
     ...branch.tags,
     ...branch.moods,
     ...getSpotScheduleAliases(branch),
@@ -945,6 +1198,7 @@ function getSpotSearchDocument(spot: Spot) {
       spot.hours,
       spot.instagram,
       spot.menuUrl,
+      ...spot.subcategories,
       ...spot.tags,
       ...spot.moods,
       ...getSpotSearchAliases(spot),
@@ -1123,6 +1377,7 @@ function doesSpotMatchTimeSelection(
   time: string,
   period: ExplorePeriod,
 ): boolean {
+  if (spot.businessStatus === 'temporarily_closed' || spot.businessStatus === 'permanently_closed') return false;
   const targetMinutes = parsePickerTimeToMinutes(time, period);
   if (targetMinutes === null) {
     return true;
@@ -1171,6 +1426,7 @@ function doesSpotMatchMinutesSelection(
   dayCode: string,
   targetMinutes: number,
 ): boolean {
+  if (spot.businessStatus === 'temporarily_closed' || spot.businessStatus === 'permanently_closed') return false;
   if (dayCode === 'Any') {
     return ['Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab', 'Dom'].some((code) =>
       doesSpotMatchMinutesSelection(spot, code, targetMinutes),
@@ -1196,8 +1452,11 @@ function doesSpotMatchMinutesSelection(
 
 function parseSortValue(value: RawParam): ExploreSort {
   const parsed = getSingleValue(value);
+  // Older Explore URLs persisted `relevance`; the default feed is now Z-A.
+  if (parsed === 'relevance') {
+    return DEFAULT_FILTERS.sortBy;
+  }
   if (
-    parsed === 'relevance' ||
     parsed === 'recent' ||
     parsed === 'priceAsc' ||
     parsed === 'priceDesc' ||
@@ -1211,7 +1470,7 @@ function parseSortValue(value: RawParam): ExploreSort {
 
 function getBudgetLowerBound(spot: Spot) {
   if (spot.minBudget > 0) return spot.minBudget;
-  return spot.maxBudget;
+  return 0;
 }
 
 function getBudgetUpperBound(spot: Spot) {
@@ -1220,10 +1479,12 @@ function getBudgetUpperBound(spot: Spot) {
 }
 
 export function isSpotOpenNow(spot: Spot) {
+  if (spot.businessStatus === 'temporarily_closed' || spot.businessStatus === 'permanently_closed') return false;
   return isScheduleOpenNow(spot.hours);
 }
 
 function doesSpotMatchDayFilter(spot: Spot, day: string) {
+  if (spot.businessStatus === 'temporarily_closed' || spot.businessStatus === 'permanently_closed') return false;
   return hasScheduleAvailabilityForDay(spot.hours, day);
 }
 

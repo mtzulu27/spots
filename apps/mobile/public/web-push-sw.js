@@ -2,8 +2,9 @@ self.addEventListener('install', (event) => {
   event.waitUntil(self.skipWaiting());
 });
 
-self.addEventListener('activate', (event) => {
-  event.waitUntil(self.clients.claim());
+self.addEventListener('activate', () => {
+  // clients.claim() removed: not needed for a push-only SW and can
+  // cause page reloads in iOS Safari PWA on second open.
 });
 
 self.addEventListener('push', (event) => {
@@ -37,7 +38,11 @@ self.addEventListener('push', (event) => {
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
 
-  const targetUrl = event.notification.data?.url || '/';
+  let targetUrl = self.location.origin + '/';
+  try {
+    const requested = new URL(event.notification.data?.url || '/', self.location.origin);
+    if (requested.origin === self.location.origin) targetUrl = requested.href;
+  } catch (_) { /* Invalid destinations open Spots, never an external site. */ }
 
   event.waitUntil(
     self.clients.matchAll({ includeUncontrolled: true, type: 'window' }).then((clients) => {

@@ -2,10 +2,15 @@ import { Redirect } from 'expo-router';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { appColors } from '@/components/app-ui';
 import { useAuthStore } from '@/lib/auth-store';
+import DebugScreen from './debug';
 
 export default function Home() {
   const { loading, user, profileCompleted, interests, onboardingCompleted } =
     useAuthStore();
+
+  if (SAFE_AREA_DIAGNOSTIC) {
+    return <DebugScreen />;
+  }
 
   if (loading) {
     return (
@@ -31,6 +36,8 @@ export default function Home() {
 
   return <Redirect href="/(tabs)/explore" />;
 }
+
+const SAFE_AREA_DIAGNOSTIC = false;
 
 const styles = StyleSheet.create({
   screen: {

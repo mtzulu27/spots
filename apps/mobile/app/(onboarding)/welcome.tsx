@@ -15,6 +15,7 @@ import {
   type ImageSourcePropType,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { topContentInset } from '@/lib/layout-insets';
 import { appColors } from '@/components/app-ui';
 import { useAuthStore } from '@/lib/auth-store';
 
@@ -257,7 +258,7 @@ export default function WelcomeScreen() {
                     styles.contentOverlay,
                     slide.kind === 'closing' ? styles.contentOverlayClosing : styles.contentOverlayRegular,
                     {
-                      paddingTop: Math.max(insets.top, 18) + (slide.kind === 'closing' ? 62 : 118),
+                      paddingTop: topContentInset(insets),
                       paddingBottom: Math.max(insets.bottom, 24) + 34,
                     },
                   ]}

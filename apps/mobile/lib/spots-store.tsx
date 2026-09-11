@@ -1,28 +1,45 @@
+import { getPublicJson } from './public-json-cache';
+import { scenarioBudget, type BudgetScenario } from './budget-scenarios';
 import {
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from 'react';
 import { Platform } from 'react-native';
-import type { Spot } from '@/lib/mock-spots';
-import { normalizeCommercialCenterLabel } from '@/lib/mock-spots';
+import type { MenuCatalogItem, Spot } from '@/lib/mock-spots';
+import { normalizeCommercialCenterLabel, normalizeSpotCategory } from '@/lib/mock-spots';
 import { backendEnabled } from '@/lib/supabase';
+import { getScheduleExceptionSegments } from '@/lib/schedule-status';
 
-const spotsCacheKey = 'spots-cache-v10';
+// Bump when the published catalog changes so newly added places are not hidden by an old snapshot.
+const spotsCacheKey = 'spots-cache-v25';
 const staticCatalogPath = '/spots-catalog.json';
 
 type SpotRow = {
+  business_status?: Spot['businessStatus'];
   id: number;
   type: 'place' | 'event';
+  starts_at?: string | null;
+  ends_at?: string | null;
+  ticket_price?: number | null;
+  venue_spot_id?: number | null;
+  venue_branch_id?: number | null;
+  venue_branch_slug?: string | null;
+  venue_name?: string | null;
+  venue_logo_url?: string | null;
   slug: string;
   name: string;
   short_description: string;
   cover_image_url: string;
+  logo_url?: string;
   gallery_urls: string[] | null;
   category: string;
+  subcategories: string[] | null;
   city: string;
   likes: string;
   tags: string[] | null;
@@ -35,11 +52,13 @@ type SpotRow = {
 };
 
 type BranchRow = {
+  business_status?: Spot['businessStatus'];
+  city?: string;
   id: number;
   spot_id: number;
   slug: string;
-  neighborhood: string;
-  mall: string;
+  neighborhood?: string | null;
+  mall?: string | null;
   hours: string;
   holiday_mode: 'inherit' | 'same_as_sunday' | 'closed' | 'custom' | null;
   holiday_open_time: string | null;
@@ -50,7 +69,15 @@ type BranchRow = {
   min_budget: number;
   max_budget?: number;
   max_people: number;
+  min_people?: number;
+  typical_budget?: number;
+  budget_basis?: string;
+  budget_scenarios?: BudgetScenario[];
+  menu_calculation_note?: string;
+  google_maps_url?: string;
+  website_url?: string;
   menu_url: string;
+  menu_items?: MenuCatalogItem[] | null;
   whatsapp: string;
   phone: string;
   instagram: string;
@@ -86,6 +113,7 @@ type SpotsStoreValue = {
   backendEnabled: boolean;
   error: string | null;
   refresh: () => Promise<void>;
+  refreshIfStale: () => Promise<void>;
 };
 
 const SpotsStoreContext = createContext<SpotsStoreValue>({
@@ -94,6 +122,7 @@ const SpotsStoreContext = createContext<SpotsStoreValue>({
   backendEnabled: false,
   error: null,
   refresh: async () => {},
+  refreshIfStale: async () => {},
 });
 
 const autoImportedPrioritySlugs = new Set([
@@ -130,22 +159,56 @@ const autoImportedPrioritySlugs = new Set([
   'gente-comun',
 ]);
 
-function readCachedSpots() {
+function readCachedSpots(preferredKey?: string) {
+  const cacheKeys = preferredKey ? [preferredKey] : listCachedSpotKeys();
+
   if (typeof window === 'undefined') {
     return null;
   }
 
-  try {
-    const raw = window.localStorage.getItem(spotsCacheKey);
-    if (!raw) {
-      return null;
-    }
+  for (const key of cacheKeys) {
+    try {
+      const raw = window.localStorage.getItem(key);
+      if (!raw) {
+        continue;
+      }
 
-    const parsed = JSON.parse(raw) as Spot[];
-    return Array.isArray(parsed) ? parsed : null;
-  } catch {
-    return null;
+      const parsed = JSON.parse(raw) as Spot[];
+      const normalized = Array.isArray(parsed)
+        ? parsed.map((spot) => ({
+            ...spot,
+            category: normalizeSpotCategory(spot.category),
+            subcategories: Array.isArray(spot.subcategories) ? spot.subcategories : [],
+            branches: spot.branches?.map((branch) => ({
+              ...branch,
+              category: normalizeSpotCategory(branch.category),
+              subcategories: Array.isArray(branch.subcategories) ? branch.subcategories : [],
+            })),
+          }))
+        : [];
+
+      if (normalized.length > 0) {
+        return normalized;
+      }
+    } catch {
+      continue;
+    }
   }
+
+  return null;
+}
+
+function listCachedSpotKeys() {
+  if (typeof window === 'undefined') {
+    return [];
+  }
+
+  const keys = Object.keys(window.localStorage);
+  const legacy = keys
+    .filter((key) => key.startsWith('spots-cache-v'))
+    .sort((left, right) => right.localeCompare(left));
+
+  return [spotsCacheKey, ...legacy.filter((item) => item !== spotsCacheKey)];
 }
 
 function writeCachedSpots(spots: Spot[]) {
@@ -168,16 +231,27 @@ function getPrimarySpotImage(
     (url) => typeof url === 'string' && url.trim().length > 0,
   )?.trim();
 
-  return firstGalleryImage || coverImageUrl || '';
+  return coverImageUrl?.trim() || firstGalleryImage || '';
 }
 
-function mapRowsToSpots(spotRows: SpotRow[], branchRows: BranchRow[], branchHourRows: BranchHourRow[]) {
-  const activeSpots = spotRows.filter((spot) => spot.is_active !== false);
+function normalizeSpotSubcategories(values: string[] | null | undefined) {
+  return Array.from(
+    new Set(
+      (values ?? [])
+        .map((value) => value.trim())
+        .filter(Boolean),
+    ),
+  );
+}
+
+export function mapRowsToSpots(spotRows: SpotRow[], branchRows: BranchRow[], branchHourRows: BranchHourRow[]) {
+  const activeSpots = spotRows.filter((spot) => spot.is_active !== false && spot.business_status !== 'permanently_closed');
+  const spotsWithBranches = new Set(branchRows.map((branch) => branch.spot_id));
   const branchesBySpot = new Map<number, BranchRow[]>();
   const hoursByBranch = new Map<number, BranchHourRow[]>();
 
   branchRows.forEach((branch) => {
-    if (branch.is_active === false) {
+    if (branch.is_active === false || branch.business_status === 'permanently_closed') {
       return;
     }
 
@@ -211,6 +285,8 @@ function mapRowsToSpots(spotRows: SpotRow[], branchRows: BranchRow[], branchHour
   const flattened: Spot[] = [];
 
   activeSpots.forEach((spot) => {
+    const canonicalCategory = normalizeSpotCategory(spot.category);
+    const normalizedSubcategories = normalizeSpotSubcategories(spot.subcategories);
     const enrichedTags = enrichSpotTaxonomy(spot.slug, spot.tags ?? [], 'tags');
     const enrichedMoods = enrichSpotTaxonomy(spot.slug, spot.moods ?? [], 'moods');
     const branches = (branchesBySpot.get(spot.id) ?? []).sort(
@@ -222,8 +298,11 @@ function mapRowsToSpots(spotRows: SpotRow[], branchRows: BranchRow[], branchHour
       branches.some((branch) => wasManuallyAdjusted(branch.created_at, branch.updated_at));
 
     if (!branches.length) {
+      // Hidden branches must not reappear as a synthetic branchless place.
+      if (spotsWithBranches.has(spot.id)) return;
       flattened.push({
         id: spot.slug,
+        businessStatus: spot.business_status,
         spotId: spot.id,
         branchId: null,
         placeSlug: spot.slug,
@@ -235,15 +314,25 @@ function mapRowsToSpots(spotRows: SpotRow[], branchRows: BranchRow[], branchHour
         updatedAt: spot.updated_at,
         likeTargetId: String(spot.id),
         type: spot.type,
+        startsAt: spot.starts_at,
+        endsAt: spot.ends_at,
+        ticketPrice: spot.ticket_price,
+        venueSpotId: spot.venue_spot_id,
+        venueBranchId: spot.venue_branch_id,
+        venueBranchSlug: spot.venue_branch_slug,
+        venueName: spot.venue_name,
+        venueLogoUrl: spot.venue_logo_url,
         name: spot.name,
         brandName: spot.name,
         branchName: '',
         neighborhood: '',
         hubName: '',
-        category: spot.category,
+        category: canonicalCategory,
+        subcategories: normalizedSubcategories,
         city: spot.city,
         likes: spot.likes,
         image: getPrimarySpotImage(spot.cover_image_url, spot.gallery_urls),
+        logoUrl: spot.logo_url,
         galleryImages: spot.gallery_urls ?? [],
         shortDescription: spot.short_description,
         description: spot.short_description,
@@ -253,12 +342,16 @@ function mapRowsToSpots(spotRows: SpotRow[], branchRows: BranchRow[], branchHour
         distanceKm: 0,
         minBudget: 0,
         maxBudget: 0,
+        budgetPilot: true,
+        budgetScenarios: [],
+        typicalBudget: 0,
         hours: '',
         address: '',
         instagram: '',
         whatsapp: '',
         phone: '',
         menuUrl: '',
+        menuItems: [],
         tags: enrichedTags,
         moods: enrichedMoods,
       });
@@ -279,15 +372,14 @@ function mapRowsToSpots(spotRows: SpotRow[], branchRows: BranchRow[], branchHour
         branch.mall,
         normalizedNeighborhood,
       );
-      const branchDescription = buildBranchDescription(
-        spot,
-        branch,
-        normalizedNeighborhood,
-        normalizedMall,
-      );
+      const branchDescription = spot.short_description.trim();
+      const scenarios = branch.budget_scenarios ?? [];
+      const estimates = scenarios.map(scenario => scenarioBudget(branch.menu_items ?? [], 2, scenario).perPerson);
+      const reference = estimates[0] ?? 0;
 
       flattened.push({
         id: branch.slug,
+        businessStatus: spot.business_status === 'temporarily_closed' ? spot.business_status : branch.business_status ?? spot.business_status,
         spotId: spot.id,
         branchId: branch.id,
         placeSlug: spot.slug,
@@ -299,30 +391,49 @@ function mapRowsToSpots(spotRows: SpotRow[], branchRows: BranchRow[], branchHour
         updatedAt: spot.updated_at,
         likeTargetId: String(spot.id),
         type: spot.type,
+        startsAt: spot.starts_at,
+        endsAt: spot.ends_at,
+        ticketPrice: spot.ticket_price,
+        venueSpotId: spot.venue_spot_id,
+        venueBranchId: spot.venue_branch_id,
+        venueBranchSlug: spot.venue_branch_slug,
+        venueName: spot.venue_name,
+        venueLogoUrl: spot.venue_logo_url,
         name: spot.name,
         brandName: spot.name,
         branchName: normalizedNeighborhood,
         neighborhood: normalizedNeighborhood,
         hubName: normalizedMall,
-        category: spot.category,
-        city: spot.city,
+        category: canonicalCategory,
+        city: branch.city || spot.city,
         likes: spot.likes,
         image: getPrimarySpotImage(spot.cover_image_url, spot.gallery_urls),
+        logoUrl: spot.logo_url,
         galleryImages: spot.gallery_urls ?? [],
         shortDescription: spot.short_description,
         description: branchDescription,
         interests: [],
+        subcategories: normalizedSubcategories,
         maxPeople: branch.max_people,
+        minPeople: branch.min_people,
+        budgetPilot: true,
+        budgetScenarios: scenarios,
+        typicalBudget: reference,
+        budgetBasis: branch.budget_basis ?? scenarios[0]?.concept ?? 'Presupuesto por confirmar: falta una selección con precios de esta sede.',
+        menuCalculationNote: branch.menu_calculation_note,
+        googleMapsUrl: branch.google_maps_url,
+        websiteUrl: branch.website_url,
         days: [],
         distanceKm: 0,
-        minBudget: branch.min_budget,
-        maxBudget: branch.max_budget ?? branch.min_budget,
+        minBudget: reference,
+        maxBudget: reference > 0 ? Math.max(...estimates.filter((price): price is number => price !== null)) : 0,
         hours: derivedHours,
         address: branch.address,
         instagram: branch.instagram,
         whatsapp: branch.whatsapp,
         phone: branch.phone,
         menuUrl: branch.menu_url,
+        menuItems: Array.isArray(branch.menu_items) ? branch.menu_items : [],
         tags: enrichedTags,
         moods: enrichedMoods,
         latitude: branch.latitude ?? undefined,
@@ -384,46 +495,13 @@ function enrichSpotTaxonomy(
   return nextValues;
 }
 
-function buildBranchDescription(
-  spot: SpotRow,
-  branch: BranchRow,
-  normalizedNeighborhood: string,
-  normalizedMall: string,
-) {
-  const normalizedSlug = branch.slug.trim().toLowerCase();
-
-  if (normalizedSlug === 'casa-banana-granada') {
-    return 'Casa Bananá en Granada es una parada de bakery y brunch pensada para antojo dulce, café y parche chill en una de las zonas más movidas del norte. Esta sede funciona muy bien para desayunos tardíos, una pausa suave entre vueltas por el barrio o un plan relajado con postres y algo rico a cualquier hora del día.';
-  }
-
-  if (normalizedSlug === 'casa-banana-puerto-125') {
-    return 'Casa Bananá en Puerto 125, Pance, junta bakery, brunch y café en un punto cómodo para el sur de la ciudad. Esta sede se presta para un parche más tranquilo, para arrancar la mañana con algo dulce, resolver un brunch sin complicarse o caer por café y postre después de darse una vuelta por el corredor de Pance.';
-  }
-
-  const locationParts = [normalizedMall, normalizedNeighborhood].filter(Boolean);
-  const locationLabel = locationParts.join(', ');
-  const offering = collectSpotKeywords(spot.tags);
-  const moods = collectSpotKeywords(spot.moods);
-  const base = spot.short_description.trim();
-  const opening = locationLabel
-    ? `${spot.name} en ${locationLabel}`
-    : `${spot.name}`;
-  const offerCopy = offering.length
-    ? ` con foco en ${formatList(offering)}`
-    : '';
-  const moodSentence = moods.length
-    ? `Su vibra va más por ${formatList(moods)}.`
-    : '';
-
-  return `${opening} es una buena opción${offerCopy}.${moodSentence}${base ? ` ${base}` : ''}`.trim();
-}
 
 function normalizeNeighborhoodLabel(
-  neighborhood: string,
-  mall: string,
+  neighborhood: string | null | undefined,
+  mall: string | null | undefined,
   address: string,
 ) {
-  const cleanedNeighborhood = neighborhood.trim();
+  const cleanedNeighborhood = (neighborhood ?? '').trim();
   if (!cleanedNeighborhood) {
     return '';
   }
@@ -492,11 +570,11 @@ function normalizeNeighborhoodLabel(
     return 'Guadalupe';
   }
 
-  if (normalizeLabelToken(mall) === 'unicentro') {
+  if (normalizeLabelToken(mall ?? '') === 'unicentro') {
     return 'Ciudad Jardín';
   }
 
-  if (normalizeLabelToken(mall) === 'mallplaza') {
+  if (normalizeLabelToken(mall ?? '') === 'mallplaza') {
     return 'Guadalupe';
   }
 
@@ -516,8 +594,8 @@ function normalizeNeighborhoodLabel(
   return 'Ciudad Jardín';
 }
 
-function normalizeMallLabel(mall: string, neighborhood: string) {
-  const cleanedMall = normalizeCommercialCenterLabel(mall);
+function normalizeMallLabel(mall: string | null | undefined, neighborhood: string) {
+  const cleanedMall = normalizeCommercialCenterLabel(mall ?? '');
   if (!cleanedMall) {
     return '';
   }
@@ -548,43 +626,13 @@ function normalizeLabelToken(value: string) {
     .trim();
 }
 
-function collectSpotKeywords(values: string[] | null, limit = 3) {
-  return (values ?? [])
-    .map((value) => value.trim().toLowerCase())
-    .filter(Boolean)
-    .slice(0, limit);
-}
-
-function formatList(values: string[]) {
-  if (!values.length) {
-    return '';
-  }
-
-  if (values.length === 1) {
-    return values[0];
-  }
-
-  if (values.length === 2) {
-    return `${values[0]} y ${values[1]}`;
-  }
-
-  return `${values.slice(0, -1).join(', ')} y ${values[values.length - 1]}`;
-}
 
 async function fetchStaticCatalog() {
   if (Platform.OS !== 'web') {
     throw new Error('El catálogo estático solo está disponible en web.');
   }
 
-  const response = await fetch(staticCatalogPath, {
-    cache: 'no-store',
-  });
-
-  if (!response.ok) {
-    throw new Error(`No pudimos descargar el catálogo estático (${response.status}).`);
-  }
-
-  const payload = (await response.json()) as Partial<SpotRowsSnapshot>;
+  const payload = await getPublicJson(staticCatalogPath, 2_000) as Partial<SpotRowsSnapshot>;
 
   return {
     spots: Array.isArray(payload.spots) ? (payload.spots as SpotRow[]) : [],
@@ -612,7 +660,7 @@ function buildBranchHoursSummary(branch: BranchRow, weeklyHours: BranchHourRow[]
 
   const grouped = buildGroupedWeeklySummary(weeklyHours);
   const holiday = buildHolidaySummary(branch);
-  const parts = [grouped, holiday].filter(Boolean);
+  const parts = [grouped, holiday, ...getScheduleExceptionSegments(branch.hours || '')].filter(Boolean);
   return parts.join(' · ') || branch.hours || '';
 }
 
@@ -680,7 +728,17 @@ function buildHolidaySummary(branch: BranchRow) {
   }
 
   if (branch.holiday_mode !== 'custom') {
-    return 'Festivos cerrado';
+    const festiveSegment = branch.hours
+      ?.split('·')
+      .map((segment) => segment.trim())
+      .find((segment) => /\b(?:festivos?|fest)\b/i.test(segment));
+
+    if (!festiveSegment) {
+      return 'Festivos por definir';
+    }
+
+    const directive = festiveSegment.replace(/^.*?\b(?:festivos?|fest)\b\s*/i, '').trim();
+    return directive ? `Festivos ${directive}` : 'Festivos por definir';
   }
 
   if (!branch.holiday_open_time || !branch.holiday_close_time) {
@@ -719,25 +777,52 @@ function formatDayIndexRange(dayIndexes: number[]) {
 
 export function SpotsStoreProvider({ children }: { children: ReactNode }) {
   const shouldUseCatalog = Platform.OS === 'web';
-  const cachedSpots = useMemo(() => (shouldUseCatalog ? readCachedSpots() : null), [shouldUseCatalog]);
+  const cachedSpots = useMemo(() => (shouldUseCatalog ? readCachedSpots(spotsCacheKey) : null), [shouldUseCatalog]);
   const [spots, setSpots] = useState<Spot[]>(shouldUseCatalog ? cachedSpots ?? [] : []);
   const [loading, setLoading] = useState(shouldUseCatalog && !(cachedSpots && cachedSpots.length > 0));
   const [error, setError] = useState<string | null>(null);
 
-  async function refresh() {
+  const inFlight = useRef<Promise<void> | null>(null);
+  const lastAttempt = useRef<number | null>(null);
+  const lastContent = useRef<string | null>(null);
+
+  const refresh = useCallback((): Promise<void> => {
+    if (!shouldUseCatalog) return Promise.resolve();
+    if (inFlight.current) return inFlight.current;
+    lastAttempt.current = Date.now();
+    const request = (async () => {
     try {
       const snapshot = await fetchStaticCatalog();
-      const nextSpots = mapRowsToSpots(snapshot.spots, snapshot.branches, snapshot.branchHours);
-      setSpots(nextSpots);
-      writeCachedSpots(nextSpots);
+      const content = JSON.stringify(snapshot);
+      if (content !== lastContent.current) {
+        const nextSpots = mapRowsToSpots(snapshot.spots, snapshot.branches, snapshot.branchHours);
+        setSpots(nextSpots);
+        writeCachedSpots(nextSpots);
+        lastContent.current = content;
+      }
       setError(null);
     } catch (err) {
+      const fallbackSpots = readCachedSpots();
+      if (fallbackSpots && fallbackSpots.length > 0) {
+        setSpots(fallbackSpots);
+      }
       setError(err instanceof Error ? err.message : 'No pudimos cargar Spots');
       throw err;
     } finally {
+      inFlight.current = null;
       setLoading(false);
     }
-  }
+    })();
+    inFlight.current = request;
+    return request;
+  }, [shouldUseCatalog]);
+
+  const refreshIfStale = useCallback(() => {
+    if (inFlight.current) return inFlight.current;
+    // Throttle failures too, so navigating offline does not repeatedly retry.
+    if (lastAttempt.current !== null && Date.now() - lastAttempt.current < 60_000) return Promise.resolve();
+    return refresh();
+  }, [refresh]);
 
   useEffect(() => {
     if (Platform.OS !== 'web') {
@@ -746,35 +831,8 @@ export function SpotsStoreProvider({ children }: { children: ReactNode }) {
       return;
     }
 
-    let active = true;
-
-    async function load() {
-      try {
-        const snapshot = await fetchStaticCatalog();
-        if (active) {
-          const nextSpots = mapRowsToSpots(snapshot.spots, snapshot.branches, snapshot.branchHours);
-          setSpots(nextSpots);
-          writeCachedSpots(nextSpots);
-          setError(null);
-        }
-      } catch (err) {
-        if (active) {
-          setError(err instanceof Error ? err.message : 'No pudimos cargar Spots');
-          setSpots(readCachedSpots() ?? []);
-        }
-      } finally {
-        if (active) {
-          setLoading(false);
-        }
-      }
-    }
-
-    load();
-
-    return () => {
-      active = false;
-    };
-  }, []);
+    void refreshIfStale().catch(() => {});
+  }, [refreshIfStale]);
 
   const value = useMemo(
     () => ({
@@ -783,8 +841,9 @@ export function SpotsStoreProvider({ children }: { children: ReactNode }) {
       backendEnabled: false,
       error,
       refresh,
+      refreshIfStale,
     }),
-    [spots, loading, error],
+    [spots, loading, error, refresh, refreshIfStale],
   );
 
   return (

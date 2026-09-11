@@ -23,6 +23,7 @@ export async function submitFeedbackNote({
   if (!normalizedNote) {
     throw new Error('Escribe tu feedback antes de enviarlo.');
   }
+  if (normalizedNote.length > 4000) throw new Error('El feedback puede tener hasta 4000 caracteres.');
 
   if (!backendEnabled || !supabase) {
     throw new Error('El backend no está disponible en este momento.');
@@ -30,8 +31,8 @@ export async function submitFeedbackNote({
 
   const { error } = await supabase.from('feedback_notes').insert({
     submitted_by_user_id: userId ?? null,
-    submitted_by_name: fullName?.trim() || null,
-    submitted_by_email: email?.trim() || null,
+    submitted_by_name: fullName?.trim() || '',
+    submitted_by_email: email?.trim() || '',
     source: 'explore',
     status: 'pending',
     note: normalizedNote,

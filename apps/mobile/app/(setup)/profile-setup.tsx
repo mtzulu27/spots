@@ -14,6 +14,7 @@ import {
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { topContentInset } from '@/lib/layout-insets';
 import {
   PrimaryAction,
   WireframeField,
@@ -194,7 +195,7 @@ export default function ProfileSetupScreen() {
           style={[
             styles.canvas,
             {
-              paddingTop: Math.max(insets.top, 16) + 12,
+              paddingTop: topContentInset(insets),
               paddingBottom: Math.max(insets.bottom, 24) + 20,
             },
           ]}

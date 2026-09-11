@@ -1,0 +1,16 @@
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const ts = require('typescript');
+const source = fs.readFileSync(`${__dirname}/../lib/menu-pricing.ts`, 'utf8');
+const mod = { exports: {} };
+new Function('exports', 'require', 'module', ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.CommonJS } }).outputText)(mod.exports, require, mod);
+const items = JSON.parse(fs.readFileSync(`${__dirname}/../public/spots-catalog.json`)).branches.find(b => b.id === 1931).menu_items;
+const index = name => items.findIndex(i => i.name === name);
+const basket = { [index('Cheese Bacon')]: 2, [index('CocaCola')]: 2 };
+assert.deepEqual(mod.exports.selectedMenuTotal(items, basket, 2), { subtotal: 90000, total: 90000, perPerson: 45000 });
+assert.equal(mod.exports.selectedMenuTotal(items, basket, 2, true).perPerson, 49500);
+assert.equal(mod.exports.selectedMenuTotal(items, { [index('Quesadillas poblanas')]: 1, [index('Soda lychee')]: 1 }, 1).total, 67000);
+assert.equal(mod.exports.selectedMenuTotal(items, { [index('Don Julio 1942')]: 1 }, 4).perPerson, 400000);
+assert.equal(mod.exports.selectedMenuTotal(items, {}, 2).total, 0);
+assert.equal(mod.exports.selectedMenuTotal(items, basket, 0).perPerson, 90000);
+console.log('Agave: exact products, shared bottles, optional tip and empty basket passed');

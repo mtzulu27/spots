@@ -1,6 +1,7 @@
+import { getCategoryLabel } from '@/lib/category-icons';
+import { useReturnScroll } from '@/lib/use-return-scroll';
 import { Link, useLocalSearchParams, useRouter } from 'expo-router';
 import {
-  ImageBackground,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -8,11 +9,13 @@ import {
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { topContentInset } from '@/lib/layout-insets';
 import { AppIconButton, appColors } from '@/components/app-ui';
 import { formatLikesCount, useLikesStore } from '@/lib/likes-store';
 import { aggregatePlaceSpotsFromList, getSpotsByTypeFromList } from '@/lib/mock-spots';
 import { useRelayoutSubscription } from '@/lib/relayout';
 import { useSpotsStore } from '@/lib/spots-store';
+import { FeedPlacePhoto } from '@/components/place-photo';
 
 const moodMap: Record<string, string[]> = {
   'Bares y noche': ['bailar', 'vida nocturna', 'discoteca', 'rumba', 'salsa'],
@@ -36,6 +39,7 @@ const moodMap: Record<string, string[]> = {
 };
 
 export default function TodayResultsScreen() {
+  const returnScroll = useReturnScroll();
   useRelayoutSubscription();
   const router = useRouter();
   const insets = useSafeAreaInsets();
@@ -73,13 +77,14 @@ export default function TodayResultsScreen() {
 
   return (
     <View style={styles.screen}>
-      <View style={[styles.header, { paddingTop: insets.top + 14 }]}>
+      <View style={[styles.header, { paddingTop: topContentInset(insets) }]}> 
         <AppIconButton name="arrow-back" onPress={() => router.back()} tone="dark" />
       <Text style={styles.headerTitle}>¿Qué hacer hoy?</Text>
         <View style={styles.headerSpacer} />
       </View>
 
       <ScrollView
+        {...returnScroll}
         style={styles.list}
         contentContainerStyle={[
           styles.listContent,
@@ -92,8 +97,8 @@ export default function TodayResultsScreen() {
         {places.map((spot) => (
           <Link key={spot.id} href={`/spot/${spot.id}`} asChild>
             <Pressable style={styles.card}>
-              <ImageBackground
-                source={{ uri: spot.image }}
+              <FeedPlacePhoto
+                spot={spot}
                 style={styles.image}
                 imageStyle={styles.imageStyle}
               >
@@ -101,13 +106,13 @@ export default function TodayResultsScreen() {
                 <View style={styles.copy}>
                   <Text style={styles.title}>{spot.name}</Text>
                   <View style={styles.metaRow}>
-                    <Text style={styles.category}>{spot.category}</Text>
+                    <Text style={styles.category}>{getCategoryLabel(spot.category)}</Text>
                     <Text style={styles.likes}>
                       ♡ {formatLikesCount(getLikesCount(spot.likeTargetId))}
                     </Text>
                   </View>
                 </View>
-              </ImageBackground>
+              </FeedPlacePhoto>
             </Pressable>
           </Link>
         ))}

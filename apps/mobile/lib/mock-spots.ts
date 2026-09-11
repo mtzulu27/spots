@@ -1,6 +1,31 @@
 export type SpotType = 'place' | 'event'
 
+export type MenuItemCategory =
+  | 'mains'
+  | 'starters'
+  | 'desserts'
+  | 'drinks'
+  | 'cover'
+  | 'tickets'
+  | 'extras'
+
+export type MenuCatalogItem = {
+  name: string
+  price: number
+  presentation?: string
+  category: MenuItemCategory
+  menuSection?: string | null
+  sourceUrl?: string | null
+  verifiedAt?: string | null
+  sourcePage?: number
+  unit?: string
+  variants?: string[]
+  calculationIncluded?: boolean
+  exclusionReason?: string
+}
+
 export type Spot = {
+  businessStatus?: 'operational' | 'temporarily_closed' | 'permanently_closed' | 'unknown'
   id: string
   spotId: number
   branchId: number | null
@@ -13,20 +38,38 @@ export type Spot = {
   updatedAt?: string | null
   likeTargetId: string
   type: SpotType
+  startsAt?: string | null
+  endsAt?: string | null
+  ticketPrice?: number | null
+  venueSpotId?: number | null
+  venueBranchId?: number | null
+  venueBranchSlug?: string | null
+  venueName?: string | null
+  venueLogoUrl?: string | null
   name: string
   brandName: string
   branchName: string
   neighborhood: string
   hubName: string
   category: string
+  subcategories: string[]
   city: string
   likes: string
   image: string
+  logoUrl?: string
   galleryImages: string[]
   shortDescription: string
   description: string
   interests: string[]
   maxPeople: number
+  minPeople?: number
+  typicalBudget?: number
+  budgetPilot?: boolean
+  budgetScenarios?: import('./budget-scenarios').BudgetScenario[]
+  budgetBasis?: string
+  menuCalculationNote?: string
+  googleMapsUrl?: string
+  websiteUrl?: string
   days: string[]
   distanceKm: number
   minBudget: number
@@ -37,6 +80,7 @@ export type Spot = {
   whatsapp: string
   phone: string
   menuUrl: string
+  menuItems?: MenuCatalogItem[]
   tags: string[]
   moods: string[]
   latitude?: number
@@ -46,6 +90,14 @@ export type Spot = {
 }
 
 const emptySpots: Spot[] = []
+
+export function normalizeSpotCategory(category: string) {
+  if (category === 'Restaurantes y cafés') {
+    return 'Comida'
+  }
+
+  return category
+}
 
 function toFiniteBudget(value: number | undefined, fallback: number | undefined) {
   if (Number.isFinite(value)) {
@@ -259,6 +311,7 @@ export function aggregatePlaceBranches(branches: Spot[]) {
   )
 
   const uniqueInterests = Array.from(new Set(branches.flatMap((branch) => branch.interests)))
+  const uniqueSubcategories = Array.from(new Set(branches.flatMap((branch) => branch.subcategories)))
   const uniqueDays = Array.from(new Set(branches.flatMap((branch) => branch.days)))
   const uniqueTags = Array.from(new Set(branches.flatMap((branch) => branch.tags)))
   const uniqueMoods = Array.from(new Set(branches.flatMap((branch) => branch.moods)))
@@ -278,6 +331,7 @@ export function aggregatePlaceBranches(branches: Spot[]) {
 
   return {
     ...primary,
+    businessStatus: branches.every(branch => branch.businessStatus === 'temporarily_closed') ? 'temporarily_closed' as const : branches.some(branch => branch.businessStatus === 'operational') ? 'operational' as const : 'unknown' as const,
     branchId: null,
     name: primary.brandName,
     manuallyAdjusted: branches.some((branch) => branch.manuallyAdjusted),
@@ -286,6 +340,7 @@ export function aggregatePlaceBranches(branches: Spot[]) {
     shortDescription: primary.shortDescription,
     description: primary.description,
     interests: uniqueInterests,
+    subcategories: uniqueSubcategories,
     maxPeople: Math.max(...branches.map((branch) => branch.maxPeople)),
     days: uniqueDays,
     distanceKm: Math.min(...branches.map((branch) => branch.distanceKm)),
@@ -343,8 +398,8 @@ export function getOtherBranches(current: Spot) {
   return getOtherBranchesFromList(emptySpots, current)
 }
 
-function parseLikes(value: string) {
-  const normalized = value.trim().toUpperCase()
+function parseLikes(value: string | null | undefined) {
+  const normalized = (value ?? '').trim().toUpperCase()
   if (normalized.endsWith('K')) {
     return Math.round(Number(normalized.replace('K', '')) * 1000)
   }

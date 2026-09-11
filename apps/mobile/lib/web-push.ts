@@ -1,203 +1,76 @@
 import { Platform } from 'react-native';
 import { supabase } from '@/lib/supabase';
 
-const WEB_PUSH_SERVICE_WORKER_PATH = '/web-push-sw.js';
-const WEB_PUSH_FUNCTION_NAME = process.env.EXPO_PUBLIC_WEB_PUSH_FUNCTION_NAME ?? 'send-web-push';
-const WEB_PUSH_PUBLIC_KEY = process.env.EXPO_PUBLIC_WEB_PUSH_PUBLIC_KEY ?? '';
-
+const SERVICE_WORKER = '/web-push-sw.js';
+const API = '/spots-push.php';
 export type WebPushPermission = NotificationPermission | 'unsupported';
+export type WebPushSnapshot = { installed: boolean; permission: WebPushPermission; subscribed: boolean; supported: boolean };
 
-export type WebPushSnapshot = {
-  installed: boolean;
-  permission: WebPushPermission;
-  subscribed: boolean;
-  supported: boolean;
-};
-
-function isWebRuntime() {
-  return Platform.OS === 'web' && typeof window !== 'undefined';
+function supported() {
+  return Platform.OS === 'web' && typeof window !== 'undefined' && window.isSecureContext
+    && 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
 }
-
-function canUseServiceWorker() {
-  return isWebRuntime() && 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
-}
-
-function getPermission(): WebPushPermission {
-  if (!isWebRuntime() || !('Notification' in window)) {
-    return 'unsupported';
-  }
-
-  return Notification.permission;
-}
-
-function decodeBase64UrlToUint8Array(value: string) {
-  const normalized = value.replace(/-/g, '+').replace(/_/g, '/');
-  const padded = normalized.padEnd(Math.ceil(normalized.length / 4) * 4, '=');
-  const decoded = window.atob(padded);
-  const bytes = new Uint8Array(decoded.length);
-
-  for (let index = 0; index < decoded.length; index += 1) {
-    bytes[index] = decoded.charCodeAt(index);
-  }
-
-  return bytes;
-}
-
-function getBrowserPlatform() {
-  if (!isWebRuntime()) {
-    return 'native';
-  }
-
-  const userAgent = navigator.userAgent.toLowerCase();
-
-  if (/iphone|ipad|ipod/.test(userAgent)) return 'ios';
-  if (userAgent.includes('android')) return 'android';
-  if (userAgent.includes('mac os')) return 'macos';
-  if (userAgent.includes('windows')) return 'windows';
-  if (userAgent.includes('linux')) return 'linux';
-  return 'web';
-}
-
 export function isStandaloneWebApp() {
-  if (!isWebRuntime()) {
-    return false;
-  }
-
-  const displayModeStandalone = window.matchMedia?.('(display-mode: standalone)').matches ?? false;
-  const navigatorStandalone =
-    typeof navigator !== 'undefined' && 'standalone' in navigator
-      ? Boolean((navigator as Navigator & { standalone?: boolean }).standalone)
-      : false;
-
-  return displayModeStandalone || navigatorStandalone;
+  return Platform.OS === 'web' && typeof window !== 'undefined' && (
+    window.matchMedia('(display-mode: standalone)').matches
+    || Boolean((navigator as Navigator & { standalone?: boolean }).standalone)
+  );
 }
-
-export async function registerWebPushServiceWorker() {
-  if (!canUseServiceWorker()) {
-    return null;
-  }
-
-  const existingRegistration = await navigator.serviceWorker.getRegistration(WEB_PUSH_SERVICE_WORKER_PATH);
-  if (existingRegistration) {
-    return existingRegistration;
-  }
-
-  return navigator.serviceWorker.register(WEB_PUSH_SERVICE_WORKER_PATH, {
-    scope: '/',
-    updateViaCache: 'none',
+async function request(body?: object): Promise<{ publicKey: string; subscribed: boolean; sent?: number }> {
+  const session = supabase ? (await supabase.auth.getSession()).data.session : null;
+  if (!session) throw new Error('Inicia sesion para activar las notificaciones de tu cuenta.');
+  const response = await fetch(API, {
+    method: body ? 'POST' : 'GET', credentials: 'same-origin', cache: 'no-store',
+    headers: { Authorization: `Bearer ${session.access_token}`, ...(body ? { 'Content-Type': 'application/json', 'X-Spots-Push': '1' } : {}) },
+    body: body ? JSON.stringify(body) : undefined, signal: AbortSignal.timeout(25000),
   });
+  const data = await response.json().catch(() => null);
+  if (!response.ok || !data) throw new Error(data?.error || 'Las notificaciones requieren la version publicada en spots.com.co.');
+  return data;
 }
-
+export async function registerWebPushServiceWorker() {
+  if (!supported()) return null;
+  return navigator.serviceWorker.register(SERVICE_WORKER, { scope: '/', updateViaCache: 'none' });
+}
 export async function getWebPushSnapshot(): Promise<WebPushSnapshot> {
-  if (!canUseServiceWorker()) {
-    return {
-      installed: false,
-      permission: 'unsupported',
-      subscribed: false,
-      supported: false,
-    };
-  }
-
-  const registration = await navigator.serviceWorker.getRegistration(WEB_PUSH_SERVICE_WORKER_PATH);
+  const result: WebPushSnapshot = { installed: isStandaloneWebApp(), permission: supported() ? Notification.permission : 'unsupported', subscribed: false, supported: supported() };
+  if (!result.supported) return result;
+  const config = await request();
+  const registration = await navigator.serviceWorker.getRegistration(SERVICE_WORKER);
   const subscription = await registration?.pushManager.getSubscription();
-
-  return {
-    installed: isStandaloneWebApp(),
-    permission: getPermission(),
-    subscribed: Boolean(subscription),
-    supported: true,
-  };
+  return { ...result, subscribed: Boolean(subscription && config.subscribed) };
 }
-
-async function persistSubscription(userId: string, subscription: PushSubscription) {
-  if (!supabase) {
-    throw new Error('Supabase no esta configurado.');
+export async function subscribeToWebPush(_userId?: string) {
+  if (!supported()) throw new Error('Abre Spots instalada desde su icono y usando HTTPS.');
+  if (!isStandaloneWebApp()) throw new Error('Agrega Spots a la pantalla de inicio y abre su icono.');
+  if (Notification.permission === 'denied') throw new Error('Permiso bloqueado. Revisa Notificaciones de Spots en Ajustes del dispositivo.');
+  // iOS requires this call directly in the tap, before network/worker awaits.
+  const permission = Notification.permission === 'granted' ? 'granted' : await Notification.requestPermission();
+  if (permission !== 'granted') throw new Error('No se concedio permiso de notificaciones.');
+  const config = await request();
+  if (!config.publicKey) throw new Error('El servidor push aun no esta configurado.');
+  await registerWebPushServiceWorker();
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const registration = await Promise.race([
+    navigator.serviceWorker.ready,
+    new Promise<never>((_, reject) => { timer = setTimeout(() => reject(new Error('El registro tardo demasiado. Vuelve a intentar.')), 15000); }),
+  ]).finally(() => { if (timer) clearTimeout(timer); });
+  const key = Uint8Array.from(atob(config.publicKey.replace(/-/g, '+').replace(/_/g, '/')), c => c.charCodeAt(0));
+  let subscription = await registration.pushManager.getSubscription();
+  const oldKey = subscription?.options.applicationServerKey;
+  if (subscription && oldKey && (oldKey.byteLength !== key.byteLength || new Uint8Array(oldKey).some((b, i) => b !== key[i]))) {
+    await subscription.unsubscribe(); subscription = null;
   }
-
-  const payload = {
-    endpoint: subscription.endpoint,
-    installed: isStandaloneWebApp(),
-    last_seen_at: new Date().toISOString(),
-    permission: getPermission(),
-    platform: getBrowserPlatform(),
-    subscription: subscription.toJSON(),
-    user_agent: navigator.userAgent,
-    user_id: userId,
-  };
-
-  const { error } = await supabase
-    .from('web_push_subscriptions')
-    .upsert(payload, { onConflict: 'endpoint' });
-
-  if (error) {
-    throw new Error(error.message);
-  }
-}
-
-export async function subscribeToWebPush(userId: string) {
-  if (!canUseServiceWorker()) {
-    throw new Error('Este navegador no soporta Web Push.');
-  }
-
-  if (!isStandaloneWebApp()) {
-    throw new Error('Agrega Spots a tu pantalla de inicio para activar notificaciones push.');
-  }
-
-  if (!WEB_PUSH_PUBLIC_KEY.trim()) {
-    throw new Error('Falta EXPO_PUBLIC_WEB_PUSH_PUBLIC_KEY para registrar la suscripcion.');
-  }
-
-  if (Notification.permission === 'denied') {
-    throw new Error('Las notificaciones estan bloqueadas para Spots en este dispositivo.');
-  }
-
-  const permission =
-    Notification.permission === 'granted'
-      ? 'granted'
-      : await Notification.requestPermission();
-
-  if (permission !== 'granted') {
-    throw new Error('Necesitamos permiso de notificaciones para activar los avisos fuera de la app.');
-  }
-
-  const registration = await registerWebPushServiceWorker();
-  if (!registration) {
-    throw new Error('No pudimos registrar el service worker de notificaciones.');
-  }
-
-  const existingSubscription = await registration.pushManager.getSubscription();
-  const subscription =
-    existingSubscription ??
-    (await registration.pushManager.subscribe({
-      applicationServerKey: decodeBase64UrlToUint8Array(WEB_PUSH_PUBLIC_KEY),
-      userVisibleOnly: true,
-    }));
-
-  await persistSubscription(userId, subscription);
-
+  subscription ??= await registration.pushManager.subscribe({ applicationServerKey: key, userVisibleOnly: true });
+  await request({ action: 'subscribe', subscription: subscription.toJSON() });
   return subscription;
 }
-
-export async function sendWebPushSelfTest(accessToken?: string | null) {
-  if (!supabase) {
-    throw new Error('Supabase no esta configurado.');
-  }
-
-  const { error } = await supabase.functions.invoke(WEB_PUSH_FUNCTION_NAME, {
-    body: {
-      body: 'Esta es una prueba de Spots desde tu PWA instalada.',
-      mode: 'self-test',
-      title: 'Push activo en Spots',
-      url: '/',
-    },
-    headers: accessToken
-      ? {
-          Authorization: `Bearer ${accessToken}`,
-        }
-      : undefined,
-  });
-
-  if (error) {
-    throw new Error(error.message);
-  }
+export async function unsubscribeFromWebPush() {
+  await request({ action: 'unsubscribe' });
+  const registration = await navigator.serviceWorker.getRegistration(SERVICE_WORKER);
+  await (await registration?.pushManager.getSubscription())?.unsubscribe();
+}
+export async function sendWebPushSelfTest(_accessToken?: string | null) {
+  const result = await request({ action: 'self-test' });
+  if (result.sent !== 1) throw new Error('El servidor no confirmo el envio.');
 }

@@ -1,9 +1,8 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { startTransition, useDeferredValue, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import {
   Animated,
   Dimensions,
-  Image,
   LayoutChangeEvent,
   Easing,
   Modal,
@@ -19,6 +18,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AppIconButton, AppPrimaryButton } from '@/components/app-ui';
+import { CategoryIcon } from '@/components/category-icon';
 import {
   DEFAULT_FILTERS,
   type ExploreFilters,
@@ -26,6 +26,7 @@ import {
   type ExploreSort,
   type ExploreTab,
   formatBudget,
+  getSpotCatalogSignals,
   matchesSpotToFilters,
   sortSpots,
 } from '@/lib/explore-filters';
@@ -37,15 +38,8 @@ import {
 import { useLocationStore } from '@/lib/location-store';
 import { useRelayoutSubscription } from '@/lib/relayout';
 import { useSpotsStore } from '@/lib/spots-store';
+import { accountUi } from '@/lib/account-ui';
 
-const exploreFoodIcon = require('../assets/explore_food_icon.png');
-const exploreCinemaIcon = require('../assets/explore_cinema_icon.png');
-const exploreArtIcon = require('../assets/explore_art_icon.png');
-const exploreNightlifeIcon = require('../assets/explore_nightlife_icon.png');
-const exploreSportsIcon = require('../assets/explore_sports_icon.png');
-const exploreFamilyIcon = require('../assets/explore_family_icon.png');
-const exploreEventsIcon = require('../assets/explore_events_icon.png');
-const exploreNatureIcon = require('../assets/explore_nature_icon.png');
 
 const MIN_PRICE = 0;
 const MAX_PRICE = 150000;
@@ -53,23 +47,24 @@ const SCREEN_HEIGHT = Dimensions.get('window').height;
 const FILTERS_SHEET_HEIGHT = Math.round(SCREEN_HEIGHT * 0.88);
 const FILTERS_COLLAPSED_OFFSET = FILTERS_SHEET_HEIGHT;
 const filtersUi = {
-  bg: '#f6f6f8',
-  surface: '#ffffff',
-  surfaceMuted: '#f0f0f3',
-  text: '#141417',
-  textSecondary: '#5f5f67',
-  textTertiary: '#85858f',
-  accent: '#EF3857',
-  accentSoft: 'rgba(239,56,87,0.08)',
+  bg: accountUi.surface,
+  surface: accountUi.bg,
+  surfaceMuted: accountUi.surfaceMuted,
+  text: accountUi.text,
+  textSecondary: accountUi.textSecondary,
+  textTertiary: accountUi.textTertiary,
+  accent: accountUi.accent,
+  accentSoft: accountUi.accentSoft,
+  border: accountUi.border,
 };
 
 const chipTextBase = {
-  fontSize: 14,
-  fontWeight: '600' as const,
+  fontSize: 12,
+  fontWeight: '500' as const,
 };
 
-const chipTextDefaultColor = '#5f5f67';
-const chipTextActiveColor = '#000000';
+const chipTextDefaultColor = accountUi.textSecondary;
+const chipTextActiveColor = accountUi.text;
 
 const dayOptions = [
   { label: 'Cualquier día', shortLabel: 'Cualquier día', value: 'Any' },
@@ -83,18 +78,324 @@ const dayOptions = [
   { label: 'Festivos', shortLabel: 'Festivos', value: 'Festivos' },
 ];
 
-const categoryOptions: Array<{
+type CategorySuboption = {
   label: string;
   value: string;
-  image: any;
-}> = [
-  { label: 'Arte y cultura', value: 'Arte y cultura', image: exploreArtIcon },
-  { label: 'Bares y noche', value: 'Bares y noche', image: exploreNightlifeIcon },
-  { label: 'Restaurantes y cafés', value: 'Restaurantes y cafés', image: exploreFoodIcon },
-  { label: 'Deporte', value: 'Deporte y bienestar', image: exploreSportsIcon },
-  { label: 'Familiar', value: 'Familiar', image: exploreFamilyIcon },
-  { label: 'Naturaleza', value: 'Naturaleza y aire libre', image: exploreNatureIcon },
+};
+
+type CategoryOption = {
+  key: string;
+  label: string;
+  legacyValue: string;
+  filterTokens: string[];
+  subcategories: CategorySuboption[];
+  momentOptions?: CategorySuboption[];
+  relatedOptionsByMoment?: Record<string, CategorySuboption[]>;
+};
+
+const foodMomentOptions: CategorySuboption[] = [
+  { label: 'Desayuno', value: 'Desayuno' },
+  { label: 'Brunch', value: 'Brunch' },
+  { label: 'Almuerzo', value: 'Almuerzo' },
+  { label: 'Tardear', value: 'Tardear' },
+  { label: 'Cena', value: 'Cena' },
+  { label: 'Postres', value: 'Postres' },
 ];
+
+const foodRelatedOptionsByMoment: Record<string, CategorySuboption[]> = {
+  Desayuno: [
+    { label: 'Café', value: 'Café' },
+    { label: 'Panadería', value: 'Panadería' },
+    { label: 'Pastelería', value: 'Pastelería' },
+    { label: 'Waffles', value: 'Waffles' },
+    { label: 'Pancakes', value: 'Pancakes' },
+    { label: 'Bowls', value: 'Bowls' },
+    { label: 'Sandwiches', value: 'Sandwiches' },
+    { label: 'Huevos', value: 'Huevos' },
+    { label: 'Tostadas', value: 'Tostadas' },
+    { label: 'Açaí', value: 'Açaí' },
+    { label: 'Fruta', value: 'Fruta' },
+    { label: 'Jugos', value: 'Jugos' },
+    { label: 'Saludable', value: 'Saludable' },
+    { label: 'Vegana', value: 'Vegana' },
+    { label: 'Vegetariana', value: 'Vegetariana' },
+    { label: 'Colombiana', value: 'Colombiana' },
+    { label: 'Americana', value: 'Americana' },
+    { label: 'Mediterránea', value: 'Mediterránea' },
+  ],
+  Brunch: [
+    { label: 'Café', value: 'Café' },
+    { label: 'Panadería', value: 'Panadería' },
+    { label: 'Pastelería', value: 'Pastelería' },
+    { label: 'Waffles', value: 'Waffles' },
+    { label: 'Pancakes', value: 'Pancakes' },
+    { label: 'Bowls', value: 'Bowls' },
+    { label: 'Sandwiches', value: 'Sandwiches' },
+    { label: 'Huevos', value: 'Huevos' },
+    { label: 'Tostadas', value: 'Tostadas' },
+    { label: 'Mimosas', value: 'Mimosas' },
+    { label: 'Açaí', value: 'Açaí' },
+    { label: 'Saludable', value: 'Saludable' },
+    { label: 'Vegana', value: 'Vegana' },
+    { label: 'Vegetariana', value: 'Vegetariana' },
+    { label: 'Americana', value: 'Americana' },
+    { label: 'Mediterránea', value: 'Mediterránea' },
+    { label: 'Fusión', value: 'Fusión' },
+  ],
+  Almuerzo: [
+    { label: 'Italiana', value: 'Italiana' },
+    { label: 'Mexicana', value: 'Mexicana' },
+    { label: 'Japonesa', value: 'Japonesa' },
+    { label: 'Nikkei', value: 'Nikkei' },
+    { label: 'Mediterránea', value: 'Mediterránea' },
+    { label: 'Colombiana', value: 'Colombiana' },
+    { label: 'Americana', value: 'Americana' },
+    { label: 'Asiática', value: 'Asiática' },
+    { label: 'Fusión', value: 'Fusión' },
+    { label: 'Pizza', value: 'Pizza' },
+    { label: 'Pasta', value: 'Pasta' },
+    { label: 'Sushi', value: 'Sushi' },
+    { label: 'Tacos', value: 'Tacos' },
+    { label: 'Ramen', value: 'Ramen' },
+    { label: 'Poke', value: 'Poke' },
+    { label: 'Pitas', value: 'Pitas' },
+    { label: 'Bowls', value: 'Bowls' },
+    { label: 'Hamburguesas', value: 'Hamburguesas' },
+    { label: 'Pollo frito', value: 'Pollo frito' },
+    { label: 'Sandwiches', value: 'Sandwiches' },
+    { label: 'Parrilla', value: 'Parrilla' },
+    { label: 'Mariscos', value: 'Mariscos' },
+    { label: 'Saludable', value: 'Saludable' },
+    { label: 'Vegana', value: 'Vegana' },
+    { label: 'Vegetariana', value: 'Vegetariana' },
+  ],
+  Tardear: [
+    { label: 'Café', value: 'Café' },
+    { label: 'Panadería', value: 'Panadería' },
+    { label: 'Pastelería', value: 'Pastelería' },
+    { label: 'Postres', value: 'Postres' },
+    { label: 'Helado', value: 'Helado' },
+    { label: 'Waffles', value: 'Waffles' },
+    { label: 'Pancakes', value: 'Pancakes' },
+    { label: 'Sandwiches', value: 'Sandwiches' },
+    { label: 'Pizza', value: 'Pizza' },
+    { label: 'Tapas', value: 'Tapas' },
+    { label: 'Bowls', value: 'Bowls' },
+    { label: 'Brunch', value: 'Brunch' },
+    { label: 'Saludable', value: 'Saludable' },
+    { label: 'Vegana', value: 'Vegana' },
+    { label: 'Vegetariana', value: 'Vegetariana' },
+    { label: 'Americana', value: 'Americana' },
+    { label: 'Mediterránea', value: 'Mediterránea' },
+    { label: 'Fusión', value: 'Fusión' },
+  ],
+  Cena: [
+    { label: 'Italiana', value: 'Italiana' },
+    { label: 'Mexicana', value: 'Mexicana' },
+    { label: 'Japonesa', value: 'Japonesa' },
+    { label: 'Nikkei', value: 'Nikkei' },
+    { label: 'Mediterránea', value: 'Mediterránea' },
+    { label: 'Colombiana', value: 'Colombiana' },
+    { label: 'Americana', value: 'Americana' },
+    { label: 'Asiática', value: 'Asiática' },
+    { label: 'Fusión', value: 'Fusión' },
+    { label: 'Pizza', value: 'Pizza' },
+    { label: 'Pasta', value: 'Pasta' },
+    { label: 'Sushi', value: 'Sushi' },
+    { label: 'Tacos', value: 'Tacos' },
+    { label: 'Ramen', value: 'Ramen' },
+    { label: 'Pitas', value: 'Pitas' },
+    { label: 'Hamburguesas', value: 'Hamburguesas' },
+    { label: 'Parrilla', value: 'Parrilla' },
+    { label: 'Mariscos', value: 'Mariscos' },
+    { label: 'Tapas', value: 'Tapas' },
+    { label: 'Vegana', value: 'Vegana' },
+    { label: 'Vegetariana', value: 'Vegetariana' },
+    { label: 'Saludable', value: 'Saludable' },
+  ],
+  Postres: [
+    { label: 'Postres', value: 'Postres' },
+    { label: 'Helado', value: 'Helado' },
+    { label: 'Pastelería', value: 'Pastelería' },
+    { label: 'Panadería', value: 'Panadería' },
+    { label: 'Café', value: 'Café' },
+    { label: 'Waffles', value: 'Waffles' },
+    { label: 'Pancakes', value: 'Pancakes' },
+    { label: 'Galletas', value: 'Galletas' },
+    { label: 'Tortas', value: 'Tortas' },
+    { label: 'Cheesecake', value: 'Cheesecake' },
+    { label: 'Brownies', value: 'Brownies' },
+    { label: 'Donas', value: 'Donas' },
+    { label: 'Chocolatería', value: 'Chocolatería' },
+    { label: 'Açaí', value: 'Açaí' },
+  ],
+};
+
+const alwaysExpandedSubcategoryCategoryKeys = new Set(['tomar-algo']);
+
+function getCategoryAllSuboptions(option: CategoryOption) {
+  const groupedOptions = option.momentOptions
+    ? [
+        ...option.momentOptions,
+        ...Object.values(option.relatedOptionsByMoment ?? {}).flat(),
+      ]
+    : [];
+
+  return Array.from(
+    new Map(
+      [...option.subcategories, ...groupedOptions].map((subcategory) => [subcategory.value, subcategory] as const),
+    ).values(),
+  );
+}
+
+const unorderedCategoryOptions: CategoryOption[] = [
+  {
+    key: 'arte-cultura',
+    label: 'Arte y cultura',
+    legacyValue: 'Arte y cultura',
+    filterTokens: ['Arte y cultura'],
+    subcategories: [
+      { label: 'Museos', value: 'Museos' },
+      { label: 'Galerías', value: 'Galerías' },
+      { label: 'Cine alternativo', value: 'Cine alternativo' },
+      { label: 'Tertulias', value: 'Tertulias' },
+      { label: 'Monumentos', value: 'Monumentos' },
+      { label: 'Teatro', value: 'Teatro' },
+      { label: 'Standup', value: 'Standup' },
+      { label: 'Comediantes', value: 'Comediantes' },
+      { label: 'Danza', value: 'Danza' },
+      { label: 'Poesía', value: 'Poesía' },
+    ],
+  },
+  {
+    key: 'tomar-algo',
+    label: 'Tomar algo',
+    legacyValue: 'Bares y noche',
+    filterTokens: ['Tomar algo', 'Bares y noche'],
+    subcategories: [
+      { label: 'Cerveza', value: 'Cerveza' },
+      { label: 'Cocktails', value: 'Cocktails' },
+      { label: 'Vino', value: 'Vino' },
+      { label: 'Cerveza artesanal', value: 'Cerveza artesanal' },
+      { label: 'Pub', value: 'Pub' },
+      { label: 'Speakeasy', value: 'Speakeasy' },
+      { label: 'After office', value: 'After office' },
+    ],
+  },
+  {
+    key: 'vida-nocturna',
+    label: 'Vida nocturna',
+    legacyValue: 'Bares y noche',
+    filterTokens: ['Vida nocturna', 'Bares y noche'],
+    subcategories: [
+      { label: 'Salsa', value: 'Salsa' },
+      { label: 'Reggaetón', value: 'Reggaetón' },
+      { label: 'Techno', value: 'Techno' },
+      { label: 'Disco', value: 'Disco' },
+      { label: 'Dancehall', value: 'Dancehall' },
+      { label: 'Crossover', value: 'Crossover' },
+      { label: 'Karaoke', value: 'Karaoke' },
+      { label: 'Shows en vivo', value: 'Shows en vivo' },
+    ],
+  },
+  {
+    key: 'comida',
+    label: 'Comida',
+    legacyValue: 'Restaurantes y cafés',
+    filterTokens: ['Comida', 'Restaurantes y cafés'],
+    subcategories: foodMomentOptions,
+    momentOptions: foodMomentOptions,
+    relatedOptionsByMoment: foodRelatedOptionsByMoment,
+  },
+  {
+    key: 'bienestar',
+    label: 'Bienestar',
+    legacyValue: 'Deporte y bienestar',
+    filterTokens: ['Bienestar', 'Deporte y bienestar'],
+    subcategories: [
+      { label: 'Yoga', value: 'Yoga' },
+      { label: 'Pilates', value: 'Pilates' },
+      { label: 'Spa', value: 'Spa' },
+      { label: 'Masajes', value: 'Masajes' },
+      { label: 'Gym', value: 'Gym' },
+      { label: 'Running', value: 'Running' },
+      { label: 'Hiking', value: 'Hiking' },
+      { label: 'Meditación', value: 'Meditación' },
+    ],
+  },
+  {
+    key: 'familiar',
+    label: 'Familiar',
+    legacyValue: 'Familiar',
+    filterTokens: ['Familiar'],
+    subcategories: [
+      { label: 'Parques infantiles', value: 'Parques infantiles' },
+      { label: 'Juegos', value: 'Juegos' },
+      { label: 'Manualidades', value: 'Manualidades' },
+      { label: 'Pintar', value: 'Pintar' },
+      { label: 'Cerámica', value: 'Cerámica' },
+      { label: 'Plan familiar', value: 'Plan familiar' },
+      { label: 'Animales', value: 'Animales' },
+      { label: 'Diversión', value: 'Diversión' },
+    ],
+  },
+  {
+    key: 'al-aire-libre',
+    label: 'Al aire libre',
+    legacyValue: 'Naturaleza y aire libre',
+    filterTokens: ['Al aire libre', 'Naturaleza y aire libre'],
+    subcategories: [
+      { label: 'Parques', value: 'Parques' },
+      { label: 'Miradores', value: 'Miradores' },
+      { label: 'Caminatas', value: 'Caminatas' },
+      { label: 'Montañas', value: 'Montañas' },
+      { label: 'Hiking', value: 'Hiking' },
+      { label: 'Running', value: 'Running' },
+      { label: 'Picnic', value: 'Picnic' },
+      { label: 'Camping', value: 'Camping' },
+    ],
+  },
+];
+
+const categoryOrder = ['Comida', 'Tomar algo', 'Vida nocturna'];
+const categoryOptions = [...unorderedCategoryOptions].sort((a, b) => {
+  const aIndex = categoryOrder.indexOf(a.label);
+  const bIndex = categoryOrder.indexOf(b.label);
+  return (aIndex === -1 ? categoryOrder.length : aIndex) - (bIndex === -1 ? categoryOrder.length : bIndex);
+});
+
+function inferSelectedCategoryKey(values: string[]) {
+  for (const option of categoryOptions) {
+    if (values.includes(option.label)) {
+      return option.key;
+    }
+  }
+
+  for (const option of categoryOptions) {
+    if (getCategoryAllSuboptions(option).some((subcategory) => values.includes(subcategory.value))) {
+      return option.key;
+    }
+  }
+
+  for (const option of categoryOptions) {
+    if (option.filterTokens.some((token) => token !== option.label && values.includes(token))) {
+      return option.key;
+    }
+  }
+
+  return null;
+}
+
+function normalizeFilterValue(value: string) {
+  return value
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/['’`´"]/g, '')
+    .replace(/[^a-z0-9\s]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
 
 const sortOptions: Array<{ label: string; value: ExploreSort }> = [
   { label: 'Más nuevos', value: 'recent' },
@@ -168,6 +469,7 @@ type FiltersSheetProps = {
   onApply: (filters: ExploreFilters) => void;
   onClearQuery?: () => void;
   onClose: () => void;
+  hideSort?: boolean;
 };
 
 type DynamicSectionKey =
@@ -185,12 +487,18 @@ export function FiltersSheet({
   onApply,
   onClearQuery,
   onClose,
+  hideSort = false,
 }: FiltersSheetProps) {
   useRelayoutSubscription();
   const insets = useSafeAreaInsets();
   const { spots } = useSpotsStore();
   const { userLocation, error: locationError, requestLocation } = useLocationStore();
   const scrollRef = useRef<ScrollView | null>(null);
+  const [openSection, setOpenSection] = useState<string | null>(null);
+  const accordion = (key: string) => ({
+    expanded: openSection === key,
+    onToggle: () => setOpenSection(current => current === key ? null : key),
+  });
   const currentScrollYRef = useRef(0);
   const sectionLayoutRef = useRef<Record<DynamicSectionKey, { y: number; height: number } | null>>({
     category: null,
@@ -207,6 +515,7 @@ export function FiltersSheet({
   const [sectorSearch, setSectorSearch] = useState('');
   const [mallSearch, setMallSearch] = useState('');
   const [distance, setDistance] = useState(initialFilters.distance);
+  const [showAdvancedDistance, setShowAdvancedDistance] = useState(false);
   const [minBudget, setMinBudget] = useState(initialFilters.minBudget);
   const [maxBudget, setMaxBudget] = useState(initialFilters.maxBudget);
   const [time, setTime] = useState(initialFilters.time);
@@ -216,22 +525,59 @@ export function FiltersSheet({
   const [sortBy, setSortBy] = useState(initialFilters.sortBy);
   const [openNowOnly, setOpenNowOnly] = useState(initialFilters.openNowOnly);
   const [hideManuallyAdjusted, setHideManuallyAdjusted] = useState(initialFilters.hideManuallyAdjusted);
+  const [expandedCategoryKey, setExpandedCategoryKey] = useState<string | null>(
+    inferSelectedCategoryKey(initialFilters.interests),
+  );
   const [neighborhoodPickerOpen, setNeighborhoodPickerOpen] = useState(false);
   const [showAdvancedWhen, setShowAdvancedWhen] = useState(false);
   const [showAllLocationSectors, setShowAllLocationSectors] = useState(false);
   const [showAllLocationMalls, setShowAllLocationMalls] = useState(false);
   const [showAllIdealFor, setShowAllIdealFor] = useState(false);
+  const [showAllSubcategories, setShowAllSubcategories] = useState(false);
   const sheetTranslateY = useRef(new Animated.Value(FILTERS_COLLAPSED_OFFSET)).current;
   const sectorChipsAnim = useRef(new Animated.Value(1)).current;
   const mallChipsAnim = useRef(new Animated.Value(1)).current;
   const sheetLastOffset = useRef(FILTERS_COLLAPSED_OFFSET);
   const closingRef = useRef(false);
-  const categoryValues = useMemo<string[]>(() => categoryOptions.map((option) => option.value), []);
-  const idealForValues = useMemo<string[]>(() => idealForOptions.map((option) => option.value), []);
-  const selectedCategoryValues = useMemo(
-    () => selectedCategories.filter((value) => categoryValues.includes(value)),
-    [categoryValues, selectedCategories],
+  const categoryValues = useMemo<string[]>(
+    () => Array.from(new Set(categoryOptions.flatMap((option) => option.filterTokens))),
+    [],
   );
+  const categorySubcategoryValues = useMemo<string[]>(
+    () => categoryOptions.flatMap((option) => getCategoryAllSuboptions(option).map((subcategory) => subcategory.value)),
+    [],
+  );
+  const expandedPrimaryCategory = useMemo(
+    () => categoryOptions.find((option) => option.key === expandedCategoryKey) ?? null,
+    [expandedCategoryKey],
+  );
+  const categorySelectionValues = useMemo<string[]>(
+    () => [...categoryValues, ...categorySubcategoryValues],
+    [categorySubcategoryValues, categoryValues],
+  );
+  const idealForValues = useMemo<string[]>(() => idealForOptions.map((option) => option.value), []);
+  const distanceSliderTrackWidthRef = useRef(0);
+  const hasCategorySelection = useMemo(
+    () => selectedCategories.some((value) => categorySelectionValues.includes(value)),
+    [categorySelectionValues, selectedCategories],
+  );
+  const hasExpandedSubcategorySelection = useMemo(
+    () =>
+      expandedPrimaryCategory
+        ? getCategoryAllSuboptions(expandedPrimaryCategory).some((subcategory) => selectedCategories.includes(subcategory.value))
+        : false,
+    [expandedPrimaryCategory, selectedCategories],
+  );
+  const selectedFoodMomentValues = useMemo(
+    () =>
+      expandedPrimaryCategory?.momentOptions
+        ? expandedPrimaryCategory.momentOptions
+            .map((momentOption) => momentOption.value)
+            .filter((value) => selectedCategories.includes(value))
+        : [],
+    [expandedPrimaryCategory, selectedCategories],
+  );
+  const hasExpandedMomentSelection = selectedFoodMomentValues.length > 0;
   const selectedIdealForValues = useMemo(
     () => selectedCategories.filter((value) => idealForValues.includes(value)),
     [idealForValues, selectedCategories],
@@ -251,6 +597,7 @@ export function FiltersSheet({
     setSectorSearch('');
     setMallSearch('');
     setDistance(initialFilters.distance);
+    setShowAdvancedDistance(false);
     setMinBudget(initialFilters.minBudget);
     setMaxBudget(initialFilters.maxBudget);
     setTime(initialFilters.time);
@@ -260,9 +607,11 @@ export function FiltersSheet({
     setSortBy(initialFilters.sortBy);
     setOpenNowOnly(initialFilters.openNowOnly);
     setHideManuallyAdjusted(initialFilters.hideManuallyAdjusted);
+    setExpandedCategoryKey(inferSelectedCategoryKey(initialFilters.interests));
     setShowAllLocationSectors(false);
     setShowAllLocationMalls(false);
     setShowAllIdealFor(false);
+    setShowAllSubcategories(false);
     setShowAdvancedWhen(currentPreset === null && (
       initialFilters.days.length > 0 ||
       Boolean(initialFilters.time) ||
@@ -301,15 +650,39 @@ export function FiltersSheet({
       hideManuallyAdjusted,
     ],
   );
+  const deferredFilters = useDeferredValue(filters);
 
   const activeData = useMemo(
     () => getSpotsByTypeFromList(spots, activeTab === 'places' ? 'place' : 'event'),
     [activeTab, spots],
   );
+  const availableCatalogSignals = useMemo(() => {
+    const signals = new Set<string>();
+
+    activeData.forEach((spot) => {
+      getSpotCatalogSignals(spot).forEach((value) => {
+        signals.add(value);
+      });
+    });
+
+    return signals;
+  }, [activeData]);
+  const visibleCategoryOptions = useMemo(
+    () =>
+      categoryOptions.filter((option) => {
+        const isSelected = option.filterTokens.some((token) => selectedCategories.includes(token));
+        if (isSelected) {
+          return true;
+        }
+
+        return option.filterTokens.some((token) => availableCatalogSignals.has(normalizeFilterValue(token)));
+      }),
+    [availableCatalogSignals, selectedCategories],
+  );
   const resultsCount = useMemo(() => {
     const filteredSpots = sortSpots(
       activeData.filter((spot) =>
-        matchesSpotToFilters(spot, filters, query, userLocation),
+        matchesSpotToFilters(spot, deferredFilters, query, userLocation),
       ),
       sortBy,
     );
@@ -319,7 +692,7 @@ export function FiltersSheet({
     }
 
     return aggregatePlaceSpotsFromList(filteredSpots).length;
-  }, [activeData, activeTab, filters, query, sortBy, userLocation]);
+  }, [activeData, activeTab, deferredFilters, query, sortBy, userLocation]);
   const neighborhoodOptions = useMemo(() => {
     return Array.from(
       new Set(
@@ -359,10 +732,10 @@ export function FiltersSheet({
   const filteredMallSearch = mallSearch.trim().toLocaleLowerCase('es');
   const locationPreviewFilters = useMemo(
     () => ({
-      ...filters,
+      ...deferredFilters,
       hubName: [],
     }),
-    [filters],
+    [deferredFilters],
   );
   const locationCandidateSpots = useMemo(
     () =>
@@ -501,6 +874,65 @@ export function FiltersSheet({
     ? locationMallsForDisplay
     : locationMallsForDisplay.slice(0, 10);
   const visibleIdealForOptions = showAllIdealFor ? idealForOptions : idealForOptions.slice(0, 8);
+  const sortedExpandedMoments = useMemo(
+    () =>
+      expandedPrimaryCategory?.momentOptions
+        ? expandedPrimaryCategory.momentOptions
+            .filter(
+              (momentOption) =>
+                selectedCategories.includes(momentOption.value) ||
+                availableCatalogSignals.has(normalizeFilterValue(momentOption.value)),
+            )
+            .sort((left, right) =>
+              left.label.localeCompare(right.label, 'es', { sensitivity: 'base' }),
+            )
+        : [],
+    [availableCatalogSignals, expandedPrimaryCategory, selectedCategories],
+  );
+  const relatedExpandedSubcategories = useMemo(() => {
+    if (!expandedPrimaryCategory?.relatedOptionsByMoment) {
+      return expandedPrimaryCategory
+        ? expandedPrimaryCategory.subcategories.filter(
+            (subcategory) =>
+              selectedCategories.includes(subcategory.value) ||
+              availableCatalogSignals.has(normalizeFilterValue(subcategory.value)),
+          )
+        : [];
+    }
+
+    if (selectedFoodMomentValues.length === 0) {
+      return [];
+    }
+
+    if (selectedFoodMomentValues.length === 1 && selectedFoodMomentValues[0] === 'Postres') {
+      return [];
+    }
+
+    return Array.from(
+      new Map(
+        selectedFoodMomentValues
+          .flatMap((momentValue) => expandedPrimaryCategory.relatedOptionsByMoment?.[momentValue] ?? [])
+          .map((subcategory) => [subcategory.value, subcategory] as const),
+      ).values(),
+    ).filter(
+      (subcategory) =>
+        selectedCategories.includes(subcategory.value) ||
+        availableCatalogSignals.has(normalizeFilterValue(subcategory.value)),
+    );
+  }, [availableCatalogSignals, expandedPrimaryCategory, selectedCategories, selectedFoodMomentValues]);
+  const sortedExpandedSubcategories = useMemo(
+    () =>
+      relatedExpandedSubcategories.length > 0
+        ? [...relatedExpandedSubcategories].sort((left, right) =>
+            left.label.localeCompare(right.label, 'es', { sensitivity: 'base' }),
+          )
+        : [],
+    [relatedExpandedSubcategories],
+  );
+  const visibleSubcategories = showAllSubcategories
+    || (expandedPrimaryCategory ? alwaysExpandedSubcategoryCategoryKeys.has(expandedPrimaryCategory.key) : false)
+    ? sortedExpandedSubcategories
+    : sortedExpandedSubcategories.slice(0, 10);
   const visibleLocationSectorSignature = useMemo(
     () => visibleLocationSectors.map((option) => option.key).join('|'),
     [visibleLocationSectors],
@@ -579,6 +1011,9 @@ export function FiltersSheet({
   );
 
   function clearFilters() {
+    const clearedFilters = {
+      ...DEFAULT_FILTERS,
+    };
     setSelectedCategories(DEFAULT_FILTERS.interests);
     setSelectedNeighborhoods([]);
     setSelectedHubNames(DEFAULT_FILTERS.hubName);
@@ -594,17 +1029,50 @@ export function FiltersSheet({
     setSortBy(DEFAULT_FILTERS.sortBy);
     setOpenNowOnly(DEFAULT_FILTERS.openNowOnly);
     setHideManuallyAdjusted(DEFAULT_FILTERS.hideManuallyAdjusted);
+    setExpandedCategoryKey(null);
     setShowAdvancedWhen(false);
     setShowAllLocationSectors(false);
     setShowAllLocationMalls(false);
     setShowAllIdealFor(false);
+    setShowAllSubcategories(false);
     onClearQuery?.();
+    onApply(clearedFilters);
   }
 
   function toggleCategory(value: string) {
+    const nextOption = categoryOptions.find((option) => option.key === value);
+    if (!nextOption) {
+      return;
+    }
+
+    setExpandedCategoryKey((currentExpandedKey) => (currentExpandedKey === value ? null : value));
+    setShowAllSubcategories(false);
+    startTransition(() => {
+      setSelectedCategories((current) => {
+        const currentKey = inferSelectedCategoryKey(current);
+        const withoutCategories = current.filter((item) => !categorySelectionValues.includes(item));
+        return currentKey === value ? withoutCategories : [...withoutCategories, ...nextOption.filterTokens];
+      });
+    });
+  }
+
+  function toggleSubcategory(value: string) {
     setSelectedCategories((current) => {
-      const withoutCategories = current.filter((item) => !categoryValues.includes(item));
-      return current.includes(value) ? withoutCategories : [...withoutCategories, value];
+      const foodMomentValues = new Set(expandedPrimaryCategory?.momentOptions?.map((momentOption) => momentOption.value) ?? []);
+      const withoutCategoryTokens = current.filter(
+        (item) => !categoryValues.includes(item) || expandedPrimaryCategory?.filterTokens.includes(item),
+      );
+
+      if (foodMomentValues.has(value)) {
+        const withoutMoments = withoutCategoryTokens.filter((item) => !foodMomentValues.has(item));
+        return current.includes(value)
+          ? withoutMoments
+          : [...withoutMoments, value];
+      }
+
+      return withoutCategoryTokens.includes(value)
+        ? withoutCategoryTokens.filter((item) => item !== value)
+        : [...withoutCategoryTokens, value];
     });
   }
 
@@ -617,7 +1085,29 @@ export function FiltersSheet({
   }
 
   function clearCategorySelections() {
-    setSelectedCategories((current) => current.filter((item) => !categoryValues.includes(item)));
+    setExpandedCategoryKey(null);
+    setShowAllSubcategories(false);
+    startTransition(() => {
+      setSelectedCategories((current) => current.filter((item) => !categorySelectionValues.includes(item)));
+    });
+  }
+
+  function clearExpandedSubcategories() {
+    if (!expandedPrimaryCategory) {
+      return;
+    }
+
+    const subcategoryValues = new Set(getCategoryAllSuboptions(expandedPrimaryCategory).map((subcategory) => subcategory.value));
+    setSelectedCategories((current) => current.filter((item) => !subcategoryValues.has(item)));
+  }
+
+  function clearExpandedMoments() {
+    if (!expandedPrimaryCategory?.momentOptions) {
+      return;
+    }
+
+    const momentValues = new Set(expandedPrimaryCategory.momentOptions.map((momentOption) => momentOption.value));
+    setSelectedCategories((current) => current.filter((item) => !momentValues.has(item)));
   }
 
   function clearIdealForSelections() {
@@ -763,9 +1253,42 @@ export function FiltersSheet({
     setTime(`${cleaned.slice(0, 2)}:${cleaned.slice(2, 4)}`);
   }
 
+  function applyCurrentTimeSelection() {
+    const now = new Date();
+    const rawHours = now.getHours();
+    const minutes = now.getMinutes();
+    const periodValue: ExplorePeriod = rawHours >= 12 ? 'PM' : 'AM';
+    const hours12 = rawHours % 12 || 12;
+    const formattedTime = `${hours12}:${String(minutes).padStart(2, '0')}`;
+
+    setOpenNowOnly(false);
+    setTime(formattedTime);
+    setPeriod(periodValue);
+    setShowAdvancedWhen(true);
+  }
+
   function applyDistancePreset(nextDistance: number) {
     setDistance((current) => (current === nextDistance ? DEFAULT_FILTERS.distance : nextDistance));
+    setShowAdvancedDistance(false);
   }
+
+  function setDistanceFromSliderPosition(positionX: number) {
+    const trackWidth = distanceSliderTrackWidthRef.current;
+    if (trackWidth <= 0) {
+      return;
+    }
+
+    const clampedPosition = clamp(positionX, 0, trackWidth);
+    const ratio = clampedPosition / trackWidth;
+    const nextDistance = Math.round(ratio * 50);
+    setDistance(nextDistance);
+  }
+
+  function handleDistanceSliderLayout(event: LayoutChangeEvent) {
+    distanceSliderTrackWidthRef.current = event.nativeEvent.layout.width;
+  }
+
+  const distanceSliderRatio = distance / 50;
 
   function applyBudgetPreset(min: number, max: number) {
     const isActive = minBudget === min && maxBudget === max;
@@ -922,7 +1445,7 @@ export function FiltersSheet({
           </View>
 
           <View style={styles.header}>
-            <Text style={styles.headerTitle}>Filters</Text>
+            <Text style={styles.headerTitle}>Filtros</Text>
             <AppIconButton
               name="close"
               onPress={() => closeSheet()}
@@ -936,7 +1459,7 @@ export function FiltersSheet({
             contentContainerStyle={[
               styles.content,
               {
-                paddingBottom: 132 + insets.bottom,
+                paddingBottom: 12,
                 flexGrow: 1,
               },
             ]}
@@ -945,59 +1468,40 @@ export function FiltersSheet({
             onScroll={handleFiltersScroll}
             scrollEventThrottle={16}
           >
-          <Section title="Ordenar por">
-            <View style={styles.sortRow}>
-              {sortOptions.map((option) => {
-                const active = sortBy === option.value;
-                return (
-                  <Pressable
-                    key={option.value}
-                    style={[styles.sortChip, active && styles.sortChipActive]}
-                    onPress={() => setSortBy(option.value)}
-                  >
-                    <Text style={[styles.sortChipText, active && styles.sortChipTextActive]}>
-                      {option.label}
-                    </Text>
-                  </Pressable>
-                );
-              })}
-            </View>
-          </Section>
+          {!hideSort && (
+            <>
+              <Section title="Ordenar por" expanded
+                actionLabel={sortBy !== DEFAULT_FILTERS.sortBy ? 'Quitar' : undefined}
+                onActionPress={() => setSortBy(DEFAULT_FILTERS.sortBy)}>
+                <View style={styles.sortRow}>
+                  {sortOptions.map((option) => {
+                    const active = sortBy === option.value;
+                    return (
+                      <Pressable
+                        key={option.value}
+                        style={[styles.sortChip, active && styles.sortChipActive]}
+                        onPress={() => setSortBy(option.value)}
+                      >
+                        <Text style={[styles.sortChipText, active && styles.sortChipTextActive]}>
+                          {option.label}
+                        </Text>
+                      </Pressable>
+                    );
+                  })}
+                </View>
+              </Section>
 
-          <Divider />
-
-          <Section
-            title="Categoría"
-            actionLabel={selectedCategoryValues.length > 0 ? 'Quitar' : undefined}
-            onActionPress={selectedCategoryValues.length > 0 ? clearCategorySelections : undefined}
-            onLayout={(event) => handleDynamicSectionLayout('category', event)}
-          >
-            <View style={styles.categoryRow}>
-              {categoryOptions.map((option) => {
-                const active = selectedCategoryValues.includes(option.value);
-                return (
-                  <Pressable
-                    key={option.value}
-                    style={[styles.categoryPill, active && styles.categoryPillActive]}
-                    onPress={() => toggleCategory(option.value)}
-                  >
-                    <Image source={option.image} style={styles.categoryPillImage} resizeMode="contain" />
-                    <Text style={[styles.categoryPillText, active && styles.categoryPillTextActive]}>
-                      {option.label}
-                    </Text>
-                  </Pressable>
-                );
-              })}
-            </View>
-          </Section>
-
-          <Divider />
+              <Divider />
+            </>
+          )}
 
           <Section
             title="Disponibilidad"
-            actionLabel={selectedWhenPreset !== 'any' || showAdvancedWhen ? 'Quitar' : undefined}
+            {...accordion('availability')}
+            activeCount={Number(openNowOnly) + selectedDays.length + Number(Boolean(time)) + Number(Boolean(period))}
+            actionLabel={openNowOnly || selectedDays.length > 0 || Boolean(time) || Boolean(period) ? 'Quitar' : undefined}
             onActionPress={
-              selectedWhenPreset !== 'any' || showAdvancedWhen
+              openNowOnly || selectedDays.length > 0 || Boolean(time) || Boolean(period)
                 ? () => {
                     applyWhenPreset('any');
                     setShowAdvancedWhen(false);
@@ -1025,7 +1529,7 @@ export function FiltersSheet({
                   })}
                 </View>
                 <Pressable onPress={() => setShowAdvancedWhen(true)}>
-                  <Text style={styles.linkButtonText}>Refinar búsqueda</Text>
+                  <Text style={styles.linkButtonText}>Búsqueda avanzada</Text>
                 </Pressable>
               </>
             ) : (
@@ -1104,6 +1608,9 @@ export function FiltersSheet({
                       );
                     })}
                   </View>
+                  <Pressable style={styles.timeNowButton} onPress={applyCurrentTimeSelection}>
+                    <Text style={styles.timeNowButtonText}>Hora actual</Text>
+                  </Pressable>
                 </View>
                 <Pressable onPress={() => setShowAdvancedWhen(false)}>
                   <Text style={styles.linkButtonText}>Volver a sugeridos</Text>
@@ -1115,31 +1622,108 @@ export function FiltersSheet({
           <Divider />
 
           <Section
-            title="Distancia"
-            actionLabel={distance !== DEFAULT_FILTERS.distance ? 'Quitar' : undefined}
-            onActionPress={distance !== DEFAULT_FILTERS.distance ? () => setDistance(DEFAULT_FILTERS.distance) : undefined}
-            onLayout={(event) => handleDynamicSectionLayout('distance', event)}
+            title="Categoría"
+            {...accordion('category')}
+            activeCount={new Set(selectedCategories.filter(value => categorySelectionValues.includes(value))).size}
+            actionLabel={hasCategorySelection ? 'Quitar' : undefined}
+            onActionPress={hasCategorySelection ? clearCategorySelections : undefined}
+            onLayout={(event) => handleDynamicSectionLayout('category', event)}
           >
-            <View style={styles.presetGrid}>
-              {distancePresetOptions.map((option) => {
-                const active = selectedDistancePreset === option.value;
+            <View style={styles.categoryRow}>
+              {visibleCategoryOptions.map((option) => {
+                const active = expandedCategoryKey === option.key;
                 return (
                   <Pressable
-                    key={option.label}
-                    style={[styles.filterChip, active && styles.filterChipActive]}
-                    onPress={() => applyDistancePreset(option.value)}
+                    key={option.key}
+                    style={[styles.categoryPill, active && styles.categoryPillActive]}
+                    onPress={() => toggleCategory(option.key)}
                   >
-                    <Text style={[styles.filterChipText, active && styles.filterChipTextActive]}>
+                    <CategoryIcon category={option.label} size={20} color={active ? chipTextActiveColor : chipTextDefaultColor} />
+                    <Text style={[styles.categoryPillText, active && styles.categoryPillTextActive]}>
                       {option.label}
                     </Text>
                   </Pressable>
                 );
               })}
             </View>
-            {locationError ? (
-              <Pressable onPress={requestLocation}>
-                <Text style={styles.locationText}>Activa ubicación para usar distancia real</Text>
-              </Pressable>
+            {expandedPrimaryCategory ? (
+              <View style={styles.subcategoryBlock}>
+                {sortedExpandedMoments.length > 0 ? (
+                  <>
+                    <View style={styles.sectionHeaderRow}>
+                      <Text style={styles.subcategoryLabel}>Momentos</Text>
+                      {hasExpandedMomentSelection ? (
+                        <Pressable onPress={clearExpandedMoments} hitSlop={8}>
+                          <Text style={styles.sectionActionText}>Quitar</Text>
+                        </Pressable>
+                      ) : null}
+                    </View>
+                    <View style={styles.subcategoryRow}>
+                      {sortedExpandedMoments.map((subcategory) => {
+                        const active = selectedCategories.includes(subcategory.value);
+                        return (
+                          <Pressable
+                            key={subcategory.value}
+                            style={[styles.subcategoryPill, active && styles.subcategoryPillActive]}
+                            onPress={() => toggleSubcategory(subcategory.value)}
+                          >
+                            <Text style={[styles.subcategoryPillText, active && styles.subcategoryPillTextActive]}>
+                              {subcategory.label}
+                            </Text>
+                          </Pressable>
+                        );
+                      })}
+                    </View>
+                  </>
+                ) : null}
+                {((sortedExpandedMoments.length === 0) || selectedFoodMomentValues.length > 0) && sortedExpandedSubcategories.length > 0 ? (
+                  <>
+                    <View style={styles.sectionHeaderRow}>
+                      <Text style={styles.subcategoryLabel}>
+                        {sortedExpandedMoments.length > 0 ? 'Relacionadas' : 'Subcategorías'}
+                      </Text>
+                      {hasExpandedSubcategorySelection ? (
+                        <Pressable onPress={clearExpandedSubcategories} hitSlop={8}>
+                          <Text style={styles.sectionActionText}>Quitar</Text>
+                        </Pressable>
+                      ) : null}
+                    </View>
+                    {visibleSubcategories.length > 0 ? (
+                      <View style={styles.subcategoryRow}>
+                        {visibleSubcategories.map((subcategory) => {
+                          const active = selectedCategories.includes(subcategory.value);
+                          return (
+                            <Pressable
+                              key={subcategory.value}
+                              style={[styles.subcategoryPill, active && styles.subcategoryPillActive]}
+                              onPress={() => toggleSubcategory(subcategory.value)}
+                            >
+                              <Text style={[styles.subcategoryPillText, active && styles.subcategoryPillTextActive]}>
+                                {subcategory.label}
+                              </Text>
+                            </Pressable>
+                          );
+                        })}
+                      </View>
+                    ) : null}
+                {sortedExpandedSubcategories.length > 10 &&
+                !(expandedPrimaryCategory ? alwaysExpandedSubcategoryCategoryKeys.has(expandedPrimaryCategory.key) : false) ? (
+                  <Pressable
+                    onPress={() => setShowAllSubcategories((current) => !current)}
+                    hitSlop={8}
+                        style={styles.inlineChevronAction}
+                      >
+                        <Text style={styles.linkButtonText}>{showAllSubcategories ? 'Ver menos' : 'Ver más'}</Text>
+                        <Ionicons
+                          name={showAllSubcategories ? 'chevron-up' : 'chevron-down'}
+                          size={14}
+                          color={filtersUi.accent}
+                        />
+                      </Pressable>
+                    ) : null}
+                  </>
+                ) : null}
+              </View>
             ) : null}
           </Section>
 
@@ -1147,6 +1731,10 @@ export function FiltersSheet({
 
           <Section
             title="Ubicación"
+            {...accordion('location')}
+            activeCount={new Set(selectedHubNames).size}
+            actionLabel={selectedHubNames.length > 0 ? 'Quitar' : undefined}
+            onActionPress={() => { setSelectedHubNames([]); setSelectedNeighborhoods([]); }}
             onLayout={(event) => handleDynamicSectionLayout('location', event)}
           >
             <View style={styles.locationContent}>
@@ -1275,11 +1863,13 @@ export function FiltersSheet({
             </View>
           </Section>
 
+          <Divider />
           <Section
             title="Presupuesto"
-            actionLabel={selectedBudgetPreset !== null ? 'Quitar' : undefined}
+            {...accordion('budget')}
+            actionLabel={minBudget !== DEFAULT_FILTERS.minBudget || maxBudget !== DEFAULT_FILTERS.maxBudget ? 'Quitar' : undefined}
             onActionPress={
-              selectedBudgetPreset !== null
+              minBudget !== DEFAULT_FILTERS.minBudget || maxBudget !== DEFAULT_FILTERS.maxBudget
                 ? () => applyBudgetPreset(DEFAULT_FILTERS.minBudget, DEFAULT_FILTERS.maxBudget)
                 : undefined
             }
@@ -1311,62 +1901,81 @@ export function FiltersSheet({
           <Divider />
 
           <Section
-            title="Ideal para"
-            actionLabel={selectedIdealForValues.length > 0 ? 'Quitar' : undefined}
-            onActionPress={selectedIdealForValues.length > 0 ? clearIdealForSelections : undefined}
+            title="Distancia"
+            {...accordion('distance')}
+            actionLabel={distance !== DEFAULT_FILTERS.distance ? 'Quitar' : undefined}
+            onActionPress={distance !== DEFAULT_FILTERS.distance ? () => setDistance(DEFAULT_FILTERS.distance) : undefined}
+            onLayout={(event) => handleDynamicSectionLayout('distance', event)}
           >
-            <View style={styles.presetGrid}>
-              {visibleIdealForOptions.map((option) => {
-                const active = selectedIdealForValues.includes(option.value);
-                return (
-                  <Pressable
-                    key={option.value}
-                    style={[styles.filterChip, active && styles.filterChipActive]}
-                    onPress={() => toggleIdealFor(option.value)}
-                  >
-                    <Text style={[styles.filterChipText, active && styles.filterChipTextActive]}>
-                      {option.label}
-                    </Text>
+            {!showAdvancedDistance ? (
+              <>
+                <View style={styles.presetGrid}>
+                  {distancePresetOptions.map((option) => {
+                    const active = selectedDistancePreset === option.value;
+                    return (
+                      <Pressable
+                        key={option.label}
+                        style={[styles.filterChip, active && styles.filterChipActive]}
+                        onPress={() => applyDistancePreset(option.value)}
+                      >
+                        <Text style={[styles.filterChipText, active && styles.filterChipTextActive]}>
+                          {option.label}
+                        </Text>
+                      </Pressable>
+                    );
+                  })}
+                </View>
+              <Pressable onPress={() => setShowAdvancedDistance(true)} style={styles.inlineChevronAction}>
+                <Text style={styles.linkButtonText}>Búsqueda avanzada</Text>
+              </Pressable>
+              </>
+            ) : (
+              <View style={styles.distanceAdvancedWrap}>
+                <View style={styles.metricRow}>
+                  <Text style={styles.metricValue}>{distance} km</Text>
+                  <Pressable onPress={() => setShowAdvancedDistance(false)} hitSlop={8}>
+                    <Text style={styles.linkButtonText}>Volver a sugeridos</Text>
                   </Pressable>
-                );
-              })}
-            </View>
-            {idealForOptions.length > 8 ? (
-              <Pressable onPress={() => setShowAllIdealFor((current) => !current)} hitSlop={8} style={styles.inlineChevronAction}>
-                <Text style={styles.linkButtonText}>{showAllIdealFor ? 'Ver menos' : 'Ver todos'}</Text>
-                <Ionicons
-                  name={showAllIdealFor ? 'chevron-up' : 'chevron-down'}
-                  size={14}
-                  color={filtersUi.accent}
-                />
+                </View>
+                <Text style={styles.metricHint}>Ajusta la distancia exacta en pasos de 1 km</Text>
+                <View
+                  style={styles.distanceSliderWrap}
+                  onLayout={handleDistanceSliderLayout}
+                  onStartShouldSetResponder={() => true}
+                  onMoveShouldSetResponder={() => true}
+                  onResponderGrant={(event) => {
+                    setDistanceFromSliderPosition(event.nativeEvent.locationX);
+                  }}
+                  onResponderMove={(event) => {
+                    setDistanceFromSliderPosition(event.nativeEvent.locationX);
+                  }}
+                >
+                  <View style={styles.sliderTrack}>
+                    <View style={[styles.sliderFill, { width: `${distanceSliderRatio * 100}%` }]} />
+                  </View>
+                  <View
+                    pointerEvents="none"
+                    style={[
+                      styles.sliderThumbTouch,
+                      {
+                        left: `${distanceSliderRatio * 100}%`,
+                      },
+                    ]}
+                  >
+                    <View style={styles.sliderThumb} />
+                  </View>
+                </View>
+                <View style={styles.distanceSliderLabels}>
+                  <Text style={styles.distanceSliderLabel}>0 km</Text>
+                  <Text style={styles.distanceSliderLabel}>50 km</Text>
+                </View>
+              </View>
+            )}
+            {locationError ? (
+              <Pressable onPress={requestLocation}>
+                <Text style={styles.locationText}>Activa ubicación para usar distancia real</Text>
               </Pressable>
             ) : null}
-          </Section>
-
-          <Divider />
-
-          <Section
-            title="Personas"
-            actionLabel={people !== 0 ? 'Quitar' : undefined}
-            onActionPress={people !== 0 ? () => setPeople(0) : undefined}
-            onLayout={(event) => handleDynamicSectionLayout('people', event)}
-          >
-            <View style={styles.presetGrid}>
-              {peoplePresetOptions.map((option) => {
-                const active = people === option.value;
-                return (
-                  <Pressable
-                    key={option.label}
-                    style={[styles.filterChip, active && styles.filterChipActive]}
-                    onPress={() => applyPeoplePreset(option.value)}
-                  >
-                    <Text style={[styles.filterChipText, active && styles.filterChipTextActive]}>
-                      {option.label}
-                    </Text>
-                  </Pressable>
-                );
-              })}
-            </View>
           </Section>
 
           </ScrollView>
@@ -1508,6 +2117,9 @@ function Section({
   actionLabel,
   onActionPress,
   onLayout,
+  expanded,
+  onToggle,
+  activeCount = actionLabel ? 1 : 0,
 }: {
   title: string;
   children: ReactNode;
@@ -1515,18 +2127,65 @@ function Section({
   actionLabel?: string;
   onActionPress?: () => void;
   onLayout?: (event: LayoutChangeEvent) => void;
+  expanded: boolean;
+  onToggle?: () => void;
+  activeCount?: number;
 }) {
+  const progress = useRef(new Animated.Value(expanded ? 1 : 0)).current;
+  const [contentMounted, setContentMounted] = useState(expanded);
+  const [contentHeight, setContentHeight] = useState(0);
+
+  useEffect(() => {
+    if (expanded) setContentMounted(true);
+    const animation = Animated.timing(progress, {
+      toValue: expanded ? 1 : 0,
+      duration: expanded ? 180 : 150,
+      useNativeDriver: false,
+    });
+    animation.start(({ finished }) => {
+      if (finished && !expanded) setContentMounted(false);
+    });
+    return () => animation.stop();
+  }, [expanded, progress]);
+
   return (
     <View style={[styles.section, containerStyle]} onLayout={onLayout}>
       <View style={styles.sectionHeaderRow}>
-        <Text style={styles.sectionTitle}>{title}</Text>
+        <Pressable disabled={!onToggle} accessibilityRole={onToggle ? 'button' : 'header'} accessibilityLabel={`${title}${activeCount ? `, ${activeCount} filtros activos` : ''}`} accessibilityState={onToggle ? { expanded } : undefined} onPress={onToggle} style={styles.accordionTrigger}>
+          <View style={styles.accordionLabel}>
+            <Text style={styles.sectionTitle}>{title}</Text>
+            {activeCount > 0 && <View style={styles.accordionBadge}><Text style={styles.accordionBadgeText}>{activeCount}</Text></View>}
+          </View>
+        </Pressable>
         {actionLabel && onActionPress ? (
-          <Pressable onPress={onActionPress} hitSlop={8}>
+          <Pressable accessibilityRole="button" accessibilityLabel={`Quitar filtros de ${title}`} onPress={onActionPress} hitSlop={8}>
             <Text style={styles.sectionActionText}>{actionLabel}</Text>
           </Pressable>
         ) : null}
+        {onToggle ? <Pressable accessibilityRole="button" accessibilityLabel={`${expanded ? 'Colapsar' : 'Expandir'} ${title}`} accessibilityState={{ expanded }} onPress={onToggle} style={{ minWidth: 44, minHeight: 44, alignItems: 'center', justifyContent: 'center' }}>
+          <Ionicons name={expanded ? 'chevron-up' : 'chevron-down'} size={20} color={filtersUi.text} />
+        </Pressable> : null}
       </View>
-      {children}
+      {!onToggle ? <View style={{ paddingTop: 12, gap: 12 }}>{children}</View> : contentMounted ? (
+        <Animated.View
+          pointerEvents={expanded ? 'auto' : 'none'}
+          accessibilityElementsHidden={!expanded}
+          importantForAccessibility={expanded ? 'auto' : 'no-hide-descendants'}
+          style={{
+            overflow: 'hidden',
+            height: progress.interpolate({ inputRange: [0, 1], outputRange: [0, contentHeight] }),
+            opacity: progress,
+            transform: [{ translateY: progress.interpolate({ inputRange: [0, 1], outputRange: [-8, 0] }) }],
+          }}
+        >
+          <View
+            style={styles.accordionContent}
+            onLayout={event => setContentHeight(event.nativeEvent.layout.height)}
+          >
+            {children}
+          </View>
+        </Animated.View>
+      ) : null}
     </View>
   );
 }
@@ -1727,7 +2386,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#000000',
   },
   sheet: {
-    height: FILTERS_SHEET_HEIGHT,
+    maxHeight: FILTERS_SHEET_HEIGHT,
     borderTopLeftRadius: 28,
     borderTopRightRadius: 28,
     backgroundColor: filtersUi.bg,
@@ -1759,7 +2418,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 18,
-    fontWeight: '700',
+    fontWeight: '600',
     color: filtersUi.text,
     letterSpacing: -0.3,
   },
@@ -1769,12 +2428,20 @@ const styles = StyleSheet.create({
   },
   content: {
     paddingHorizontal: 20,
-    gap: 18,
+    gap: 12,
   },
   section: {
-    gap: 12,
-    paddingVertical: 4,
+    gap: 0,
+    paddingVertical: 2,
     zIndex: 1,
+  },
+  accordionContent: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    paddingTop: 12,
+    gap: 12,
   },
   sectionHeaderRow: {
     flexDirection: 'row',
@@ -1786,11 +2453,35 @@ const styles = StyleSheet.create({
     zIndex: 12,
   },
   sectionTitle: {
-    fontSize: 13,
+    fontSize: 15,
     fontWeight: '600',
-    color: filtersUi.textTertiary,
-    textTransform: 'uppercase',
-    letterSpacing: 0.3,
+    color: filtersUi.text,
+  },
+  accordionTrigger: {
+    flex: 1,
+    minHeight: 44,
+    justifyContent: 'center',
+    alignItems: 'flex-start',
+  },
+  accordionLabel: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  accordionBadge: {
+    minWidth: 20,
+    height: 20,
+    paddingHorizontal: 4,
+    borderRadius: 10,
+    backgroundColor: accountUi.accent,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  accordionBadgeText: {
+    color: '#ffffff',
+    fontSize: 11,
+    fontWeight: '700',
+    lineHeight: 14,
   },
   sectionActionText: {
     fontSize: 13,
@@ -1822,8 +2513,10 @@ const styles = StyleSheet.create({
   },
   locationSelectButton: {
     minHeight: 48,
-    borderRadius: 16,
-    backgroundColor: filtersUi.surface,
+    borderRadius: 24,
+    borderWidth: 1,
+    borderColor: '#d6d6dc',
+    backgroundColor: accountUi.surface,
     paddingHorizontal: 14,
     flexDirection: 'row',
     alignItems: 'center',
@@ -1839,7 +2532,7 @@ const styles = StyleSheet.create({
   locationSelectValue: {
     flex: 1,
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: '400',
   },
   locationSelectValuePlaceholder: {
     color: filtersUi.textTertiary,
@@ -1865,10 +2558,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 6,
   },
-  categoryPillImage: {
-    width: 30,
-    height: 30,
-  },
   categoryPillActive: {
     backgroundColor: filtersUi.accentSoft,
   },
@@ -1877,6 +2566,46 @@ const styles = StyleSheet.create({
     color: chipTextDefaultColor,
   },
   categoryPillTextActive: {
+    color: chipTextActiveColor,
+  },
+  subcategoryBlock: {
+    marginTop: 16,
+    gap: 10,
+  },
+  subcategoryLabel: {
+    fontSize: 12,
+    fontWeight: '700',
+    letterSpacing: 0.4,
+    textTransform: 'uppercase',
+    color: filtersUi.textTertiary,
+  },
+  subcategoryHintText: {
+    fontSize: 13,
+    lineHeight: 18,
+    color: filtersUi.textSecondary,
+  },
+  subcategoryRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
+  },
+  subcategoryPill: {
+    minHeight: 38,
+    borderRadius: 999,
+    backgroundColor: filtersUi.surfaceMuted,
+    paddingHorizontal: 13,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  subcategoryPillActive: {
+    backgroundColor: filtersUi.accentSoft,
+  },
+  subcategoryPillText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: chipTextDefaultColor,
+  },
+  subcategoryPillTextActive: {
     color: chipTextActiveColor,
   },
   sortRow: {
@@ -1945,22 +2674,23 @@ const styles = StyleSheet.create({
     color: filtersUi.textTertiary,
   },
   sliderTrack: {
-    marginTop: 2,
-    height: 5,
+    height: 6,
     borderRadius: 999,
-    backgroundColor: '#ddddE3',
+    backgroundColor: 'rgba(239,56,87,0.16)',
     justifyContent: 'center',
     overflow: 'visible',
   },
   sliderFill: {
     position: 'absolute',
-    height: 5,
+    height: 6,
     borderRadius: 999,
-    backgroundColor: filtersUi.text,
+    backgroundColor: filtersUi.accent,
   },
   sliderThumbTouch: {
     position: 'absolute',
     marginLeft: -20,
+    top: '50%',
+    marginTop: -20,
     width: 40,
     height: 40,
     alignItems: 'center',
@@ -1970,13 +2700,12 @@ const styles = StyleSheet.create({
     width: 18,
     height: 18,
     borderRadius: 9,
-    backgroundColor: filtersUi.surface,
-    borderWidth: 2,
-    borderColor: filtersUi.text,
-    shadowColor: '#000000',
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 3 },
+    backgroundColor: filtersUi.accent,
+    borderWidth: 0,
+    shadowColor: '#EF3857',
+    shadowOpacity: 0.2,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 4 },
     elevation: 4,
   },
   sliderThumbSecondary: {
@@ -1991,6 +2720,25 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     shadowOffset: { width: 0, height: 3 },
     elevation: 4,
+  },
+  distanceAdvancedWrap: {
+    marginTop: 10,
+    gap: 10,
+  },
+  distanceSliderWrap: {
+    position: 'relative',
+    justifyContent: 'center',
+    minHeight: 40,
+  },
+  distanceSliderLabels: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  distanceSliderLabel: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: filtersUi.textTertiary,
   },
   locationText: {
     fontSize: 13,
@@ -2041,12 +2789,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'nowrap',
     gap: 8,
+    width: '100%',
   },
   whenDayChip: {
+    flex: 1,
     minHeight: 38,
     borderRadius: 14,
     backgroundColor: filtersUi.surface,
-    paddingHorizontal: 12,
     paddingVertical: 7,
     justifyContent: 'center',
     alignItems: 'center',
@@ -2061,47 +2810,6 @@ const styles = StyleSheet.create({
   whenDayChipTextActive: {
     color: chipTextActiveColor,
   },
-  toggleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: 16,
-  },
-  toggleCopy: {
-    flex: 1,
-    gap: 0,
-  },
-  toggleTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: filtersUi.text,
-  },
-  toggleHint: {
-    fontSize: 13,
-    lineHeight: 18,
-    color: filtersUi.textTertiary,
-  },
-  toggleControl: {
-    width: 48,
-    height: 30,
-    borderRadius: 999,
-    paddingHorizontal: 4,
-    backgroundColor: '#dedee4',
-    justifyContent: 'center',
-  },
-  toggleControlActive: {
-    backgroundColor: '#dedee4',
-  },
-  toggleThumb: {
-    width: 22,
-    height: 22,
-    borderRadius: 11,
-    backgroundColor: '#ffffff',
-  },
-  toggleThumbActive: {
-    backgroundColor: filtersUi.text,
-    marginLeft: 18,
-  },
   whenLayout: {
     gap: 12,
   },
@@ -2114,7 +2822,9 @@ const styles = StyleSheet.create({
     flex: 0.88,
     height: 44,
     borderRadius: 16,
-    backgroundColor: filtersUi.surface,
+    borderWidth: 1,
+    borderColor: '#d6d6dc',
+    backgroundColor: accountUi.surface,
     paddingHorizontal: 14,
     justifyContent: 'center',
   },
@@ -2133,7 +2843,7 @@ const styles = StyleSheet.create({
   daySelectValue: {
     flex: 1,
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: '400',
     color: filtersUi.textTertiary,
   },
   daySelectValueActive: {
@@ -2225,9 +2935,9 @@ const styles = StyleSheet.create({
     color: filtersUi.text,
   },
   periodToggle: {
-    flex: 1.04,
     flexDirection: 'row',
     alignItems: 'center',
+    alignSelf: 'flex-start',
     borderRadius: 16,
     backgroundColor: filtersUi.surface,
     padding: 4,
@@ -2249,6 +2959,19 @@ const styles = StyleSheet.create({
   },
   periodSegmentTextActive: {
     color: chipTextActiveColor,
+  },
+  timeNowButton: {
+    minHeight: 36,
+    borderRadius: 14,
+    paddingHorizontal: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(239,56,87,0.08)',
+  },
+  timeNowButtonText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: filtersUi.accent,
   },
   whenDisabled: {
     opacity: 0.46,
@@ -2278,14 +3001,11 @@ const styles = StyleSheet.create({
     color: filtersUi.text,
   },
   bottomBar: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    bottom: 0,
+    position: 'relative',
     zIndex: 24,
     paddingHorizontal: 20,
     paddingTop: 12,
-    backgroundColor: 'rgba(245,245,247,0.98)',
+    backgroundColor: filtersUi.bg,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
@@ -2325,9 +3045,11 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   selectorSearchWrap: {
-    minHeight: 46,
-    borderRadius: 16,
-    backgroundColor: filtersUi.surface,
+    minHeight: 48,
+    borderRadius: 24,
+    borderWidth: 1,
+    borderColor: '#d6d6dc',
+    backgroundColor: accountUi.surface,
     paddingHorizontal: 14,
     marginBottom: 12,
     flexDirection: 'row',
@@ -2345,8 +3067,8 @@ const styles = StyleSheet.create({
   },
   selectorSearchInput: {
     flex: 1,
-    fontSize: 15,
-    fontWeight: '500',
+    fontSize: 16,
+    fontWeight: '400',
     color: filtersUi.text,
     paddingVertical: 0,
     outlineStyle: 'none' as never,
@@ -2360,7 +3082,7 @@ const styles = StyleSheet.create({
   },
   selectorTitle: {
     fontSize: 18,
-    fontWeight: '700',
+    fontWeight: '600',
     color: filtersUi.text,
   },
   selectorList: {
@@ -2550,8 +3272,6 @@ const styles = StyleSheet.create({
   clearButton: {
     width: '30%',
     minHeight: 52,
-    borderRadius: 28,
-    backgroundColor: filtersUi.surface,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -2569,3 +3289,6 @@ const styles = StyleSheet.create({
     color: filtersUi.accent,
   },
 });
+
+// Shared visual primitives for discovery filter sheets.
+export { Section as FilterSection, Divider as FilterDivider, styles as filterSheetStyles };

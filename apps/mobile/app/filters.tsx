@@ -14,7 +14,9 @@ import {
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { topContentInset } from '@/lib/layout-insets';
 import { AppIconButton, AppPrimaryButton, appColors } from '@/components/app-ui';
+import { AppToggle } from '@/components/app-toggle';
 import {
   DEFAULT_FILTERS,
   type ExploreFilters,
@@ -29,6 +31,7 @@ import { useLocationStore } from '@/lib/location-store';
 import { useRelayoutSubscription } from '@/lib/relayout';
 import { getSpotsByTypeFromList } from '@/lib/mock-spots';
 import { useSpotsStore } from '@/lib/spots-store';
+import { accountUi } from '@/lib/account-ui';
 
 const MIN_DISTANCE = 0;
 const MAX_DISTANCE = 50;
@@ -53,7 +56,7 @@ const categoryOptions: Array<{
 }> = [
   { label: 'Arte y cultura', value: 'Arte y cultura', icon: 'color-palette-outline' },
   { label: 'Bares y noche', value: 'Bares y noche', icon: 'wine-outline' },
-  { label: 'Restaurantes y cafés', value: 'Restaurantes y cafés', icon: 'restaurant-outline' },
+  { label: 'Comida', value: 'Comida', icon: 'restaurant-outline' },
   { label: 'Deporte', value: 'Deporte y bienestar', icon: 'barbell-outline' },
   { label: 'Familiar', value: 'Familiar', icon: 'people-outline' },
   { label: 'Naturaleza', value: 'Naturaleza y aire libre', icon: 'leaf-outline' },
@@ -61,14 +64,11 @@ const categoryOptions: Array<{
 const idealForOptions = [{ label: 'Pet-friendly', value: 'Pet friendly', icon: 'paw-outline' }] as const;
 const timeOptions = ['7:00', '9:00', '11:00'];
 const filtersUi = {
-  bg: '#f5f5f7',
-  surface: '#ffffff',
-  surfaceMuted: '#ededf0',
-  text: '#141417',
-  textSecondary: '#5f5f67',
-  textTertiary: '#8b8b94',
-  accent: '#EF3857',
-  accentSoft: 'rgba(239,56,87,0.12)',
+  bg: accountUi.bg, surface: accountUi.surface, surfaceMuted: accountUi.surfaceMuted,
+  text: accountUi.text, textSecondary: accountUi.textSecondary,
+  textTertiary: accountUi.textTertiary, accent: accountUi.accent,
+  accentSoft: accountUi.accentSoft,
+  border: accountUi.border,
 };
 
 export default function FiltersScreen() {
@@ -422,7 +422,8 @@ export default function FiltersScreen() {
           contentContainerStyle={[
             styles.content,
             {
-              paddingBottom: 132 + insets.bottom,
+              paddingTop: topContentInset(insets),
+              paddingBottom: 12,
               flexGrow: 1,
             },
           ]}
@@ -468,12 +469,11 @@ export default function FiltersScreen() {
               <View style={styles.toggleCopy}>
                 <Text style={styles.toggleTitle}>Solo lugares abiertos</Text>
               </View>
-              <Pressable
-                onPress={() => setOpenNowOnly((current) => !current)}
-                style={[styles.toggleControl, openNowOnly && styles.toggleControlActive]}
-              >
-                <View style={[styles.toggleThumb, openNowOnly && styles.toggleThumbActive]} />
-              </Pressable>
+              <AppToggle
+                label="Solo lugares abiertos"
+                value={openNowOnly}
+                onValueChange={setOpenNowOnly}
+              />
             </View>
           </Section>
 
@@ -709,7 +709,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#000000',
   },
   sheet: {
-    height: FILTERS_SHEET_HEIGHT,
+    maxHeight: FILTERS_SHEET_HEIGHT,
     borderTopLeftRadius: 28,
     borderTopRightRadius: 28,
     backgroundColor: filtersUi.bg,
@@ -816,7 +816,7 @@ const styles = StyleSheet.create({
     marginTop: 2,
     height: 4,
     borderRadius: 999,
-    backgroundColor: '#dcdde3',
+    backgroundColor: filtersUi.border,
     justifyContent: 'center',
     overflow: 'visible',
   },
@@ -923,31 +923,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: filtersUi.text,
   },
-  toggleHint: {
-    fontSize: 13,
-    lineHeight: 18,
-    color: filtersUi.textSecondary,
-  },
-  toggleControl: {
-    width: 56,
-    height: 32,
-    borderRadius: 16,
-    paddingHorizontal: 4,
-    backgroundColor: '#dbdbe2',
-    justifyContent: 'center',
-  },
-  toggleControlActive: {
-    backgroundColor: filtersUi.accent,
-  },
-  toggleThumb: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: '#ffffff',
-  },
-  toggleThumbActive: {
-    alignSelf: 'flex-end',
-  },
   stepperButton: {
     width: 34,
     height: 34,
@@ -964,13 +939,10 @@ const styles = StyleSheet.create({
     color: filtersUi.text,
   },
   bottomBar: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    bottom: 0,
+    position: 'relative',
     paddingHorizontal: 20,
     paddingTop: 12,
-    backgroundColor: 'rgba(245,245,247,0.98)',
+    backgroundColor: filtersUi.bg,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,

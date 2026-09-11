@@ -9,7 +9,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const appRoot = join(__dirname, '..');
 const distDir = join(appRoot, 'dist');
 const envLocalPath = join(appRoot, '.env.local');
-const envDeployPath = join(appRoot, '.env.deploy.local');
+const envDeployPath = join(appRoot, '..', '..', '.env.deploy.local');
 const remoteManifestName = '.spots-deploy-manifest.json';
 
 function parseEnvFile(pathname) {
@@ -111,12 +111,26 @@ function runCurl(args, options = {}) {
   });
 }
 
+const ftpCurlOptions = [
+  '--ftp-pasv',
+  '--connect-timeout',
+  '15',
+  '--max-time',
+  '180',
+  '--retry',
+  '5',
+  '--retry-delay',
+  '3',
+  '--retry-all-errors',
+];
+
 function tryReadRemoteManifest({ host, port, username, password, basePath }) {
   try {
     const output = runCurl(
       [
         '--silent',
         '--show-error',
+        ...ftpCurlOptions,
         '--user',
         `${username}:${password}`,
         ftpUrl(host, port, basePath, remoteManifestName),
@@ -140,6 +154,7 @@ function uploadFile({ host, port, username, password, basePath, localPath, remot
   runCurl([
     '--silent',
     '--show-error',
+    ...ftpCurlOptions,
     '--ftp-create-dirs',
     '--user',
     `${username}:${password}`,
@@ -154,6 +169,7 @@ function deleteRemoteFile({ host, port, username, password, basePath, remotePath
     runCurl([
       '--silent',
       '--show-error',
+      ...ftpCurlOptions,
       '--user',
       `${username}:${password}`,
       ftpUrl(host, port, basePath),
@@ -170,7 +186,7 @@ function main() {
     throw new Error('No existe dist. Corre el export antes del deploy.');
   }
 
-  const host = readEnvValue('HOSTINGER_FTP_HOST', '145.223.107.61');
+  const host = readEnvValue('HOSTINGER_FTP_HOST', 'ftp.spots.com.co');
   const port = readEnvValue('HOSTINGER_FTP_PORT', '21');
   const username = readEnvValue('HOSTINGER_FTP_USERNAME');
   const password = readEnvValue('HOSTINGER_FTP_PASSWORD');

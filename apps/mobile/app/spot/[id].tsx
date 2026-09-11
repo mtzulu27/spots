@@ -1,11 +1,19 @@
+import { DiscoveryPlaceCard } from '@/components/discovery-place-card'
+import { SharePlaceButton } from '@/components/share-place-button'
+import { getCategoryLabel } from '@/lib/category-icons';
+import { formatPeopleLabel } from '@/lib/people-label'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Ionicons } from '@expo/vector-icons'
+import { Entrance } from '@/components/entrance'
+import { accountUi } from '@/lib/account-ui'
+import { CategoryIcon } from '@/components/category-icon'
 import { Link, useLocalSearchParams, useRouter } from 'expo-router'
 import * as Linking from 'expo-linking'
 import {
   AppState,
   ActivityIndicator,
   Animated,
+  Easing,
   Image,
   ImageBackground,
   Modal,
@@ -19,15 +27,17 @@ import {
   View,
 } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { AppBookmarkButton, AppIconButton, AppLikeButton, AppPrimaryButton, appColors, spotsUi } from '@/components/app-ui'
+import { topContentInset } from '@/lib/layout-insets'
+import { AppBookmarkButton, AppIconButton, AppPrimaryButton, AppVisitedButton, appColors, spotsUi } from '@/components/app-ui'
 import { useBookmarksStore } from '@/lib/bookmarks-store'
+import { useVisitedStore } from '@/lib/visited-store'
 import { formatApproxBudgetPerPersonLabel, getEffectiveSpotDistanceKm } from '@/lib/explore-filters'
-import { formatLikesCount, useLikesStore } from '@/lib/likes-store'
 import { useLocationStore } from '@/lib/location-store'
 import { useRelayoutSubscription } from '@/lib/relayout'
 import {
   getOpenStatusFromSchedule,
   getScheduleDayRows,
+  getHolidayScheduleRow,
   getScheduleDisplayLabel,
   getScheduleLabel,
   getTodayScheduleLabel,
@@ -42,9 +52,13 @@ import {
   getSpotByIdFromList,
   getSpotFeedSubtitle,
   normalizeCommercialCenterLabel,
+  normalizeSpotCategory,
   type Spot,
 } from '@/lib/mock-spots'
 import { useSpotsStore } from '@/lib/spots-store'
+import { isRecentlyAdded } from '@/lib/discovery-ranking'
+import { NewPlaceBadge } from '@/components/new-place-badge'
+import { PlanBudgetCalculator } from '@/components/plan-budget-calculator'
 
 const exploreFoodIcon = require('../../assets/explore_food_icon.png')
 const exploreCinemaIcon = require('../../assets/explore_cinema_icon.png')
@@ -78,7 +92,8 @@ const emptySpotForActions: Spot = {
   branchName: '',
   neighborhood: '',
   hubName: '',
-  category: 'Restaurantes y cafés',
+  category: 'Comida',
+  subcategories: [],
   city: 'Cali',
   likes: '0',
   image: '',
@@ -101,23 +116,26 @@ const emptySpotForActions: Spot = {
   moods: [],
 }
 
-const detailUi = {
-  bg: '#f5f5f7',
-  surface: '#ffffff',
-  surfaceMuted: '#ededf0',
-  text: '#141417',
-  textSecondary: '#5f5f67',
-  textTertiary: '#8b8b94',
-  accent: '#EF3857',
-  accentSoft: 'rgba(239,56,87,0.12)',
-}
+const detailUi = accountUi
 
 function getPriceLabel(spot: Spot) {
-  return formatApproxBudgetPerPersonLabel(spot.minBudget, spot.maxBudget)
+  return formatApproxBudgetPerPersonLabel(spot.minBudget, spot.maxBudget, spot.typicalBudget, spot.budgetPilot, spot.budgetBasis).replace(' COP', '')
 }
 
-function getMenuActionLabel(category: Spot['category']) {
-  return category === 'Restaurantes y cafés' || category === 'Restaurantes' || category === 'Bares y noche'
+function isMenuppUrl(value: string) {
+  try {
+    const hostname = new URL(value).hostname.toLowerCase()
+    return hostname === 'menupp.co' || hostname.endsWith('.menupp.co')
+  } catch {
+    return false
+  }
+}
+
+function getMenuActionLabel(category: Spot['category'], menuUrl: string) {
+  if (isMenuppUrl(menuUrl)) return 'Menu'
+
+  const normalizedCategory = normalizeSpotCategory(category)
+  return normalizedCategory === 'Comida' || normalizedCategory === 'Restaurantes' || normalizedCategory === 'Bares y noche'
     ? 'Menu'
     : 'Website'
 }
@@ -173,25 +191,33 @@ function clamp(value: number, min: number, max: number) {
 function buildGalleryImages(detailSpot: Spot) {
   return Array.from(
     new Set([
-      ...(detailSpot.galleryImages ?? []),
       detailSpot.image,
-    ].filter(Boolean)),
+      ...(detailSpot.galleryImages ?? []),
+    ].map(image => image?.trim()).filter(Boolean)),
   ).slice(0, 10)
 }
 
-function getOpenStatus(schedule: string) {
-  return getOpenStatusFromSchedule(schedule)
+function getOpenStatus(spot: Spot) {
+  return getOpenStatusFromSchedule(spot.hours, new Date(), spot.businessStatus)
 }
 
 export default function SpotDetailScreen() {
+  const [isStandalonePwa, setIsStandalonePwa] = useState(Platform.OS !== 'web');
+  useEffect(() => {
+    if (Platform.OS !== 'web' || typeof window === 'undefined') return;
+    setIsStandalonePwa(
+      window.matchMedia('(display-mode: standalone)').matches ||
+      Boolean((navigator as Navigator & { standalone?: boolean }).standalone),
+    );
+  }, []);
   useRelayoutSubscription()
   const router = useRouter()
   const insets = useSafeAreaInsets()
   const { width: windowWidth, height: windowHeight } = useWindowDimensions()
   const { id, branch } = useLocalSearchParams<{ id: string; branch?: string }>()
   const { spots, loading } = useSpotsStore()
-  const { getLikesCount, isLiked, toggleLike } = useLikesStore()
   const { isBookmarked, toggleBookmark } = useBookmarksStore()
+  const { isVisited, toggleVisited } = useVisitedStore()
   const { userLocation } = useLocationStore()
   const [, forceResumeRender] = useState(0)
   const [selectedBranchId, setSelectedBranchId] = useState<string | null>(null)
@@ -202,6 +228,7 @@ export default function SpotDetailScreen() {
   const [scheduleExpanded, setScheduleExpanded] = useState(false)
   const [scheduleContentMounted, setScheduleContentMounted] = useState(false)
   const [scheduleContentHeight, setScheduleContentHeight] = useState(0)
+  const [budgetCalculatorOpen, setBudgetCalculatorOpen] = useState(false)
   const [galleryViewportWidth, setGalleryViewportWidth] = useState(windowWidth)
   const GALLERY_VELOCITY_PROJECTION = 160
   const galleryDragStartIndexRef = useRef(0)
@@ -237,7 +264,7 @@ export default function SpotDetailScreen() {
   }, [])
 
   const spot =
-    getSpotByIdFromList(spots, id ?? '1') ?? getSpotByIdFromList(spots, spots[0]?.id ?? '1')
+    getSpotByIdFromList(spots, id ?? '')
   const isEvent = spot?.type === 'event'
   const brandBranches = useMemo(
     () => (spot && !isEvent ? getBrandBranchesFromList(spots, spot) : []),
@@ -458,13 +485,13 @@ export default function SpotDetailScreen() {
       const multiBranchPlace = !isEvent && brandBranches.length > 1 && !selectedBranch
       const idealFor =
         contextSpot.moods.length > 0 ? contextSpot.moods.slice(0, 3).join(' · ') : 'Parche casual'
-      const scheduleStatus = multiBranchPlace ? null : getOpenStatus(contextSpot.hours)
+      const scheduleStatus = multiBranchPlace ? null : getOpenStatus(contextSpot)
 
       return [
         {
           icon: 'people-outline',
           label: 'Personas',
-          value: `1 - ${contextSpot.maxPeople}`,
+          value: formatPeopleLabel(contextSpot.minPeople, contextSpot.maxPeople),
         },
         {
           icon: 'time-outline',
@@ -474,7 +501,7 @@ export default function SpotDetailScreen() {
           statusTone: scheduleStatus?.tone,
         },
         {
-          icon: 'cash-outline',
+          icon: 'wallet-outline',
           label: isEvent ? 'Entrada' : 'Presupuesto',
           value: getPriceLabel(contextSpot),
         },
@@ -501,14 +528,17 @@ export default function SpotDetailScreen() {
 
   const resolvedContextSpot = (contextSpot ?? detailSpot) as Spot | undefined
   const selectedBranchOpenStatus =
-    !isEvent && resolvedContextSpot ? getOpenStatus(resolvedContextSpot.hours) : null
+    !isEvent && resolvedContextSpot ? getOpenStatus(resolvedContextSpot) : null
   const hasSelectedBranchStatus = Boolean(selectedBranchOpenStatus)
-  const todayScheduleLabel = resolvedContextSpot ? getTodayScheduleLabel(resolvedContextSpot.hours) : ''
-  const weeklyScheduleRows = resolvedContextSpot ? getScheduleDayRows(resolvedContextSpot.hours) : []
+  const todayScheduleLabel = resolvedContextSpot?.businessStatus === 'temporarily_closed'
+    ? 'Cerrado temporalmente'
+    : resolvedContextSpot ? getTodayScheduleLabel(resolvedContextSpot.hours) : ''
+  const weeklyScheduleRows = resolvedContextSpot
+    ? [...getScheduleDayRows(resolvedContextSpot.hours), getHolidayScheduleRow(resolvedContextSpot.hours)]
+    : []
 
-  const likeCount = detailSpot ? getLikesCount(detailSpot.likeTargetId) : 0
-  const liked = detailSpot ? isLiked(detailSpot.likeTargetId) : false
   const bookmarked = detailSpot ? isBookmarked(detailSpot.likeTargetId) : false
+  const visited = detailSpot ? isVisited(detailSpot.likeTargetId) : false
   const similarSpots = detailSpot
     ? isEvent
       ? getSimilarSpotsFromList(spots, detailSpot)
@@ -536,27 +566,99 @@ export default function SpotDetailScreen() {
   const hasInstagram = resolvedContextSpot ? hasValueLink(resolvedContextSpot.instagram) : false
   const hasWhatsApp = resolvedContextSpot ? hasValueLink(resolvedContextSpot.whatsapp) : false
   const hasPhone = resolvedContextSpot ? hasValueText(resolvedContextSpot.phone) : false
-  const showMenu = hasMenu && resolvedContextSpot?.category !== 'Eventos'
-  const menuActionLabel = resolvedContextSpot ? getMenuActionLabel(resolvedContextSpot.category) : 'Menu'
+  const showMenu =
+    hasMenu &&
+    (resolvedContextSpot?.category !== 'Eventos' || isMenuppUrl(resolvedContextSpot.menuUrl))
+  const menuActionLabel = resolvedContextSpot
+    ? getMenuActionLabel(resolvedContextSpot.category, resolvedContextSpot.menuUrl)
+    : 'Menu'
+  const googleMapsUrl = resolvedContextSpot ? getGoogleMapsUrl(resolvedContextSpot) : null
+  const openPlaceMap = () => {
+    if (!resolvedContextSpot) return
+    router.push({ pathname: '/place-map', params: { branch: resolvedContextSpot.id, returnSpot: id } })
+  }
   const primaryAction = getPrimaryAction({
     hasWhatsApp,
     hasPhone,
     hasMenu: showMenu,
     hasInstagram,
     spot: resolvedContextSpot ?? spot ?? emptySpotForActions,
+    onMap: openPlaceMap,
   })
-  const categoryIcon = getCategoryIcon(detailSpot?.category ?? 'Restaurantes y cafés')
-  const baseHeroHeight = 352
-  const sheetMaxOffset = clamp(windowHeight * 0.34, 160, 300)
+  const categoryIcon = getCategoryIcon(detailSpot?.category ?? 'Comida')
+  const baseHeroHeight = 406
+  const heroPanelOverlap = 28
+  const sheetMaxOffset = Math.max(1, windowHeight - baseHeroHeight)
+  const panelCompressionFactor = 1
   const baseHeroHeightValue = useRef(new Animated.Value(baseHeroHeight)).current
-  const baseSheetTopValue = useRef(new Animated.Value(baseHeroHeight - 28)).current
+  const baseSheetTopValue = useRef(new Animated.Value(baseHeroHeight - heroPanelOverlap)).current
   const sheetTranslateY = useRef(new Animated.Value(0)).current
+  const [galleryHeaderHidden, setGalleryHeaderHidden] = useState(false)
+  useEffect(() => {
+    const listener = sheetTranslateY.addListener(({ value }) => {
+      setGalleryHeaderHidden(value >= sheetMaxOffset * 0.9)
+    })
+    return () => sheetTranslateY.removeListener(listener)
+  }, [sheetTranslateY, sheetMaxOffset])
+  const galleryHeaderOpacity = sheetTranslateY.interpolate({
+    inputRange: [0, sheetMaxOffset * 0.9],
+    outputRange: [1, 0],
+    extrapolate: 'clamp',
+  })
+  const galleryHeaderTranslate = sheetTranslateY.interpolate({
+    inputRange: [0, sheetMaxOffset * 0.9],
+    outputRange: [0, -16],
+    extrapolate: 'clamp',
+  })
   const sheetOffsetRef = useRef(0)
-  const heroAnimatedHeight = Animated.add(sheetTranslateY, baseHeroHeightValue)
-  const sheetTranslateWithIntro = Animated.add(sheetTranslateY, sheetIntroTranslateY)
+  const galleryLastTap = useRef<{ time: number; x: number; y: number } | null>(null)
+  const infoScrollY = useRef(0)
+  const webScrollFrame = useRef<number | null>(null)
+  const webOffsetPending = useRef<number | null>(null)
+  const webOffsetApplied = useRef(0)
+  const upwardScrollDistance = useRef(0)
+  const scrollCollapseTriggered = useRef(false)
+  const sheetAnimating = useRef(false)
+  const [infoScrollLocked, setInfoScrollLocked] = useState(false)
+  const infoScrollRef = useRef<ScrollView>(null)
+  const scrollSettleTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const pendingScrollTarget = useRef<number | null>(null)
+  const scrollLayoutSettledAt = useRef(0)
+  useEffect(() => () => {
+    if (scrollSettleTimer.current) clearTimeout(scrollSettleTimer.current)
+  }, [])
+  const collapseDistance = Math.max(0, baseHeroHeight - heroPanelOverlap - (insets.top + 72))
+  const effectiveSheetOffset = sheetTranslateY.interpolate({
+    inputRange: [-collapseDistance, 0, sheetMaxOffset],
+    outputRange: [-collapseDistance, 0, sheetMaxOffset],
+    extrapolate: 'clamp',
+  })
+  const heroAnimatedHeight = Animated.add(effectiveSheetOffset, baseHeroHeightValue)
+  const galleryCornerRadius = effectiveSheetOffset.interpolate({
+    inputRange: [0, sheetMaxOffset],
+    outputRange: [44, 0],
+    extrapolate: 'clamp',
+  })
+  const galleryHandleInset = effectiveSheetOffset.interpolate({
+    inputRange: [0, sheetMaxOffset],
+    outputRange: [0, insets.bottom],
+    extrapolate: 'clamp',
+  })
+  const sheetAnimatedTop = Animated.add(
+    baseSheetTopValue,
+    effectiveSheetOffset.interpolate({
+      inputRange: [-collapseDistance, 0, sheetMaxOffset],
+      outputRange: [-collapseDistance, 0, sheetMaxOffset * panelCompressionFactor],
+    }),
+  )
   const heroContentOpacity = sheetTranslateY.interpolate({
     inputRange: [0, sheetMaxOffset * 0.55, sheetMaxOffset],
     outputRange: [1, 0.4, 0],
+    extrapolate: 'clamp',
+  })
+  const collapsedHeroOpacity = effectiveSheetOffset.interpolate({
+    inputRange: [-Math.max(1, collapseDistance * 0.65), 0],
+    outputRange: [0, 1],
     extrapolate: 'clamp',
   })
   const heroContentTranslateY = sheetTranslateY.interpolate({
@@ -640,16 +742,115 @@ export default function SpotDetailScreen() {
     }).start()
   }
 
-  function snapSheet(toValue: number) {
-    Animated.spring(sheetTranslateY, {
+  function snapSheet(toValue: number, fromScroll = false) {
+    sheetTranslateY.stopAnimation((value) => {
+      if (typeof value === 'number') sheetOffsetRef.current = value
+    })
+    pendingScrollTarget.current = null
+    if (scrollSettleTimer.current) {
+      clearTimeout(scrollSettleTimer.current)
+      scrollSettleTimer.current = null
+    }
+    upwardScrollDistance.current = 0
+    scrollCollapseTriggered.current = toValue < 0
+    sheetAnimating.current = true
+    setInfoScrollLocked(true)
+    infoScrollRef.current?.scrollTo({ y: infoScrollY.current, animated: false })
+    const animation = fromScroll ? Animated.timing(sheetTranslateY, {
+      toValue,
+      duration: 550,
+      easing: Easing.inOut(Easing.cubic),
+      useNativeDriver: false,
+    }) : Animated.spring(sheetTranslateY, {
       toValue,
       damping: 18,
       stiffness: 220,
       mass: 0.9,
-      useNativeDriver: true,
-    }).start(() => {
-      sheetOffsetRef.current = toValue
+      overshootClamping: toValue === sheetMaxOffset,
+      useNativeDriver: false,
     })
+    animation.start(({ finished }) => {
+      if (finished) {
+        sheetOffsetRef.current = toValue
+        sheetAnimating.current = false
+        setInfoScrollLocked(false)
+        scrollLayoutSettledAt.current = Date.now() + 180
+      }
+    })
+  }
+
+  function handleBackPress() {
+    const navigateBack = () => {
+      if (router.canGoBack()) {
+        router.back()
+        return
+      }
+
+      router.replace('/(tabs)/explore')
+    }
+
+    if (sheetAnimating.current) {
+      sheetTranslateY.stopAnimation((value) => {
+        const currentValue = typeof value === 'number' ? value : sheetOffsetRef.current
+        sheetAnimating.current = false
+        setInfoScrollLocked(false)
+        sheetOffsetRef.current = currentValue
+        if (currentValue < -1) {
+          navigateBack()
+        } else {
+          snapSheet(0)
+        }
+      })
+      return
+    }
+
+    if (sheetOffsetRef.current >= sheetMaxOffset * 0.8) {
+      snapSheet(0)
+      return
+    }
+
+    navigateBack()
+  }
+
+  function handleInfoScroll(event: any) {
+    const y = Math.max(0, event.nativeEvent.contentOffset.y)
+    const delta = y - infoScrollY.current
+    infoScrollY.current = y
+    if (scrollSettleTimer.current) clearTimeout(scrollSettleTimer.current)
+    if (sheetAnimating.current) return
+    if (Platform.OS === 'web') {
+      if (y <= 16 && delta < -0.5 && sheetOffsetRef.current < -1) {
+        snapSheet(0, true)
+        return
+      }
+
+      if (delta > 1 && sheetOffsetRef.current > -1 && !sheetAnimating.current) {
+        snapSheet(-collapseDistance, true)
+      }
+
+      return
+    }
+    if (y <= 16 && delta < -0.5 && sheetOffsetRef.current < -1) {
+      snapSheet(0, true)
+      return
+    }
+    const { contentSize, layoutMeasurement } = event.nativeEvent
+    const maxScrollY = Math.max(0, contentSize.height - layoutMeasurement.height)
+    if (maxScrollY > 1 && y >= maxScrollY - 1 && delta > 0 && !scrollCollapseTriggered.current && Math.abs(sheetOffsetRef.current) <= 1) {
+      snapSheet(-collapseDistance, true)
+      return
+    }
+    if (Date.now() < scrollLayoutSettledAt.current) return
+    if (delta < -4) upwardScrollDistance.current = 0
+    else if (delta > 0) upwardScrollDistance.current += delta
+    const collapseCover = !scrollCollapseTriggered.current && Math.abs(sheetOffsetRef.current) <= 1 && upwardScrollDistance.current >= 32
+    if (collapseCover) pendingScrollTarget.current = -collapseDistance
+    if (pendingScrollTarget.current === null) return
+    scrollSettleTimer.current = setTimeout(() => {
+      scrollSettleTimer.current = null
+      const target = pendingScrollTarget.current
+      if (!sheetAnimating.current && target !== null) snapSheet(target, true)
+    }, 100)
   }
 
   const sheetPanResponder = useMemo(
@@ -659,16 +860,34 @@ export default function SpotDetailScreen() {
           Math.abs(gestureState.dy) > Math.abs(gestureState.dx) &&
           Math.abs(gestureState.dy) > 3,
         onPanResponderGrant: () => {
+          if (scrollSettleTimer.current) clearTimeout(scrollSettleTimer.current)
           sheetTranslateY.stopAnimation((value) => {
+            sheetAnimating.current = false
+            setInfoScrollLocked(false)
             sheetOffsetRef.current = typeof value === 'number' ? value : 0
           })
         },
         onPanResponderMove: (_, gestureState) => {
-          const nextValue = clamp(sheetOffsetRef.current + gestureState.dy, 0, sheetMaxOffset)
+          const nextValue = clamp(sheetOffsetRef.current + gestureState.dy, -collapseDistance, sheetMaxOffset)
           sheetTranslateY.setValue(nextValue)
         },
         onPanResponderRelease: (_, gestureState) => {
-          const currentValue = clamp(sheetOffsetRef.current + gestureState.dy, 0, sheetMaxOffset)
+          const currentValue = clamp(sheetOffsetRef.current + gestureState.dy, -collapseDistance, sheetMaxOffset)
+          const startedInGallery = sheetOffsetRef.current >= sheetMaxOffset * 0.8
+          if (startedInGallery && (gestureState.dy <= -14 || (gestureState.dy < -3 && gestureState.vy < -0.25))) {
+            snapSheet(0)
+            return
+          }
+          // A short downward gesture restores the cover instead of requiring a full drag.
+          const startedCollapsed = collapseDistance > 0 && sheetOffsetRef.current <= -collapseDistance * 0.8
+          if (startedCollapsed && (gestureState.dy >= 14 || (gestureState.dy > 3 && gestureState.vy > 0.25))) {
+            snapSheet(0)
+            return
+          }
+          if (gestureState.vy < -0.6 || currentValue < -collapseDistance * 0.5) {
+            snapSheet(-collapseDistance)
+            return
+          }
           if (gestureState.vy > 0.6 || currentValue > sheetMaxOffset * 0.5) {
             snapSheet(sheetMaxOffset)
             return
@@ -680,12 +899,13 @@ export default function SpotDetailScreen() {
           snapSheet(sheetOffsetRef.current > sheetMaxOffset * 0.5 ? sheetMaxOffset : 0)
         },
       }),
-    [sheetMaxOffset, sheetTranslateY],
+    [sheetMaxOffset, sheetTranslateY, collapseDistance],
   )
 
   const galleryPanResponder = useMemo(
     () =>
       PanResponder.create({
+        onStartShouldSetPanResponder: () => true,
         onMoveShouldSetPanResponder: (_, gestureState) =>
           galleryImages.length > 1 &&
           Math.abs(gestureState.dx) > Math.abs(gestureState.dy) &&
@@ -705,7 +925,25 @@ export default function SpotDetailScreen() {
           galleryTranslateRef.current = nextTranslate
           galleryTranslateX.setValue(nextTranslate)
         },
-        onPanResponderRelease: (_, gestureState) => {
+        onPanResponderRelease: (event, gestureState) => {
+          const isTap = Math.abs(gestureState.dx) < 8 && Math.abs(gestureState.dy) < 8
+          if (isTap && sheetOffsetRef.current < sheetMaxOffset * 0.8) {
+            galleryLastTap.current = null
+            snapSheet(sheetMaxOffset)
+            return
+          }
+          if (isTap && sheetOffsetRef.current >= sheetMaxOffset * 0.8) {
+            const tap = { time: Date.now(), x: event.nativeEvent.pageX, y: event.nativeEvent.pageY }
+            const previous = galleryLastTap.current
+            if (previous && tap.time - previous.time < 320 && Math.hypot(tap.x - previous.x, tap.y - previous.y) < 32) {
+              galleryLastTap.current = null
+              snapSheet(0)
+            } else {
+              galleryLastTap.current = tap
+            }
+            return
+          }
+          galleryLastTap.current = null
           snapGalleryToIndex(
             resolveGalleryTargetIndex(gestureState.dx, gestureState.vx),
             gestureState.vx,
@@ -715,7 +953,7 @@ export default function SpotDetailScreen() {
           snapGalleryToIndex(galleryDragStartIndexRef.current)
         },
       }),
-    [galleryImages.length, galleryIndex, galleryTranslateX, galleryViewportWidth],
+    [galleryImages.length, galleryIndex, galleryTranslateX, galleryViewportWidth, sheetMaxOffset],
   )
 
   if (!detailSpot || !resolvedContextSpot) {
@@ -732,15 +970,31 @@ export default function SpotDetailScreen() {
   }
 
   return (
-    <View style={styles.screen}>
+    <Entrance style={styles.screen}>
+      <ScrollView
+        ref={infoScrollRef}
+        scrollEnabled={!infoScrollLocked}
+        style={styles.pageScroll}
+        contentContainerStyle={[styles.pageScrollContent, { paddingBottom: isStandalonePwa ? insets.bottom : 12 }]}
+        bounces={false}
+        overScrollMode="never"
+        scrollEventThrottle={16}
+        onScroll={handleInfoScroll}
+        showsVerticalScrollIndicator={false}
+      >
       <Animated.View
         style={[
           styles.heroStage,
           {
             height: heroAnimatedHeight,
+            borderBottomLeftRadius: galleryCornerRadius,
+            borderBottomRightRadius: galleryCornerRadius,
             opacity: heroIntroOpacity,
             transform: [{ translateY: heroIntroTranslateY }],
           },
+          Platform.OS === 'web'
+            ? ({ position: 'sticky', top: 0 } as never)
+            : null,
         ]}
       >
         <Animated.View style={[styles.heroBaseWrap, { opacity: heroImageOpacity }]}>
@@ -750,6 +1004,7 @@ export default function SpotDetailScreen() {
             imageStyle={styles.heroImage}
           />
           <View pointerEvents="none" style={styles.heroOverlay} />
+          <View pointerEvents="none" style={styles.heroBottomShadow} />
         </Animated.View>
 
         <Animated.View
@@ -785,69 +1040,82 @@ export default function SpotDetailScreen() {
             ]}
           >
             {galleryImages.map((imageUrl, index) => (
-              <ImageBackground
+              Math.abs(index - galleryIndex) <= 1 ? <ImageBackground
                 key={`${imageUrl}-${index}`}
                 source={{ uri: imageUrl }}
                 style={[styles.heroGalleryPage, { width: galleryViewportWidth }]}
                 imageStyle={styles.heroImage}
-              />
+              /> : <View key={`${imageUrl}-${index}`} style={[styles.heroGalleryPage, { width: galleryViewportWidth }]} />
             ))}
           </Animated.View>
         </Animated.View>
 
         <View pointerEvents="box-none" style={styles.heroChrome}>
-          <View style={[styles.topActions, { paddingTop: insets.top + 8 }]}>
+          <Animated.View
+            pointerEvents={galleryHeaderHidden ? 'auto' : 'none'}
+            accessibilityElementsHidden={!galleryHeaderHidden}
+            importantForAccessibility={galleryHeaderHidden ? 'auto' : 'no-hide-descendants'}
+            aria-hidden={!galleryHeaderHidden}
+            style={{ position: 'absolute', top: topContentInset(insets), left: 18, zIndex: 20, opacity: sheetTranslateY.interpolate({ inputRange: [sheetMaxOffset * 0.8, sheetMaxOffset], outputRange: [0, 1], extrapolate: 'clamp' }) }}
+          >
             <AppIconButton
               name="arrow-back"
-              tone="glass"
-              onPress={() => {
-                if (router.canGoBack()) {
-                  router.back()
-                  return
-                }
-
-                router.replace('/(tabs)/explore')
-              }}
+              tone="light"
+              accessibilityLabel="Volver"
+              onPress={handleBackPress}
+            />
+          </Animated.View>
+          <Animated.View
+            pointerEvents={galleryHeaderHidden ? 'none' : 'auto'}
+            accessibilityElementsHidden={galleryHeaderHidden}
+            importantForAccessibility={galleryHeaderHidden ? 'no-hide-descendants' : 'auto'}
+            aria-hidden={galleryHeaderHidden}
+            style={[styles.topActions, { paddingTop: topContentInset(insets), opacity: galleryHeaderOpacity, transform: [{ translateY: galleryHeaderTranslate }] }]}
+          >
+            <AppIconButton
+              name="arrow-back"
+              tone="light"
+              onPress={handleBackPress}
             />
             <View style={styles.topActionRow}>
-              <AppLikeButton
-                liked={liked}
-                tone="glass"
-                activeColor={detailUi.accent}
-                onPress={() => toggleLike(detailSpot.likeTargetId)}
-              />
+              {!isEvent ? (
+                <AppVisitedButton
+                  visited={visited}
+                  tone="light"
+                  activeColor={detailUi.accent}
+                  onPress={() => void toggleVisited(detailSpot.likeTargetId)}
+                />
+              ) : null}
               <AppBookmarkButton
                 bookmarked={bookmarked}
-                tone="glass"
-                activeColor={detailUi.text}
+                tone="light"
+                activeColor={detailUi.accent}
                 onPress={() => void toggleBookmark(detailSpot.likeTargetId)}
               />
-              <AppIconButton
-                name="share-social-outline"
-                tone="glass"
-                onPress={() => shareSpotLink(detailSpot)}
-              />
+              <SharePlaceButton spot={detailSpot} />
             </View>
-          </View>
+          </Animated.View>
 
           <Animated.View
             pointerEvents="none"
             style={[
               styles.heroCopy,
               {
-                opacity: heroContentOpacity,
+                opacity: Animated.multiply(heroContentOpacity, collapsedHeroOpacity),
                 transform: [{ translateY: heroContentTranslateY }],
               },
             ]}
           >
             <View style={styles.heroBadges}>
+              {resolvedContextSpot.businessStatus === 'temporarily_closed' && <View style={styles.heroChip}><Text style={styles.heroChipText}>Cerrado temporalmente</Text></View>}
+              {isRecentlyAdded(detailSpot, new Date()) && <NewPlaceBadge />}
               <View style={styles.heroChip}>
-                <Ionicons
-                  name={categoryIcon}
-                  size={14}
+                <CategoryIcon
+                  category={detailSpot.category}
+                  size={12}
                   color="#ffffff"
                 />
-                <Text style={styles.heroChipText}>{detailSpot.category}</Text>
+                <Text style={styles.heroChipText}>{getCategoryLabel(detailSpot.category)}</Text>
               </View>
             </View>
 
@@ -860,47 +1128,23 @@ export default function SpotDetailScreen() {
               <>
                 <View style={styles.heroMetaInline}>
                   <View style={styles.heroLocationRow}>
-                    <Ionicons name="location" size={14} color="#fff7fb" />
+                    <Ionicons name="location-outline" size={14} color="#fff7fb" />
                     <Text numberOfLines={1} ellipsizeMode="tail" style={styles.heroLocationText}>
                       {`${brandBranches.length} sedes: ${getPlaceLocationSummary(otherBranches)}`}
                     </Text>
                   </View>
                 </View>
-                {resolvedContextSpot.moods.length > 0 ? (
-                  <View style={styles.heroIdealForRow}>
-                    <Text style={styles.heroIdealForLabel}>Ideal para:</Text>
-                    <View style={styles.heroIdealForChips}>
-                      {resolvedContextSpot.moods.slice(0, 3).map((mood) => (
-                        <View key={mood} style={styles.heroIdealForChip}>
-                          <Text style={styles.heroIdealForChipText}>{mood}</Text>
-                        </View>
-                      ))}
-                    </View>
-                  </View>
-                ) : null}
               </>
             ) : (
               <>
                 <View style={styles.heroMetaInline}>
                   <View style={styles.heroLocationRow}>
-                    <Ionicons name="location" size={14} color="#fff7fb" />
+                    <Ionicons name="location-outline" size={14} color="#fff7fb" />
                     <Text numberOfLines={1} ellipsizeMode="tail" style={styles.heroLocationText}>
                       {`1 sede: ${getBranchLocationLabel(detailSpot)}`}
                     </Text>
                   </View>
                 </View>
-                {resolvedContextSpot.moods.length > 0 ? (
-                  <View style={styles.heroIdealForRow}>
-                    <Text style={styles.heroIdealForLabel}>Ideal para:</Text>
-                    <View style={styles.heroIdealForChips}>
-                      {resolvedContextSpot.moods.slice(0, 3).map((mood) => (
-                        <View key={mood} style={styles.heroIdealForChip}>
-                          <Text style={styles.heroIdealForChipText}>{mood}</Text>
-                        </View>
-                      ))}
-                    </View>
-                  </View>
-                ) : null}
               </>
             )}
           </Animated.View>
@@ -909,18 +1153,45 @@ export default function SpotDetailScreen() {
         {galleryImages.length > 1 ? (
           <Animated.View style={[styles.galleryDotsWrap, { opacity: galleryDotsOpacity }]}>
             <View style={styles.galleryDots}>
-              {galleryImages.map((_, index) => (
-                <View
-                  key={`gallery-dot-${index}`}
-                  style={[
-                    styles.galleryDot,
-                    index === galleryIndex && styles.galleryDotActive,
-                  ]}
-                />
-              ))}
+              {galleryImages.map((_, index) => {
+                const inputRange = [-(index + 1) * Math.max(1, galleryViewportWidth), -index * Math.max(1, galleryViewportWidth), (1 - index) * Math.max(1, galleryViewportWidth)]
+                return (
+                <View key={`gallery-dot-${index}`} style={styles.galleryDotSlot}>
+                  <Animated.View
+                    style={[
+                      styles.galleryDotShape,
+                      {
+                        opacity: galleryTranslateX.interpolate({
+                          inputRange: [-(index + 1) * Math.max(1, galleryViewportWidth), -index * Math.max(1, galleryViewportWidth), (1 - index) * Math.max(1, galleryViewportWidth)],
+                          outputRange: [0.42, 1, 0.42],
+                          extrapolate: 'clamp',
+                        }),
+                      },
+                    ]}
+                  >
+                    <Animated.View style={[styles.galleryDotCore, { transform: [{ scaleX: galleryTranslateX.interpolate({ inputRange, outputRange: [0, 2, 0], extrapolate: 'clamp' }) }] }]} />
+                    {[-1, 1].map(direction => <Animated.View key={direction} style={[styles.galleryDot, { transform: [{ translateX: galleryTranslateX.interpolate({ inputRange, outputRange: [0, direction * 8, 0], extrapolate: 'clamp' }) }] }]} />)}
+                  </Animated.View>
+                </View>
+              ) })}
             </View>
           </Animated.View>
         ) : null}
+
+        <Animated.View
+          style={[
+            styles.heroHandleArea,
+            { bottom: galleryHandleInset },
+            Platform.OS === 'web'
+              ? ({
+                  touchAction: 'none',
+                } as never)
+              : null,
+          ]}
+          {...sheetPanResponder.panHandlers}
+        >
+          <View style={styles.heroHandle} />
+        </Animated.View>
       </Animated.View>
 
       <Animated.View
@@ -928,28 +1199,20 @@ export default function SpotDetailScreen() {
           styles.sheet,
           {
             opacity: sheetIntroOpacity,
-            top: baseSheetTopValue,
-            transform: [{ translateY: sheetTranslateWithIntro }],
+            marginTop: -28,
+            transform: [{ translateY: sheetIntroTranslateY }],
           },
         ]}
       >
-        <View style={styles.sheetHandleArea} {...sheetPanResponder.panHandlers}>
-          <View style={styles.sheetHandle} />
-        </View>
-        <ScrollView
-          style={styles.sheetScroll}
-          scrollIndicatorInsets={{ bottom: insets.bottom }}
-          contentContainerStyle={[
-            styles.sheetContent,
-            {
-              paddingBottom: insets.bottom,
-              flexGrow: 1,
-            },
-          ]}
-          showsVerticalScrollIndicator={false}
-        >
-          <View style={styles.panel}>
+        <View style={styles.sheetTopInset} />
+        <View>
+          <View style={[styles.panel, isStandalonePwa && { paddingBottom: 0 }]}>
             <View style={styles.section}>
+              {!isEvent && resolvedContextSpot.description ? (
+                <View style={styles.sectionBlock}>
+                  <Text style={[styles.bodyText, styles.placeDescription]}>{resolvedContextSpot.description}</Text>
+                </View>
+              ) : null}
               {!isEvent && otherBranches.length ? (
                 <View style={styles.sectionBlock}>
                   <View style={styles.branchSelectorStack}>
@@ -984,6 +1247,14 @@ export default function SpotDetailScreen() {
                         </Text>
                         {selectedBranch && selectedBranchOpenStatus?.label ? (
                           <View style={styles.branchSelectorStatusRow}>
+                            <View
+                              style={[
+                                styles.branchSelectorDot,
+                                selectedBranchOpenStatus?.tone === 'open'
+                                  ? styles.branchSelectorDotOpen
+                                  : styles.branchSelectorDotClosed,
+                              ]}
+                            />
                             <Text
                               style={[
                                 styles.branchSelectorFieldMeta,
@@ -996,14 +1267,6 @@ export default function SpotDetailScreen() {
                             >
                               {selectedBranchOpenStatus.label}
                             </Text>
-                            <View
-                              style={[
-                                styles.branchSelectorDot,
-                                selectedBranchOpenStatus?.tone === 'open'
-                                  ? styles.branchSelectorDotOpen
-                                  : styles.branchSelectorDotClosed,
-                              ]}
-                            />
                           </View>
                         ) : selectedBranch ? (
                           <Text style={styles.branchSelectorFieldMeta}>Horario por confirmar</Text>
@@ -1018,7 +1281,11 @@ export default function SpotDetailScreen() {
                             <Ionicons name="chevron-forward" size={16} color={detailUi.textSecondary} />
                           </View>
                         </View>
-                      ) : null}
+                      ) : (
+                        <View style={styles.branchSelectorAction}>
+                          <Text style={styles.branchSelectorActionText}>Sede única</Text>
+                        </View>
+                      )}
                     </Pressable>
                   </View>
                   <View style={styles.sectionDivider} />
@@ -1033,10 +1300,6 @@ export default function SpotDetailScreen() {
                       transform: [{ translateY: branchContentTranslateY }],
                     }}
                   >
-                    <View style={styles.sectionBlock}>
-                      <Text style={styles.bodyText}>{resolvedContextSpot.description}</Text>
-                    </View>
-
                     <View style={[styles.sectionBlock, styles.scheduleSectionBlock]}>
                       <Text style={styles.sectionEyebrow}>Información</Text>
                       <Pressable
@@ -1113,6 +1376,7 @@ export default function SpotDetailScreen() {
                                     style={[
                                       styles.scheduleDayName,
                                       row.isToday && styles.scheduleDayNameToday,
+                                      row.isToday && selectedBranchOpenStatus?.tone === 'closed' && styles.scheduleDayTextClosed,
                                     ]}
                                   >
                                     {row.label}
@@ -1147,7 +1411,7 @@ export default function SpotDetailScreen() {
                   <View style={[styles.sectionBlock, styles.quickInfoSectionBlock]}>
                     {hasValueText(resolvedContextSpot.address) ? (
                       <Pressable
-                        onPress={() => openInMaps(resolvedContextSpot.address)}
+                        onPress={openPlaceMap}
                         style={styles.statCard}
                       >
                         <View style={styles.statIconWrap}>
@@ -1172,9 +1436,15 @@ export default function SpotDetailScreen() {
                       </Pressable>
                     ) : null}
                     <View style={styles.dualStatsRow}>
-                      <View style={[styles.statCard, styles.compactStatCard, styles.compactStatCardWide]}>
+                      <Pressable
+                        accessibilityRole="button"
+                        accessibilityLabel="Calcular presupuesto del plan"
+                        disabled={resolvedContextSpot.businessStatus === 'temporarily_closed' || (resolvedContextSpot.minBudget <= 0 && resolvedContextSpot.maxBudget <= 0)}
+                        onPress={() => setBudgetCalculatorOpen(true)}
+                        style={({ pressed }) => [styles.statCard, styles.compactStatCard, styles.compactStatCardWide, pressed && styles.budgetCardPressed]}
+                      >
                         <View style={styles.statIconWrap}>
-                          <Ionicons name="cash-outline" size={18} color={detailUi.text} />
+                          <Ionicons name="wallet-outline" size={18} color={detailUi.text} />
                         </View>
                         <View style={[styles.statCopy, styles.compactStatCopy]}>
                           <Text
@@ -1185,7 +1455,8 @@ export default function SpotDetailScreen() {
                             {getPriceLabel(resolvedContextSpot)}
                           </Text>
                         </View>
-                      </View>
+                        {(resolvedContextSpot.minBudget > 0 || resolvedContextSpot.maxBudget > 0) ? <Ionicons name="calculator-outline" size={18} color={detailUi.textSecondary} /> : null}
+                      </Pressable>
                       <View style={[styles.statCard, styles.compactStatCard, styles.compactStatCardTight]}>
                         <View style={styles.statIconWrap}>
                           <Ionicons name="people-outline" size={18} color={detailUi.text} />
@@ -1196,20 +1467,27 @@ export default function SpotDetailScreen() {
                             ellipsizeMode="tail"
                             style={[styles.statValue, styles.compactStatValue]}
                           >
-                            {`1-${resolvedContextSpot.maxPeople} personas`}
+                            {formatPeopleLabel(resolvedContextSpot.minPeople, resolvedContextSpot.maxPeople, true)}
                           </Text>
                         </View>
                       </View>
                     </View>
                   </View>
 
-                    {showMenu || hasWhatsApp || hasPhone || hasInstagram ? (
+                    {showMenu || hasWhatsApp || hasPhone || hasInstagram || googleMapsUrl ? (
                       <View style={[styles.sectionBlock, styles.quickActionsSectionBlock]}>
                         <Text style={styles.sectionEyebrow}>Acciones rápidas</Text>
                         <View style={styles.branchActionRow}>
+                          {googleMapsUrl ? (
+                            <BranchActionButton
+                              icon="map-outline"
+                              label="Google Maps"
+                              onPress={() => openExternal(googleMapsUrl)}
+                            />
+                          ) : null}
                           {showMenu ? (
                             <BranchActionButton
-                              icon={menuActionLabel === 'Website' ? 'globe-outline' : 'restaurant-outline'}
+                              icon={menuActionLabel === 'Website' ? 'globe-outline' : 'book-outline'}
                               label={menuActionLabel}
                               onPress={() => openExternal(resolvedContextSpot.menuUrl)}
                             />
@@ -1218,7 +1496,7 @@ export default function SpotDetailScreen() {
                             <BranchActionButton
                               icon="logo-whatsapp"
                               label={
-                                resolvedContextSpot.category === 'Restaurantes y cafés' ||
+                                normalizeSpotCategory(resolvedContextSpot.category) === 'Comida' ||
                                 resolvedContextSpot.category === 'Restaurantes'
                                   ? 'Escribir'
                                   : 'Contactar'
@@ -1303,6 +1581,7 @@ export default function SpotDetailScreen() {
                   <ScrollView
                     horizontal
                     showsHorizontalScrollIndicator={false}
+                    style={styles.similarRail}
                     contentContainerStyle={styles.similarScrollContent}
                   >
                     {similarSpots.map((item) => (
@@ -1318,8 +1597,9 @@ export default function SpotDetailScreen() {
               </View>
             </View>
           </View>
-        </ScrollView>
+        </View>
       </Animated.View>
+      </ScrollView>
 
       {!isEvent ? (
         <Modal
@@ -1343,7 +1623,6 @@ export default function SpotDetailScreen() {
                 },
               ]}
             >
-              <View style={styles.selectorHandle} />
               <View style={styles.selectorHeader}>
                 <Text style={styles.selectorTitle}>Selecciona una sede</Text>
               </View>
@@ -1353,7 +1632,7 @@ export default function SpotDetailScreen() {
               >
                 {otherBranches.map((branch) => {
                   const active = branch.id === selectedBranch?.id
-                  const branchStatus = getOpenStatus(branch.hours)
+                  const branchStatus = getOpenStatus(branch)
                   const openTone = branchStatus?.tone
                   return (
                     <Pressable
@@ -1379,6 +1658,16 @@ export default function SpotDetailScreen() {
                         </Text>
                         {branchStatus?.label ? (
                           <View style={styles.selectorOptionStatusRow}>
+                            <View
+                              style={[
+                                styles.branchSelectorDot,
+                                openTone === 'open'
+                                  ? styles.branchSelectorDotOpen
+                                  : openTone === 'closed'
+                                    ? styles.branchSelectorDotClosed
+                                    : styles.branchSelectorDotNeutral,
+                              ]}
+                            />
                             <Text
                               style={[
                                 styles.selectorOptionMeta,
@@ -1391,16 +1680,6 @@ export default function SpotDetailScreen() {
                             >
                               {branchStatus.label}
                             </Text>
-                            <View
-                              style={[
-                                styles.branchSelectorDot,
-                                openTone === 'open'
-                                  ? styles.branchSelectorDotOpen
-                                  : openTone === 'closed'
-                                    ? styles.branchSelectorDotClosed
-                                    : styles.branchSelectorDotNeutral,
-                              ]}
-                            />
                           </View>
                         ) : null}
                       </View>
@@ -1414,7 +1693,11 @@ export default function SpotDetailScreen() {
         </Modal>
       ) : null}
 
-    </View>
+      {!isEvent && resolvedContextSpot && (resolvedContextSpot.minBudget > 0 || resolvedContextSpot.maxBudget > 0)
+        ? <PlanBudgetCalculator spot={resolvedContextSpot} visible={budgetCalculatorOpen && resolvedContextSpot.businessStatus !== 'temporarily_closed'} onClose={() => setBudgetCalculatorOpen(false)} />
+        : null}
+
+    </Entrance>
   )
 }
 
@@ -1508,60 +1791,9 @@ function SelectorRadio({
 }
 
 function SimilarSpotCard({ spot }: { spot: Spot }) {
+  const router = useRouter()
   const { isBookmarked, toggleBookmark } = useBookmarksStore()
-
-  return (
-    <Link href={`/spot/${spot.id}`} asChild>
-      <Pressable style={styles.similarCard}>
-        <ImageBackground
-          source={{ uri: spot.image }}
-          style={styles.similarImage}
-          imageStyle={styles.similarImageStyle}
-        >
-          <View style={styles.cardOverlay} />
-          <View style={styles.similarImageMeta}>
-            <View style={styles.similarImageActions}>
-              {spot.type === 'place' ? (
-                <AppBookmarkButton
-                  bookmarked={isBookmarked(spot.likeTargetId)}
-                  onPress={() => void toggleBookmark(spot.likeTargetId)}
-                  activeColor={detailUi.text}
-                />
-              ) : null}
-              <View style={styles.similarCategoryChip}>
-                {getCategoryImage(spot.category) ? (
-                  <Image source={getCategoryImage(spot.category)} style={styles.similarCategoryChipImage} />
-                ) : (
-                  <Ionicons
-                    name={getCategoryIcon(spot.category)}
-                    size={14}
-                    color={detailUi.text}
-                  />
-                )}
-              </View>
-            </View>
-          </View>
-        </ImageBackground>
-        <View style={styles.similarBody}>
-          <Text style={styles.similarTitle}>{spot.type === 'event' ? spot.name : spot.brandName}</Text>
-          <View style={styles.similarFooterRow}>
-            <View style={styles.similarMetaInline}>
-              <View style={styles.similarMetaGroup}>
-                <Ionicons name="location-outline" size={12} color={detailUi.textSecondary} />
-                <Text numberOfLines={1} ellipsizeMode="tail" style={styles.similarMetaText}>
-                  {getSpotFeedSubtitle(spot)}
-                </Text>
-              </View>
-              <View style={styles.similarMetaGroupWide}>
-                <Ionicons name="cash-outline" size={12} color={detailUi.textSecondary} />
-                <Text style={styles.similarMetaText}>{getPriceLabel(spot)}</Text>
-              </View>
-            </View>
-          </View>
-        </View>
-      </Pressable>
-    </Link>
-  )
+  return <DiscoveryPlaceCard spot={spot} bookmarked={isBookmarked(spot.likeTargetId)} onPress={() => router.push(`/spot/${spot.id}`)} onToggleBookmark={() => toggleBookmark(spot.likeTargetId)} />
 }
 
 function getPrimaryAction({
@@ -1570,12 +1802,14 @@ function getPrimaryAction({
   hasMenu,
   hasInstagram,
   spot,
+  onMap,
 }: {
   hasWhatsApp: boolean
   hasPhone: boolean
   hasMenu: boolean
   hasInstagram: boolean
   spot: Spot
+  onMap: () => void
 }) {
   const isEvent = spot.type === 'event'
 
@@ -1602,26 +1836,26 @@ function getPrimaryAction({
 
   if (hasMenu) {
     return {
-      label: getMenuActionLabel(spot.category) === 'Menu' ? 'Ver menu' : 'Ver website',
+      label: getMenuActionLabel(spot.category, spot.menuUrl) === 'Menu' ? 'Ver menu' : 'Ver website',
       onPress: () => openExternal(spot.menuUrl),
     }
   }
 
   return {
     label: 'Como llegar',
-    onPress: () => openInMaps(spot.address),
+    onPress: onMap,
   }
 }
 
 function getCategoryIcon(category: Spot['category']): keyof typeof Ionicons.glyphMap {
-  switch (category) {
+  switch (normalizeSpotCategory(category)) {
     case 'Arte y cultura':
       return 'color-palette-outline'
     case 'Bares y noche':
       return 'wine-outline'
     case 'Cine':
       return 'film-outline'
-    case 'Restaurantes y cafés':
+    case 'Comida':
     case 'Restaurantes':
       return 'restaurant-outline'
     case 'Eventos':
@@ -1640,14 +1874,14 @@ function getCategoryIcon(category: Spot['category']): keyof typeof Ionicons.glyp
 }
 
 function getCategoryImage(category: Spot['category']) {
-  switch (category) {
+  switch (normalizeSpotCategory(category)) {
     case 'Arte y cultura':
       return exploreArtIcon
     case 'Bares y noche':
       return exploreNightlifeIcon
     case 'Cine':
       return exploreCinemaIcon
-    case 'Restaurantes y cafés':
+    case 'Comida':
     case 'Restaurantes':
       return exploreFoodIcon
     case 'Eventos':
@@ -1668,6 +1902,16 @@ async function openExternal(url: string) {
   await Linking.openURL(url)
 }
 
+function getGoogleMapsUrl(spot: Spot) {
+  if (spot.googleMapsUrl && /^https:\/\//.test(spot.googleMapsUrl)) return spot.googleMapsUrl
+  const hasCoordinates = Number.isFinite(spot.latitude) && Number.isFinite(spot.longitude)
+  if (!hasCoordinates && !hasValueText(spot.address)) return null
+  const query = hasCoordinates
+    ? `${spot.latitude},${spot.longitude}`
+    : [spot.brandName || spot.name, spot.address, spot.city].filter(Boolean).join(', ')
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`
+}
+
 async function openInstagram(handleOrUrl: string) {
   const url = handleOrUrl.startsWith('http')
     ? handleOrUrl
@@ -1676,19 +1920,20 @@ async function openInstagram(handleOrUrl: string) {
 }
 
 async function openWhatsApp(phone: string) {
-  const digits = phone.replace(/\D/g, '')
-  await openExternal(`https://wa.me/${digits}`)
+  const value = String(phone ?? '').trim()
+  if (/^https?:\/\//i.test(value)) {
+    await openExternal(value)
+    return
+  }
+  const digits = value.replace(/\D/g, '')
+  if (!digits) return
+  const normalizedDigits = digits.length === 10 && digits.startsWith('3') ? `57${digits}` : digits
+  await openExternal(`https://wa.me/${normalizedDigits}`)
 }
 
 async function openPhone(phone: string) {
   const digits = phone.replace(/[^\d+]/g, '')
   await openExternal(`tel:${digits}`)
-}
-
-async function openInMaps(address: string) {
-  await openExternal(
-    `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`,
-  )
 }
 
 function hasValueLink(value: string | null | undefined) {
@@ -1711,11 +1956,6 @@ function hasValueText(value: string | null | undefined) {
   )
 }
 
-async function shareSpotLink(spot: Spot) {
-  await openExternal(
-    `https://www.google.com/search?q=${encodeURIComponent(`${spot.brandName} ${spot.address}`)}`,
-  )
-}
 
 const styles = StyleSheet.create({
   emptyScreen: {
@@ -1742,6 +1982,11 @@ const styles = StyleSheet.create({
   },
   heroStage: {
     overflow: 'hidden',
+    position: 'relative',
+    zIndex: 3,
+    elevation: 10,
+    borderBottomLeftRadius: 44,
+    borderBottomRightRadius: 44,
   },
   heroBaseWrap: {
     ...StyleSheet.absoluteFillObject,
@@ -1769,60 +2014,72 @@ const styles = StyleSheet.create({
   },
   heroChrome: {
     ...StyleSheet.absoluteFillObject,
+    zIndex: 20,
     justifyContent: 'space-between',
     paddingHorizontal: 18,
     paddingTop: 0,
-    paddingBottom: 42,
+    paddingBottom: 52,
   },
   heroImage: {
     resizeMode: 'cover',
   },
   heroOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(12,9,13,0.38)',
+    backgroundColor: 'rgba(0,0,0,0.2)',
+  },
+  heroBottomShadow: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: 0,
+    backgroundColor: 'transparent',
   },
   topActions: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    zIndex: 20,
   },
   topActionRow: {
     flexDirection: 'row',
     gap: 10,
+    zIndex: 21,
   },
   heroCopy: {
     gap: 8,
   },
   heroBadges: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
     alignItems: 'center',
-    marginBottom: 6,
+    gap: 8,
+    marginBottom: 0,
   },
   heroChip: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
+    gap: 4,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
     borderRadius: 999,
     backgroundColor: 'rgba(0,0,0,0.28)',
   },
   heroChipText: {
-    fontSize: 13,
-    fontWeight: '700',
+    fontSize: 11,
+    fontWeight: '500',
     color: '#ffffff',
   },
   heroTitle: {
     fontSize: 34,
     lineHeight: 36,
-    fontWeight: '900',
+    fontWeight: '600',
     color: '#ffffff',
     maxWidth: 280,
   },
   heroSubtitle: {
     fontSize: 18,
-    fontWeight: '700',
+    fontWeight: '500',
     color: '#fff7fb',
   },
   heroMetaInline: {
@@ -1840,7 +2097,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   heroLocationText: {
-    fontSize: 14,
+    fontSize: 12,
     color: '#fff7fb',
     fontWeight: '600',
     flexShrink: 1,
@@ -1880,52 +2137,72 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 18,
     right: 18,
-    bottom: 42,
+    bottom: 70,
     alignItems: 'center',
   },
   galleryDots: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: 2,
   },
   galleryDot: {
+    position: 'absolute',
     width: 8,
     height: 8,
     borderRadius: 999,
-    backgroundColor: 'rgba(255,247,251,0.42)',
+    backgroundColor: '#ffffff',
   },
-  galleryDotActive: {
-    width: 20,
-    backgroundColor: '#fff7fb',
+  galleryDotSlot: {
+    width: 24,
+    height: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
+  galleryDotShape: { width: 8, height: 8, alignItems: 'center', justifyContent: 'center' },
+  galleryDotCore: { position: 'absolute', width: 8, height: 8, backgroundColor: '#ffffff' },
   sheet: {
+    position: 'relative',
+    width: '100%',
+    borderTopLeftRadius: 0,
+    borderTopRightRadius: 0,
+    backgroundColor: detailUi.bg,
+    overflow: 'hidden',
+    shadowColor: '#000000',
+    shadowOpacity: 0,
+    shadowRadius: 18,
+    shadowOffset: { width: 0, height: -4 },
+    elevation: 8,
+    zIndex: 1,
+  },
+  heroHandleArea: {
     position: 'absolute',
     left: 0,
     right: 0,
     bottom: 0,
-    borderTopLeftRadius: 28,
-    borderTopRightRadius: 28,
-    backgroundColor: detailUi.bg,
-    overflow: 'hidden',
-    shadowColor: '#000000',
-    shadowOpacity: 0.08,
-    shadowRadius: 18,
-    shadowOffset: { width: 0, height: -4 },
-    elevation: 8,
-  },
-  sheetHandleArea: {
+    height: 64,
     alignItems: 'center',
-    paddingTop: 20,
+    justifyContent: 'flex-end',
     paddingBottom: 20,
+    backgroundColor: 'transparent',
+    zIndex: 4,
   },
-  sheetHandle: {
-    width: 42,
-    height: 5,
+  heroHandle: {
+    width: 46,
+    height: 6,
     borderRadius: 999,
-    backgroundColor: '#d2d2d8',
+    backgroundColor: '#ffffff',
+  },
+  sheetTopInset: {
+    height: 58,
   },
   sheetScroll: {
     flex: 1,
+  },
+  pageScroll: {
+    flex: 1,
+  },
+  pageScrollContent: {
+    flexGrow: 1,
   },
   sheetContent: {
     flexGrow: 1,
@@ -1933,7 +2210,7 @@ const styles = StyleSheet.create({
   panel: {
     backgroundColor: detailUi.bg,
     paddingHorizontal: 20,
-    paddingTop: 18,
+    paddingTop: 12,
     paddingBottom: 26,
     gap: 22,
   },
@@ -1983,10 +2260,10 @@ const styles = StyleSheet.create({
     gap: 10,
     alignItems: 'flex-start',
     shadowColor: '#000000',
-    shadowOpacity: 0.04,
+    shadowOpacity: 0,
     shadowRadius: 10,
     shadowOffset: { width: 0, height: 4 },
-    elevation: 2,
+    elevation: 0,
   },
   compactStatCard: {
     minHeight: 56,
@@ -2001,6 +2278,7 @@ const styles = StyleSheet.create({
   compactStatCardWide: {
     flex: 1,
   },
+  budgetCardPressed: { opacity: 0.72 },
   compactStatCardTight: {
     flexShrink: 0,
     minWidth: 160,
@@ -2047,13 +2325,13 @@ const styles = StyleSheet.create({
   statStatus: {
     fontSize: 12,
     lineHeight: 16,
-    fontWeight: '800',
+    fontWeight: '600',
   },
   statStatusOpen: {
-    color: '#2f9e62',
+    color: '#26834a',
   },
   statStatusClosed: {
-    color: '#d4586c',
+    color: '#8b8b94',
   },
   scheduleCard: {
     borderRadius: 18,
@@ -2062,10 +2340,10 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     gap: 14,
     shadowColor: '#000000',
-    shadowOpacity: 0.04,
+    shadowOpacity: 0,
     shadowRadius: 10,
     shadowOffset: { width: 0, height: 4 },
-    elevation: 2,
+    elevation: 0,
   },
   scheduleCardHeader: {
     flexDirection: 'row',
@@ -2096,21 +2374,21 @@ const styles = StyleSheet.create({
     color: detailUi.textSecondary,
   },
   scheduleTodayValueOpen: {
-    color: '#2f9e62',
+    color: '#26834a',
   },
   scheduleTodayValueClosed: {
-    color: '#d4586c',
+    color: '#8b8b94',
   },
   scheduleTodayStatus: {
     fontSize: 13,
     lineHeight: 18,
-    fontWeight: '800',
+    fontWeight: '600',
   },
   scheduleTodayStatusOpen: {
-    color: '#2f9e62',
+    color: '#26834a',
   },
   scheduleTodayStatusClosed: {
-    color: '#d4586c',
+    color: '#8b8b94',
   },
   scheduleExpandedList: {
     gap: 8,
@@ -2130,7 +2408,12 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   scheduleDayRowToday: {
-    backgroundColor: '#dfe0e6',
+    borderWidth: 2,
+    borderColor: '#34343A',
+  },
+  scheduleDayTextClosed: {
+    color: '#9B9BA3',
+    fontWeight: '400',
   },
   scheduleDayName: {
     fontSize: 14,
@@ -2139,7 +2422,7 @@ const styles = StyleSheet.create({
   },
   scheduleDayNameToday: {
     color: detailUi.text,
-    fontWeight: '700',
+    fontWeight: '500',
   },
   scheduleDayValueWrap: {
     flex: 1,
@@ -2155,59 +2438,68 @@ const styles = StyleSheet.create({
   },
   scheduleDayValueToday: {
     color: detailUi.text,
-    fontWeight: '700',
+    fontWeight: '500',
   },
   scheduleDayValueTodayOpen: {
-    color: '#2f9e62',
+    color: '#26834a',
   },
   scheduleDayValueTodayClosed: {
-    color: '#d4586c',
+    color: '#9B9BA3',
+    fontWeight: '400',
   },
   section: {
-    gap: 14,
+    gap: 16,
   },
   sectionBlock: {
     gap: 12,
   },
   scheduleSectionBlock: {
-    marginTop: 24,
+    marginTop: 0,
   },
   quickInfoSectionBlock: {
-    marginTop: 8,
+    marginTop: 12,
   },
   quickActionsSectionBlock: {
-    marginTop: 14,
+    marginTop: 32,
   },
   similarSectionBlock: {
-    marginTop: 24,
+    marginTop: 0,
+  },
+  similarRail: {
+    marginRight: -20,
   },
   sectionDivider: {
     height: 1,
     backgroundColor: '#e7e7eb',
-    marginTop: 8,
-    marginBottom: 4,
+    marginTop: 0,
+    marginBottom: 0,
   },
   sectionEyebrow: {
-    fontSize: 13,
+    fontSize: 11,
+    lineHeight: 16,
     fontWeight: '600',
     letterSpacing: 0.3,
     color: detailUi.textTertiary,
     textTransform: 'uppercase',
   },
   sectionTitle: {
-    fontSize: 20,
-    fontWeight: '900',
-    color: appColors.text,
+    fontSize: 18,
+    fontWeight: '600',
+    color: detailUi.text,
   },
   bodyText: {
+    fontSize: 14,
+    lineHeight: 22,
+    color: detailUi.text,
+  },
+  placeDescription: {
     fontSize: 16,
     lineHeight: 24,
-    color: detailUi.text,
   },
   distanceCard: {
     minHeight: 48,
     borderRadius: 16,
-    backgroundColor: '#faf5f8',
+    backgroundColor: detailUi.surface,
     paddingHorizontal: 14,
     flexDirection: 'row',
     alignItems: 'center',
@@ -2215,8 +2507,8 @@ const styles = StyleSheet.create({
   },
   distanceCardText: {
     fontSize: 14,
-    fontWeight: '700',
-    color: appColors.primaryDark,
+    fontWeight: '500',
+    color: detailUi.text,
   },
   distanceInlineRow: {
     flexDirection: 'row',
@@ -2226,8 +2518,8 @@ const styles = StyleSheet.create({
   },
   distanceInlineText: {
     fontSize: 14,
-    fontWeight: '700',
-    color: appColors.primaryDark,
+    fontWeight: '500',
+    color: detailUi.text,
   },
   infoRow: {
     flexDirection: 'row',
@@ -2238,7 +2530,7 @@ const styles = StyleSheet.create({
     width: 38,
     height: 38,
     borderRadius: 19,
-    backgroundColor: '#faf5f8',
+    backgroundColor: detailUi.surface,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -2248,19 +2540,19 @@ const styles = StyleSheet.create({
   },
   infoLabel: {
     fontSize: 13,
-    fontWeight: '700',
-    color: appColors.textMuted,
+    fontWeight: '500',
+    color: detailUi.textSecondary,
   },
   infoValue: {
     fontSize: 16,
     lineHeight: 22,
-    color: appColors.text,
-    fontWeight: '700',
+    color: detailUi.text,
+    fontWeight: '500',
   },
   quickTile: {
     minHeight: 68,
     borderRadius: 18,
-    backgroundColor: '#faf5f8',
+    backgroundColor: detailUi.surface,
     paddingHorizontal: 14,
     flexDirection: 'row',
     alignItems: 'center',
@@ -2272,8 +2564,8 @@ const styles = StyleSheet.create({
   },
   quickTileLabel: {
     fontSize: 13,
-    fontWeight: '700',
-    color: appColors.textMuted,
+    fontWeight: '500',
+    color: detailUi.textSecondary,
   },
   quickTileDisabled: {
     opacity: 0.46,
@@ -2287,12 +2579,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   quickTileIconDisabled: {
-    backgroundColor: '#f3edf0',
+    backgroundColor: detailUi.surfaceMuted,
   },
   quickTileText: {
     fontSize: 15,
-    fontWeight: '700',
-    color: appColors.text,
+    fontWeight: '500',
+    color: detailUi.text,
   },
   quickTileTextDisabled: {
     color: '#8f818d',
@@ -2314,10 +2606,10 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     gap: 12,
     shadowColor: '#000000',
-    shadowOpacity: 0.04,
+    shadowOpacity: 0,
     shadowRadius: 10,
     shadowOffset: { width: 0, height: 4 },
-    elevation: 2,
+    elevation: 0,
   },
   branchSelectorFieldActiveOpen: {
     backgroundColor: detailUi.surface,
@@ -2342,10 +2634,10 @@ const styles = StyleSheet.create({
     flexShrink: 1,
   },
   branchSelectorFieldTitleActiveOpen: {
-    color: '#2f7f58',
+    color: detailUi.text,
   },
   branchSelectorFieldTitleActiveClosed: {
-    color: '#b65569',
+    color: detailUi.text,
   },
   branchSelectorFieldMeta: {
     fontSize: 13,
@@ -2354,10 +2646,10 @@ const styles = StyleSheet.create({
     color: detailUi.textSecondary,
   },
   branchSelectorFieldMetaActiveOpen: {
-    color: '#4f8d68',
+    color: detailUi.textSecondary,
   },
   branchSelectorFieldMetaActiveClosed: {
-    color: '#b36d7d',
+    color: detailUi.textSecondary,
   },
   branchSelectorAction: {
     alignItems: 'flex-end',
@@ -2383,13 +2675,13 @@ const styles = StyleSheet.create({
     flexShrink: 0,
   },
   branchSelectorDotOpen: {
-    backgroundColor: '#2f9e62',
+    backgroundColor: '#26834a',
   },
   branchSelectorDotClosed: {
-    backgroundColor: '#d4586c',
+    backgroundColor: '#8b8b94',
   },
   branchSelectorDotNeutral: {
-    backgroundColor: '#c8bcc4',
+    backgroundColor: '#8b8b94',
   },
   branchContentWrap: {
     position: 'relative',
@@ -2413,7 +2705,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.06,
     shadowRadius: 10,
     shadowOffset: { width: 0, height: 4 },
-    elevation: 2,
+    elevation: 0,
   },
   branchContentOverlayText: {
     fontSize: 13,
@@ -2423,7 +2715,7 @@ const styles = StyleSheet.create({
   },
   branchSelectorCard: {
     borderRadius: 18,
-    backgroundColor: '#faf5f8',
+    backgroundColor: detailUi.surface,
     paddingHorizontal: 14,
     paddingVertical: 14,
     flexDirection: 'row',
@@ -2440,8 +2732,8 @@ const styles = StyleSheet.create({
   },
   branchSelectorTitle: {
     fontSize: 16,
-    fontWeight: '800',
-    color: appColors.text,
+    fontWeight: '600',
+    color: detailUi.text,
   },
   branchSelectorTitleActive: {
     color: '#ffffff',
@@ -2449,12 +2741,12 @@ const styles = StyleSheet.create({
   branchSelectorMeta: {
     fontSize: 14,
     lineHeight: 20,
-    color: appColors.textMuted,
+    color: detailUi.textSecondary,
   },
   branchSelectorHelper: {
     fontSize: 12,
     lineHeight: 17,
-    fontWeight: '700',
+    fontWeight: '500',
     color: '#8e7e8a',
   },
   branchSelectorMetaActive: {
@@ -2485,20 +2777,12 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: -4 },
     elevation: 6,
   },
-  selectorHandle: {
-    width: 54,
-    height: 5,
-    borderRadius: 999,
-    backgroundColor: '#d2d2d8',
-    alignSelf: 'center',
-    marginBottom: 16,
-  },
   selectorHeader: {
     paddingBottom: 8,
   },
   selectorTitle: {
     fontSize: 18,
-    fontWeight: '700',
+    fontWeight: '500',
     color: detailUi.text,
   },
   selectorList: {
@@ -2532,10 +2816,10 @@ const styles = StyleSheet.create({
     color: detailUi.text,
   },
   selectorOptionTextOpen: {
-    color: '#2f7f58',
+    color: detailUi.text,
   },
   selectorOptionTextClosed: {
-    color: '#b65569',
+    color: detailUi.text,
   },
   selectorOptionTextActive: {
     color: detailUi.text,
@@ -2547,10 +2831,10 @@ const styles = StyleSheet.create({
     color: detailUi.textSecondary,
   },
   selectorOptionMetaOpen: {
-    color: '#4f8d68',
+    color: detailUi.textSecondary,
   },
   selectorOptionMetaClosed: {
-    color: '#b36d7d',
+    color: detailUi.textSecondary,
   },
   selectorRadio: {
     width: 20,
@@ -2586,7 +2870,7 @@ const styles = StyleSheet.create({
   },
   branchDetailCard: {
     borderRadius: 20,
-    backgroundColor: '#faf5f8',
+    backgroundColor: detailUi.surface,
     padding: 16,
     gap: 14,
   },
@@ -2595,13 +2879,13 @@ const styles = StyleSheet.create({
   },
   branchDetailTitle: {
     fontSize: 16,
-    fontWeight: '800',
-    color: appColors.text,
+    fontWeight: '600',
+    color: detailUi.text,
   },
   branchDetailMeta: {
     fontSize: 14,
     lineHeight: 20,
-    color: appColors.textMuted,
+    color: detailUi.textSecondary,
   },
   branchActionRow: {
     flexDirection: 'row',
@@ -2619,24 +2903,24 @@ const styles = StyleSheet.create({
   },
   branchActionText: {
     fontSize: 13,
-    fontWeight: '700',
+    fontWeight: '500',
     color: detailUi.text,
   },
   branchCard: {
     borderRadius: 18,
-    backgroundColor: '#faf5f8',
+    backgroundColor: detailUi.surface,
     padding: 14,
     gap: 5,
   },
   branchTitle: {
     fontSize: 16,
-    fontWeight: '800',
-    color: appColors.text,
+    fontWeight: '600',
+    color: detailUi.text,
   },
   branchMeta: {
     fontSize: 14,
     lineHeight: 20,
-    color: appColors.textMuted,
+    color: detailUi.textSecondary,
   },
   similarCard: {
     width: 256,
@@ -2690,7 +2974,7 @@ const styles = StyleSheet.create({
   similarTitle: {
     fontSize: 20,
     lineHeight: 24,
-    fontWeight: '700',
+    fontWeight: '500',
     color: detailUi.text,
   },
   similarMetaInline: {
@@ -2736,14 +3020,14 @@ const styles = StyleSheet.create({
   },
   similarScrollContent: {
     gap: 14,
-    paddingRight: 4,
+    paddingRight: 20,
   },
   bottomBar: {
     position: 'absolute',
     left: 16,
     right: 16,
     borderRadius: 24,
-    backgroundColor: '#fffdfd',
+    backgroundColor: detailUi.surface,
     padding: 14,
     flexDirection: 'row',
     alignItems: 'center',
@@ -2760,13 +3044,13 @@ const styles = StyleSheet.create({
   },
   bottomPriceLabel: {
     fontSize: 12,
-    fontWeight: '700',
-    color: appColors.textMuted,
+    fontWeight: '500',
+    color: detailUi.textSecondary,
   },
   bottomPriceValue: {
     fontSize: 24,
     lineHeight: 26,
-    fontWeight: '900',
-    color: appColors.text,
+    fontWeight: '600',
+    color: detailUi.text,
   },
 })
