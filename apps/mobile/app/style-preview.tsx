@@ -1,4 +1,4 @@
-import { Ionicons } from '@expo/vector-icons';
+import { SpotsIcon as Ionicons } from '@/components/spots-icon';
 import { Stack } from 'expo-router';
 import { useMemo, useState } from 'react';
 import {
@@ -12,6 +12,7 @@ import {
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { topContentInset } from '@/lib/layout-insets';
 import { SearchField } from '@/components/app-ui';
 import { formatApproxBudgetPerPersonLabel } from '@/lib/explore-filters';
 import {
@@ -70,7 +71,7 @@ const quickCategories: Array<{ label: string; color: string; icon: keyof typeof 
 ];
 
 function getPriceLabel(spot: Spot) {
-  return formatApproxBudgetPerPersonLabel(spot.minBudget, spot.maxBudget);
+  return formatApproxBudgetPerPersonLabel(spot.minBudget, spot.maxBudget, spot.typicalBudget, spot.budgetPilot);
 }
 
 function getHeroTitle(spot: Spot) {
@@ -451,7 +452,7 @@ export default function StylePreviewScreen() {
   return (
     <View style={styles.screen}>
       <Stack.Screen options={{ headerShown: false }} />
-      <View style={[styles.shell, { paddingTop: insets.top + 16, paddingBottom: Math.max(insets.bottom, 20) }]}>
+      <View style={[styles.shell, { paddingTop: topContentInset(insets), paddingBottom: Math.max(insets.bottom, 20) }]}> 
         <View style={styles.shellHeader}>
           <Text style={styles.shellTitle}>Spots Preview Lab</Text>
           <Text style={styles.shellCopy}>Referencia adaptada al layout actual de Explore y detalle.</Text>

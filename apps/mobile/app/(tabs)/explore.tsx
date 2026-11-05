@@ -1,4 +1,6 @@
-import { Ionicons } from '@expo/vector-icons';
+import { SpotsIcon as Ionicons } from '@/components/spots-icon';
+import { useReturnScroll } from '@/lib/use-return-scroll';
+import { FeedPlacePhoto } from '@/components/place-photo';
 import { Link, useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import {
   startTransition,
@@ -13,8 +15,6 @@ import {
 import {
   Animated,
   Image,
-  ImageBackground,
-  KeyboardAvoidingView,
   type LayoutChangeEvent,
   Modal,
   Platform,
@@ -30,7 +30,6 @@ import {
   AppAvatar,
   AppBookmarkButton,
   AppIconButton,
-  AppPrimaryButton,
   AppSegmentedTabs,
   SearchField,
   appColors,
@@ -38,7 +37,9 @@ import {
 } from '@/components/app-ui';
 import { ExploreMap } from '@/components/explore-map';
 import { ExploreDiscovery } from '@/components/explore-discovery';
-import { PlaceNotifications } from '@/components/place-notifications';
+import { getExploreHomeParams, getExploreResultsParams, type ExploreResultsSnapshot } from '@/lib/explore-map-navigation';
+import type { MapSearchBounds } from '@/lib/explore-map-search';
+import { ContributionSheet, contributionFormStyles } from '@/components/contribution-sheet';
 import { FiltersSheet } from '@/components/filters-sheet';
 import { submitFeedbackNote } from '@/lib/feedback-notes';
 import { formatApproxBudgetPerPersonLabel } from '@/lib/explore-filters';
@@ -50,7 +51,7 @@ import {
   type ExploreTab,
   getEffectiveSpotDistanceKm,
   isFiltersActive,
-  matchesSpotToFilters,
+  createSpotFilter,
   parseExploreTab,
   parseFiltersFromParams,
   serializeFilters,
@@ -65,6 +66,7 @@ import {
   type Spot,
 } from '@/lib/mock-spots';
 import { formatLikesCount, useLikesStore } from '@/lib/likes-store';
+import { isRecentlyAdded, rankSearchResults } from '@/lib/discovery-ranking';
 import { useLocationStore } from '@/lib/location-store';
 import { useSpotsStore } from '@/lib/spots-store';
 import { backendEnabled, supabase } from '@/lib/supabase';
@@ -76,6 +78,7 @@ import {
   type WebPushSnapshot,
 } from '@/lib/web-push';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { topContentInset } from '@/lib/layout-insets';
 
 const exploreFoodIcon = require('../../assets/explore_food_chef_hat_icon.png');
 const exploreCinemaIcon = require('../../assets/explore_cinema_icon.png');
@@ -214,7 +217,7 @@ const useLegacyIOSWebExplorePath = false;
 const debugGeneralRenderLimit = 12;
 const generalRenderBatchStep = 12;
 
-const categoryOptions: Array<{
+const unorderedCategoryOptions: Array<{
   label: string;
   value: string;
   icon: keyof typeof Ionicons.glyphMap;
@@ -229,8 +232,15 @@ const categoryOptions: Array<{
   { label: 'Al aire libre', value: 'Al aire libre', icon: 'leaf-outline', image: exploreNatureIcon },
 ];
 
+const categoryOrder = ['Comida', 'Tomar algo', 'Vida nocturna'];
+const categoryOptions = [...unorderedCategoryOptions].sort((a, b) => {
+  const aIndex = categoryOrder.indexOf(a.value);
+  const bIndex = categoryOrder.indexOf(b.value);
+  return (aIndex === -1 ? categoryOrder.length : aIndex) - (bIndex === -1 ? categoryOrder.length : bIndex);
+});
+
 function getPriceLabel(spot: Spot) {
-  return formatApproxBudgetPerPersonLabel(spot.minBudget, spot.maxBudget);
+  return formatApproxBudgetPerPersonLabel(spot.minBudget, spot.maxBudget, spot.typicalBudget, spot.budgetPilot, spot.budgetBasis);
 }
 
 function hasFeedMinPrice(spot: Spot) {
@@ -238,7 +248,7 @@ function hasFeedMinPrice(spot: Spot) {
 }
 
 function getFeedMinPriceLabel(spot: Spot) {
-  return formatApproxBudgetPerPersonLabel(spot.minBudget, spot.maxBudget)
+  return formatApproxBudgetPerPersonLabel(spot.minBudget, spot.maxBudget, spot.typicalBudget, spot.budgetPilot, spot.budgetBasis, false)
 }
 
 function getPreferredDetailBranchId(
@@ -282,7 +292,7 @@ type NewPlaceBanner = {
 };
 
 function isNewSpot(spot: Spot) {
-  return spot.editorialBadge === 'Recién añadido';
+  return isRecentlyAdded(spot, new Date());
 }
 type WebPushToast = {
   title: string;
@@ -300,6 +310,8 @@ export default function ExploreScreen() {
   const query = typeof params.query === 'string' ? params.query : '';
   const [draftQuery, setDraftQuery] = useState(query);
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [filtersFromMap, setFiltersFromMap] = useState(false);
+  const [filtersMapArea, setFiltersMapArea] = useState<MapSearchBounds | null>(null);
   const [showFilterResults, setShowFilterResults] = useState(() => params.results === '1');
   const [suggestPlacesOpen, setSuggestPlacesOpen] = useState(false);
   const [suggestPlacesVisible, setSuggestPlacesVisible] = useState(false);
@@ -322,7 +334,6 @@ export default function ExploreScreen() {
   useFocusEffect(useCallback(() => {
     void refreshIfStale().catch(() => {});
   }, [refreshIfStale]));
-  const [notificationsOpen, setNotificationsOpen] = useState(false);
   const { getLikesCount, isLiked, toggleLike } = useLikesStore();
   const { isBookmarked, toggleBookmark } = useBookmarksStore();
   const { userLocation } = useLocationStore();
@@ -352,7 +363,8 @@ export default function ExploreScreen() {
   const lastScrollY = useRef(0);
   const scrollDirectionRef = useRef<'up' | 'down' | null>(null);
   const scrollDistanceRef = useRef(0);
-  const feedScrollRef = useRef<ScrollView | null>(null);
+  const returnScroll = useReturnScroll();
+  const feedScrollRef = returnScroll.ref;
   const bannerTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const webPushToastTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const suggestModalCloseTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -417,9 +429,7 @@ export default function ExploreScreen() {
 
   if (isIOSWeb && useLegacyIOSWebExplorePath) {
     const iosActiveData = getSpotsByTypeFromList(spots, activeTab === 'places' ? 'place' : 'event');
-    const iosFilteredData = iosActiveData.filter((spot) =>
-      matchesSpotToFilters(spot, filters, deferredQuery, userLocation),
-    );
+    const iosFilteredData = iosActiveData.filter(createSpotFilter(filters, deferredQuery, userLocation));
     const iosBaseData =
       deferredQuery.trim().length === 0 && !isFiltersActive(filters) && iosFilteredData.length === 0 && iosActiveData.length > 0
         ? iosActiveData
@@ -428,20 +438,22 @@ export default function ExploreScreen() {
       activeTab === 'places'
         ? aggregatePlaceSpotsFromList(iosBaseData)
         : iosBaseData;
-    const iosSortedData = sortSpots(iosGroupedData, filters.sortBy, getLikesCount);
+    const iosSortedData = draftQuery.trim()
+      ? rankSearchResults(iosGroupedData, draftQuery, new Date(), 'relevance', getLikesCount)
+      : sortSpots(iosGroupedData, filters.sortBy, getLikesCount);
     const previewSpots = iosSortedData.slice(0, 16);
     const iosMappableData = iosSortedData.filter(
       (spot) => typeof spot.latitude === 'number' && typeof spot.longitude === 'number',
     );
     return (
-      <View style={[styles.screen, { backgroundColor: '#f5f5f7' }]}>
+      <View style={[styles.screen, { backgroundColor: '#f5f5f7' }]}> 
         {webPushToast ? (
           <Animated.View
             pointerEvents="none"
             style={[
               styles.webPushToastWrap,
               {
-                paddingTop: Math.max(insets.top, 16),
+                paddingTop: topContentInset(insets),
                 opacity: webPushToastProgress,
                 transform: [
                   {
@@ -481,7 +493,7 @@ export default function ExploreScreen() {
             style={[
               styles.newPlaceBannerWrap,
               {
-                top: Math.max(insets.top, 16) + 112,
+                top: topContentInset(insets) + 112,
                 opacity: newPlaceBannerProgress,
                 transform: [
                   {
@@ -530,6 +542,7 @@ export default function ExploreScreen() {
         ) : null}
 
         <Animated.ScrollView
+          {...returnScroll}
           style={[styles.screen, { backgroundColor: '#f5f5f7' }]}
           contentContainerStyle={{
             paddingBottom: insets.bottom + 32,
@@ -543,7 +556,7 @@ export default function ExploreScreen() {
           <Animated.View
             style={{
               backgroundColor: '#f5f5f7',
-              paddingTop: Math.max(insets.top, 12) + 18,
+              paddingTop: 8,
               borderRadius: 28,
               paddingHorizontal: 0,
               paddingBottom: 6,
@@ -683,8 +696,8 @@ export default function ExploreScreen() {
                     onPress={() => router.push(`/spot/${spot.id}`)}
                     style={styles.card}
                   >
-                    <ImageBackground
-                      source={{ uri: spot.image }}
+                    <FeedPlacePhoto
+                      spot={spot}
                       style={styles.cardImage}
                       imageStyle={styles.cardImageStyle}
                     >
@@ -722,7 +735,7 @@ export default function ExploreScreen() {
                           ) : null}
                         </View>
                       </View>
-                    </ImageBackground>
+                    </FeedPlacePhoto>
                     <View style={styles.cardBody}>
                       <Text style={[styles.cardTitle, { color: '#141417' }]}>
                         {spot.type === 'event' ? spot.name : spot.brandName}
@@ -841,6 +854,8 @@ export default function ExploreScreen() {
       clearTimeout(querySyncTimeoutRef.current);
     }
 
+    // Keep URL syncing behind the input interaction so fast typing does not
+    // replace the route while the native keyboard is still committing text.
     querySyncTimeoutRef.current = setTimeout(() => {
       startTransition(() => {
         router.replace({
@@ -852,7 +867,7 @@ export default function ExploreScreen() {
           },
         });
       });
-    }, 180);
+    }, 450);
 
     return () => {
       if (querySyncTimeoutRef.current) {
@@ -1075,7 +1090,7 @@ export default function ExploreScreen() {
   }, [newPlaceBannerProgress]);
 
   useEffect(() => {
-    if (isIOSWeb || !backendEnabled || !supabase) {
+    if (process.env.EXPO_PUBLIC_LIVE_CATALOG_BANNERS !== 'true' || isIOSWeb || !backendEnabled || !supabase) {
       return;
     }
 
@@ -1130,19 +1145,19 @@ export default function ExploreScreen() {
   );
   const filteredData = useMemo(
     () =>
-      activeData.filter((spot) =>
-        matchesSpotToFilters(spot, filters, deferredQuery, userLocation),
-      ),
+      activeData.filter(createSpotFilter(filters, deferredQuery, userLocation)),
     [activeData, deferredQuery, filters, userLocation],
   );
-  const mapSearchData = useMemo(() => aggregatePlaceSpotsFromList(getSpotsByTypeFromList(spots, 'place')), [spots]);
+  const mapSearchData = useMemo(() => aggregatePlaceSpotsFromList(
+    getSpotsByTypeFromList(spots, 'place').filter(createSpotFilter(filters, '', userLocation)),
+  ), [spots, filters, userLocation]);
   const searchData = useMemo(
     () => aggregatePlaceSpotsFromList(
-      getSpotsByTypeFromList(spots, 'place').filter(spot =>
-        matchesSpotToFilters(spot, filters, deferredQuery, userLocation),
+      activeTab === 'places' ? filteredData : getSpotsByTypeFromList(spots, 'place').filter(
+        createSpotFilter(filters, deferredQuery, userLocation),
       ),
     ),
-    [spots, filters, deferredQuery, userLocation],
+    [activeTab, filteredData, spots, filters, deferredQuery, userLocation],
   );
   const hasActiveFilters = deferredQuery.trim().length > 0 || isFiltersActive(filters);
   const visibleBaseData =
@@ -1157,8 +1172,13 @@ export default function ExploreScreen() {
     [activeTab, layoutMode, visibleBaseData],
   );
   const visibleData = useMemo(
-    () => sortSpots(groupedVisibleBaseData, filters.sortBy, getLikesCount),
-    [filters.sortBy, getLikesCount, groupedVisibleBaseData],
+    // Use the input state directly for ordering. The deferred value is useful
+    // for filtering large catalogs, but it can briefly lag behind what the
+    // user sees and leave the result list in catalog order.
+    () => draftQuery.trim()
+      ? rankSearchResults(groupedVisibleBaseData, draftQuery, new Date(), 'relevance', getLikesCount)
+      : sortSpots(groupedVisibleBaseData, filters.sortBy, getLikesCount),
+    [draftQuery, filters.sortBy, getLikesCount, groupedVisibleBaseData],
   );
   useEffect(() => {
     if (layoutMode !== 'editorial') {
@@ -1556,6 +1576,25 @@ export default function ExploreScreen() {
     setDraftQuery(nextQuery);
   }
 
+  function returnToDiscoveryHome() {
+    resetFeedViewportToTop();
+    setDraftQuery('');
+    setShowFilterResults(false);
+    setOptimisticQuickCategory(null);
+    setFiltersOpen(false);
+    setFiltersFromMap(false);
+    router.setParams(getExploreHomeParams());
+  }
+
+  function restoreDiscoveryResults(snapshot: ExploreResultsSnapshot) {
+    setDraftQuery(snapshot.query);
+    setShowFilterResults(snapshot.resultsMode);
+    setOptimisticQuickCategory(null);
+    setFiltersOpen(false);
+    setFiltersFromMap(false);
+    router.setParams(getExploreResultsParams(snapshot));
+  }
+
   function resetFeedViewportToTop() {
     lastScrollY.current = 0;
     scrollDirectionRef.current = null;
@@ -1564,16 +1603,18 @@ export default function ExploreScreen() {
     feedScrollRef.current?.scrollTo({ y: 0, animated: false });
   }
 
-  function applyFilters(nextFilters: typeof filters, openResults = false) {
+  function applyFilters(nextFilters: typeof filters, openResults = false, inMap = false) {
     resetFeedViewportToTop();
-    if (openResults) setShowFilterResults(true);
+    if (inMap) setShowFilterResults(false);
+    else if (openResults) setShowFilterResults(true);
     router.replace({
       pathname: '/(tabs)/explore',
       params: {
         ...serializeFilters(nextFilters),
         tab: activeTab,
         query: draftQuery,
-        results: openResults || showFilterResults ? '1' : '',
+        results: !inMap && (openResults || showFilterResults) ? '1' : '',
+        view: inMap ? 'map' : '',
       },
     });
   }
@@ -1783,9 +1824,10 @@ export default function ExploreScreen() {
   function renderSearchRow(options: {
     onChangeText: (value: string) => void;
     onOpenFilters: () => void;
+    marginTop?: number;
   }) {
     return (
-      <View style={styles.searchRow}>
+      <View style={[styles.searchRow, options.marginTop != null && { marginTop: options.marginTop }]}>
         <View style={styles.searchFieldWrap}>
           <SearchField
             value={draftQuery}
@@ -1844,246 +1886,114 @@ export default function ExploreScreen() {
 
   function renderSuggestPlacesSheet() {
     return (
-      <Modal
+      <ContributionSheet
         visible={suggestPlacesVisible}
-        transparent
-        animationType="none"
-        onRequestClose={handleSuggestPlacesRequestClose}
+        progress={suggestModalProgress}
+        title="Sugerir lugares"
+        description="Cuéntanos qué lugares te gustaría encontrar."
+        closeLabel="Cerrar sugerencias"
+        submitLabel={suggestionSubmitting ? 'Enviando...' : 'Enviar sugerencia'}
+        submitting={suggestionSubmitting}
+        onClose={handleSuggestPlacesRequestClose}
+        onSubmit={handleSubmitSuggestion}
       >
-        <View style={styles.suggestModalRoot}>
-          <Animated.View
-            pointerEvents="none"
-            style={[
-              styles.suggestModalBackdrop,
-              {
-                opacity: suggestModalProgress.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [0, 1],
-                }),
-              },
-            ]}
-          />
-          <Pressable style={StyleSheet.absoluteFillObject} onPress={handleSuggestPlacesRequestClose} />
-          <KeyboardAvoidingView
-            pointerEvents="box-none"
-            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-            style={styles.suggestModalKeyboard}
+        <View style={styles.suggestFieldsWrap}>
+          <ScrollView
+            style={styles.suggestFieldsScroll}
+            contentContainerStyle={styles.suggestFields}
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
           >
-            <Animated.View
-              style={[
-                styles.suggestModalCard,
-                {
-                  paddingBottom: 18 + Math.max(insets.bottom, 12),
-                  maxHeight: '84%',
-                },
-                {
-                  opacity: suggestModalProgress,
-                  transform: [
-                    {
-                      translateY: suggestModalProgress.interpolate({
-                        inputRange: [0, 1],
-                        outputRange: [56, 0],
-                      }),
-                    },
-                    {
-                      scale: suggestModalProgress.interpolate({
-                        inputRange: [0, 1],
-                        outputRange: [0.98, 1],
-                      }),
-                    },
-                  ],
-                },
-              ]}
-            >
-              <View style={styles.suggestModalHeader}>
-                <View style={styles.suggestModalTitleWrap}>
-                  <Text style={styles.suggestModalTitle}>Sugerir lugares</Text>
-                  <Text style={styles.suggestModalCopy}>
-                    Escribe uno o varios lugares para revisarlos luego por fecha de sugerencia.
-                  </Text>
+            {suggestedPlacesDraft.map((value, index) => (
+              <View key={`suggest-place-${index}`} style={styles.suggestFieldRow}>
+                <View style={[contributionFormStyles.field, styles.suggestInputWrap]}>
+                  <TextInput
+                    value={value}
+                    onChangeText={(nextValue) => updateSuggestedPlace(index, nextValue)}
+                    placeholder={`Lugar ${index + 1}`}
+                    accessibilityLabel={`Lugar ${index + 1}`}
+                    placeholderTextColor={accountUi.textTertiary}
+                    style={[
+                      contributionFormStyles.input,
+                      styles.suggestInput,
+                      Platform.OS === 'web'
+                        ? ({
+                            outlineWidth: 0,
+                            outlineStyle: 'none',
+                            outlineColor: 'transparent',
+                          } as never)
+                        : null,
+                    ]}
+                  />
                 </View>
-                <Pressable
-                  accessibilityRole="button"
-                  accessibilityLabel="Cerrar sugerencias"
-                  onPress={handleSuggestPlacesRequestClose}
-                  style={styles.suggestModalClose}
-                >
-                  <Ionicons name="close" size={20} color={accountUi.text} />
-                </Pressable>
+
+                {suggestedPlacesDraft.length > 1 ? (
+                  <Pressable
+                    accessibilityRole="button"
+                    accessibilityLabel={`Eliminar lugar ${index + 1}`}
+                    onPress={() => removeSuggestedPlaceField(index)}
+                    style={styles.suggestFieldAction}
+                  >
+                    <Ionicons name="remove" size={20} color={accountUi.text} />
+                  </Pressable>
+                ) : null}
+
+                {index === suggestedPlacesDraft.length - 1 ? (
+                  <Pressable
+                    accessibilityRole="button"
+                    accessibilityLabel="Agregar otro lugar"
+                    onPress={addSuggestedPlaceField}
+                    style={styles.suggestFieldAction}
+                  >
+                    <Ionicons name="add" size={20} color={accountUi.text} />
+                  </Pressable>
+                ) : null}
               </View>
-
-              <View style={styles.suggestFieldsWrap}>
-                <ScrollView
-                  style={styles.suggestFieldsScroll}
-                  contentContainerStyle={styles.suggestFields}
-                  showsVerticalScrollIndicator={false}
-                  keyboardShouldPersistTaps="handled"
-                >
-                  {suggestedPlacesDraft.map((value, index) => (
-                    <View key={`suggest-place-${index}`} style={styles.suggestFieldRow}>
-                      <View style={styles.suggestInputWrap}>
-                        <TextInput
-                          value={value}
-                          onChangeText={(nextValue) => updateSuggestedPlace(index, nextValue)}
-                          placeholder={`Lugar ${index + 1}`}
-                          placeholderTextColor={accountUi.textTertiary}
-                          style={[
-                            styles.suggestInput,
-                            Platform.OS === 'web'
-                              ? ({
-                                  outlineWidth: 0,
-                                  outlineStyle: 'none',
-                                  outlineColor: 'transparent',
-                                } as never)
-                              : null,
-                          ]}
-                        />
-                      </View>
-
-                      {suggestedPlacesDraft.length > 1 ? (
-                        <Pressable
-                          accessibilityRole="button"
-                          accessibilityLabel={`Eliminar lugar ${index + 1}`}
-                          onPress={() => removeSuggestedPlaceField(index)}
-                          style={styles.suggestFieldAction}
-                        >
-                          <Ionicons name="remove" size={20} color={accountUi.text} />
-                        </Pressable>
-                      ) : null}
-
-                      {index === suggestedPlacesDraft.length - 1 ? (
-                        <Pressable
-                          accessibilityRole="button"
-                          accessibilityLabel="Agregar otro lugar"
-                          onPress={addSuggestedPlaceField}
-                          style={styles.suggestFieldAction}
-                        >
-                          <Ionicons name="add" size={20} color={accountUi.text} />
-                        </Pressable>
-                      ) : null}
-                    </View>
-                  ))}
-                </ScrollView>
-              </View>
-
-              <View style={styles.suggestModalFooter}>
-                <AppPrimaryButton
-                  label={suggestionSubmitting ? 'Enviando...' : 'Enviar sugerencia'}
-                  loading={suggestionSubmitting}
-                  onPress={handleSubmitSuggestion}
-                  fullWidth
-                />
-              </View>
-            </Animated.View>
-          </KeyboardAvoidingView>
+            ))}
+          </ScrollView>
         </View>
-      </Modal>
+      </ContributionSheet>
     );
   }
 
   function renderFeedbackSheet() {
     return (
-      <Modal
+      <ContributionSheet
         visible={feedbackVisible}
-        transparent
-        animationType="none"
-        onRequestClose={handleFeedbackRequestClose}
+        progress={feedbackModalProgress}
+        title="Añadir feedback"
+        description="Comparte una idea o cuéntanos qué mejorar."
+        closeLabel="Cerrar feedback"
+        submitLabel={feedbackSubmitting ? 'Guardando...' : 'Guardar feedback'}
+        submitting={feedbackSubmitting}
+        onClose={handleFeedbackRequestClose}
+        onSubmit={handleSubmitFeedback}
       >
-        <View style={styles.suggestModalRoot}>
-          <Animated.View
-            pointerEvents="none"
-            style={[
-              styles.suggestModalBackdrop,
-              {
-                opacity: feedbackModalProgress.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [0, 1],
-                }),
-              },
-            ]}
-          />
-          <Pressable style={StyleSheet.absoluteFillObject} onPress={handleFeedbackRequestClose} />
-          <KeyboardAvoidingView
-            pointerEvents="box-none"
-            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-            style={styles.suggestModalKeyboard}
-          >
-            <Animated.View
+        <ScrollView style={styles.feedbackFieldsScroll} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
+          <View style={[contributionFormStyles.field, styles.feedbackTextAreaWrap]}>
+            <TextInput
+              value={feedbackDraft}
+              onChangeText={setFeedbackDraft}
+              placeholder="Escribe tu idea o cuéntanos qué pasó…"
+              accessibilityLabel="Tu feedback"
+              placeholderTextColor={accountUi.textTertiary}
+              multiline
+              textAlignVertical="top"
               style={[
-                styles.suggestModalCard,
-                {
-                  paddingBottom: 18 + Math.max(insets.bottom, 12),
-                  maxHeight: '78%',
-                },
-                {
-                  opacity: feedbackModalProgress,
-                  transform: [
-                    {
-                      translateY: feedbackModalProgress.interpolate({
-                        inputRange: [0, 1],
-                        outputRange: [56, 0],
-                      }),
-                    },
-                    {
-                      scale: feedbackModalProgress.interpolate({
-                        inputRange: [0, 1],
-                        outputRange: [0.98, 1],
-                      }),
-                    },
-                  ],
-                },
+                contributionFormStyles.input,
+                styles.feedbackTextArea,
+                Platform.OS === 'web'
+                  ? ({
+                      outlineWidth: 0,
+                      outlineStyle: 'none',
+                      outlineColor: 'transparent',
+                    } as never)
+                  : null,
               ]}
-            >
-              <View style={styles.suggestModalHeader}>
-                <View style={styles.suggestModalTitleWrap}>
-                  <Text style={styles.suggestModalTitle}>Añadir feedback</Text>
-                  <Text style={styles.suggestModalCopy}>
-                    Deja ideas, problemas o mejoras que quieras que revisemos e implementemos después.
-                  </Text>
-                </View>
-                <Pressable
-                  accessibilityRole="button"
-                  accessibilityLabel="Cerrar feedback"
-                  onPress={handleFeedbackRequestClose}
-                  style={styles.suggestModalClose}
-                >
-                  <Ionicons name="close" size={20} color={accountUi.text} />
-                </Pressable>
-              </View>
-
-              <View style={styles.feedbackTextAreaWrap}>
-                <TextInput
-                  value={feedbackDraft}
-                  onChangeText={setFeedbackDraft}
-                  placeholder="Escribe aquí todo lo que notaste, ideas nuevas, bugs o mejoras que quieras guardar..."
-                  placeholderTextColor={accountUi.textTertiary}
-                  multiline
-                  textAlignVertical="top"
-                  style={[
-                    styles.feedbackTextArea,
-                    Platform.OS === 'web'
-                      ? ({
-                          outlineWidth: 0,
-                          outlineStyle: 'none',
-                          outlineColor: 'transparent',
-                        } as never)
-                      : null,
-                  ]}
-                />
-              </View>
-
-              <View style={styles.suggestModalFooter}>
-                <AppPrimaryButton
-                  label={feedbackSubmitting ? 'Guardando...' : 'Guardar feedback'}
-                  loading={feedbackSubmitting}
-                  onPress={handleSubmitFeedback}
-                  fullWidth
-                />
-              </View>
-            </Animated.View>
-          </KeyboardAvoidingView>
-        </View>
-      </Modal>
+            />
+          </View>
+        </ScrollView>
+      </ContributionSheet>
     );
   }
 
@@ -2252,32 +2162,37 @@ export default function ExploreScreen() {
     return (
       <View style={styles.screen}>
         <ExploreDiscovery
+          onApplyFilters={nextFilters => applyFilters(nextFilters)}
+          filters={filters}
+          sortBy={filters.sortBy}
+          getLikesCount={getLikesCount}
           resultsMode={showFilterResults}
           avatar={avatarUrl}
           name={greetingName}
           query={draftQuery}
           onQuery={updateQuery}
           onSearchBack={() => { setShowFilterResults(false); setOptimisticQuickCategory(null); changeTab(activeTab); }}
-          onFilters={() => setFiltersOpen(true)}
+          onHome={returnToDiscoveryHome}
+          onRestoreResults={restoreDiscoveryResults}
+          onFilters={(inMap = false, mapArea = null) => { setFiltersFromMap(inMap); setFiltersMapArea(mapArea); setFiltersOpen(true); }}
+          onMapCategory={value => applyFilters({ ...filters, interests: filters.interests.includes(value) ? [] : [value] }, false, true)}
           activeFiltersCount={activeFiltersCount}
-          onNotifications={() => setNotificationsOpen(true)}
+          onNotifications={() => router.push('/notifications')}
           onCategory={toggleQuickCategory}
           selected={filters.interests}
           spots={visibleData}
           searchSpots={searchData}
           mapSearchSpots={mapSearchData}
+          locationFilters={filters.hubName}
           isSaved={isBookmarked}
           toggleSaved={toggleBookmark}
           href={getSpotHref}
-          onAll={() => router.push({ pathname: '/discover', params: { ...serializeFilters(filters), query: draftQuery } })}
-          onMap={() => { setLayoutMode('map'); setDiscoveryHome(false); }}
-          onSuggest={() => setSuggestPlacesOpen(true)}
-          onFeedback={openFeedback}
+          onAll={() => router.push({ pathname: '/discover', params: { ...serializeFilters({ ...filters, openNowOnly: true }), query: draftQuery } })}
+          onMap={() => router.setParams({ ...serializeFilters(filters), tab: 'places', query: draftQuery, view: 'map', results: showFilterResults ? '1' : '' })}
         />
         {renderSuggestPlacesSheet()}
-        <PlaceNotifications visible={notificationsOpen} spots={aggregatePlaceSpotsFromList(getSpotsByTypeFromList(spots, 'place'))} onClose={() => setNotificationsOpen(false)} onPlace={(spot) => { setNotificationsOpen(false); router.push(getSpotHref(spot)); }} />
         {renderFeedbackSheet()}
-        {filtersOpen ? <FiltersSheet activeTab={activeTab} initialFilters={filters} query={deferredQuery} onApply={nextFilters => applyFilters(nextFilters, true)} onClearQuery={() => setDraftQuery('')} onClose={() => setFiltersOpen(false)} /> : null}
+        {filtersOpen ? <FiltersSheet activeTab={activeTab} initialFilters={filters} query={deferredQuery} mapArea={filtersFromMap ? filtersMapArea : null} onApply={nextFilters => applyFilters(nextFilters, !filtersFromMap, filtersFromMap)} onClearQuery={() => setDraftQuery('')} onClose={() => setFiltersOpen(false)} /> : null}
       </View>
     );
   }
@@ -2289,7 +2204,7 @@ export default function ExploreScreen() {
           style={[
             styles.webPushToastWrap,
             {
-              paddingTop: Math.max(insets.top, 16),
+              paddingTop: topContentInset(insets),
               opacity: webPushToastProgress,
               transform: [
                 {
@@ -2328,7 +2243,8 @@ export default function ExploreScreen() {
         style={[
           styles.topBar,
           {
-            paddingTop: Math.max(insets.top, 16) + 14,
+            top: topContentInset(insets),
+            paddingTop: 0,
             backgroundColor: theme.background,
             opacity: topBarIntro,
             borderBottomLeftRadius: topBarBottomRadius,
@@ -2368,7 +2284,7 @@ export default function ExploreScreen() {
             subtitle: encouragement,
             textPrimaryColor: theme.textPrimary,
             textSecondaryColor: theme.textSecondary,
-            onNotificationsPress: handleNotificationsPress,
+            onNotificationsPress: () => router.push('/notifications'),
             onLayout: (event) => {
               const nextHeight = event.nativeEvent.layout.height;
               if (nextHeight !== topBarHeight) {
@@ -2378,7 +2294,11 @@ export default function ExploreScreen() {
           })}
         </Animated.View>
 
-        {renderSearchRow({ onChangeText: updateQuery, onOpenFilters: () => setFiltersOpen(true) })}
+        {renderSearchRow({
+          onChangeText: updateQuery,
+          onOpenFilters: () => setFiltersOpen(true),
+          marginTop: layoutMode === 'map' ? 12 : undefined,
+        })}
 
         <Animated.View
           style={[
@@ -2513,7 +2433,7 @@ export default function ExploreScreen() {
       ) : null}
 
       <Animated.ScrollView
-        ref={feedScrollRef}
+        {...returnScroll}
         style={[
           styles.feed,
           {
@@ -2532,7 +2452,7 @@ export default function ExploreScreen() {
         contentContainerStyle={[
           styles.feedContent,
           {
-            paddingTop: topBarTotalHeight + 12,
+            paddingTop: topContentInset(insets) + topBarTotalHeight,
             paddingBottom: 28 + insets.bottom,
             flexGrow: 1,
           },
@@ -2540,7 +2460,7 @@ export default function ExploreScreen() {
         bounces={!disableFeedBounce}
         alwaysBounceVertical={!disableFeedBounce}
         showsVerticalScrollIndicator={false}
-        onScroll={handleScroll}
+        onScroll={event => { returnScroll.onScroll(event); handleScroll(event); }}
         scrollEventThrottle={16}
         refreshControl={Platform.OS !== 'web' ? (
           <RefreshControl
@@ -2591,7 +2511,7 @@ export default function ExploreScreen() {
                         <Link key={spot.id} href={getSpotHref(spot)} asChild>
                           <Pressable style={styles.listCard}>
                           <View style={styles.listCardImageWrap}>
-                            <Image source={{ uri: spot.image }} style={styles.listCardImage} />
+                            <FeedPlacePhoto spot={spot} style={styles.listCardImage} />
                             {isNewSpot(spot) ? (
                               <View style={styles.newBadgeWrap}>
                                 <View style={styles.newBadge}>
@@ -2693,8 +2613,8 @@ export default function ExploreScreen() {
               {renderedVisibleData.map((spot) => (
                   <Link key={spot.id} href={getSpotHref(spot)} asChild>
                     <Pressable style={styles.gridCard}>
-                    <ImageBackground
-                      source={{ uri: spot.image }}
+                    <FeedPlacePhoto
+                      spot={spot}
                       style={styles.gridCardImage}
                       imageStyle={styles.gridCardImageStyle}
                     >
@@ -2732,7 +2652,7 @@ export default function ExploreScreen() {
                           ) : null}
                         </View>
                       </View>
-                    </ImageBackground>
+                    </FeedPlacePhoto>
                     <View style={styles.gridCardBody}>
                       <Text numberOfLines={2} style={[styles.gridCardTitle, { color: theme.textPrimary }]}>
                         {spot.type === 'event' ? spot.name : spot.brandName}
@@ -2775,8 +2695,8 @@ export default function ExploreScreen() {
               {renderedVisibleData.map((spot) => (
                   <Link key={spot.id} href={getSpotHref(spot)} asChild>
                     <Pressable style={styles.listCard}>
-                    <ImageBackground
-                      source={{ uri: spot.image }}
+                    <FeedPlacePhoto
+                      spot={spot}
                       style={styles.listCardImage}
                       imageStyle={styles.listCardImageStyle}
                     >
@@ -2814,7 +2734,7 @@ export default function ExploreScreen() {
                           ) : null}
                         </View>
                       </View>
-                    </ImageBackground>
+                    </FeedPlacePhoto>
                     <View style={styles.listCardBody}>
                       <Text numberOfLines={2} style={[styles.listCardTitle, { color: theme.textPrimary }]}>
                         {spot.type === 'event' ? spot.name : spot.brandName}
@@ -2864,8 +2784,8 @@ export default function ExploreScreen() {
               <StackedFeedCard key={spot.id} index={index}>
                 <Link href={getSpotHref(spot)} asChild>
                   <Pressable style={styles.card}>
-                  <ImageBackground
-                    source={{ uri: spot.image }}
+                  <FeedPlacePhoto
+                    spot={spot}
                     style={styles.cardImage}
                     imageStyle={styles.cardImageStyle}
                   >
@@ -2899,7 +2819,7 @@ export default function ExploreScreen() {
                           {spot.type === 'event' ? spot.name : spot.brandName}
                         </Text>
                       </View>
-	                  </ImageBackground>
+	                  </FeedPlacePhoto>
 	                  <View style={styles.cardBody}>
                       <View style={styles.cardPanelTopRow}>
                         <Text numberOfLines={3} style={styles.cardPanelDescription}>
@@ -3375,70 +3295,16 @@ const styles = StyleSheet.create({
   feedbackFabSecondaryText: {
     color: spotsUi.textPrimary,
   },
-  suggestModalRoot: {
-    flex: 1,
-    justifyContent: 'flex-end',
-  },
-  suggestModalBackdrop: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(15,8,13,0.52)',
-  },
-  suggestModalKeyboard: {
-    flex: 1,
-    justifyContent: 'flex-end',
-  },
-  suggestModalCard: {
-    width: '100%',
-    borderTopLeftRadius: 28,
-    borderTopRightRadius: 28,
-    backgroundColor: accountUi.surface,
-    paddingHorizontal: 20,
-    paddingTop: 18,
-    paddingBottom: 18,
-    gap: 18,
-  },
-  suggestModalHeader: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: 14,
-  },
-  suggestModalTitleWrap: {
-    flex: 1,
-    gap: 6,
-  },
-  suggestModalTitle: {
-    color: accountUi.text,
-    fontSize: 18,
-    lineHeight: 24,
-    fontWeight: '600',
-  },
-  suggestModalCopy: {
-    color: accountUi.textSecondary,
-    fontSize: 12,
-    lineHeight: 17,
-    fontWeight: '400',
-  },
-  suggestModalClose: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: accountUi.surfaceMuted,
-  },
   suggestFieldsWrap: {
-    flex: 1,
+    flexShrink: 1,
     minHeight: 0,
   },
   suggestFieldsScroll: {
-    flex: 1,
+    flexShrink: 1,
   },
   suggestFields: {
     gap: 12,
     paddingBottom: 8,
-  },
-  suggestModalFooter: {
-    paddingTop: 4,
   },
   suggestFieldRow: {
     flexDirection: 'row',
@@ -3447,52 +3313,38 @@ const styles = StyleSheet.create({
   },
   suggestInputWrap: {
     flex: 1,
+    minWidth: 0,
     minHeight: 48,
-    borderRadius: 24,
-    borderWidth: 1,
-    borderColor: '#d6d6dc',
-    backgroundColor: accountUi.surface,
     justifyContent: 'center',
-    paddingHorizontal: 14,
   },
   suggestInput: {
     minHeight: 46,
-    color: accountUi.text,
-    fontSize: 16,
-    fontWeight: '400',
-    paddingVertical: 0,
+  },
+  feedbackFieldsScroll: {
+    flexShrink: 1,
+    minHeight: 0,
   },
   feedbackTextAreaWrap: {
-    minHeight: 220,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: '#d6d6dc',
-    backgroundColor: accountUi.surface,
-    paddingHorizontal: 14,
+    minHeight: 180,
     paddingVertical: 14,
   },
   feedbackTextArea: {
-    minHeight: 188,
-    color: accountUi.text,
-    fontSize: 16,
-    lineHeight: 20,
-    fontWeight: '400',
+    minHeight: 152,
+    lineHeight: 22,
   },
   suggestFieldAction: {
-    width: 42,
-    height: 42,
-    borderRadius: 14,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: accountUi.surfaceMuted,
-    borderWidth: 1,
-    borderColor: '#dedee3',
+    backgroundColor: accountUi.surface,
   },
   filterButton: {
     width: 48,
     height: 48,
     borderRadius: 14,
-    backgroundColor: '#ffffff',
+    backgroundColor: accountUi.surface,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -3513,7 +3365,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   quickCategoryChipActive: {
-    backgroundColor: '#ffffff',
+    backgroundColor: accountUi.surface,
   },
   quickCategoryChipFill: {
     position: 'absolute',
@@ -3564,7 +3416,7 @@ const styles = StyleSheet.create({
     width: 54,
     height: 54,
     borderRadius: 27,
-    backgroundColor: '#ffffff',
+    backgroundColor: accountUi.surface,
     borderWidth: 1,
     borderColor: 'transparent',
     alignItems: 'center',

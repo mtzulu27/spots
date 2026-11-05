@@ -914,6 +914,7 @@ async function main() {
       visitedCategories = await scrapePdfLike(page, screenshots, rawRecords);
     } else {
       await dismissOverlays(page);
+
       await snapshotState(page, 'inicio', screenshots, rawRecords);
 
       const categories = await discoverCategoryButtons(page);

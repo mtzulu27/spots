@@ -7,7 +7,7 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "./assets/splash-logo-rojo.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -27,8 +27,8 @@
     },
     "web": {
       "favicon": "./assets/favicon.png",
-      "backgroundColor": "#050305",
-      "themeColor": "#050305",
+      "backgroundColor": "#ffffff",
+      "themeColor": "#ffffff",
       "display": "fullscreen"
     },
     "plugins": [

@@ -1,4 +1,4 @@
-import { Ionicons } from '@expo/vector-icons';
+import { SpotsIcon as Ionicons } from '@/components/spots-icon';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'expo-router';
 import {

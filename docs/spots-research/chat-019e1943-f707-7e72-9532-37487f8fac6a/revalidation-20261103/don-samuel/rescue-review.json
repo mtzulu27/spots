@@ -1,0 +1,19 @@
+{
+  "checkedAt": "2026-11-03",
+  "queries": [
+    "\"Don Samuel\" \"Lago Verde\" cierre",
+    "\"donsamuelbakery\" \"punto de venta\""
+  ],
+  "outcome": "No relevant verified result in returned search results; unrelated Chilean/other results rejected. Not evidence that facts do not exist.",
+  "placesDecision": "Both Places searches inspected. All candidates belong to the mall, other brands or homonyms; none selected as Don Samuel. Do not take mall operational status as branch status or its coordinates as an exact storefront pin.",
+  "taxonomyDecision": "Preserve Lago Verde as mall and Pance as neighborhood: official Menupp address now corroborates the original classification.",
+  "coordination": {
+    "status": "resolved",
+    "note": "User explicitly reauthorized coordination; Main confirmed IDs3650/5136 free. Integrator completed with lock, immediate reread and expected SHA. Main notified window released."
+  },
+  "followupQueries": [
+    "\"donsamuelbakery\" Cali",
+    "\"Don Samuel Healthy Bakery\" \"Lago Verde\""
+  ],
+  "followupOutcome": "Both targeted queries returned empty search results. No new verified branch or closure-duration source."
+}

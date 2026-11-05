@@ -2,10 +2,12 @@ import { Redirect, Tabs } from 'expo-router';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { appColors } from '@/components/app-ui';
 import { useAuthStore } from '@/lib/auth-store';
-import { localPreviewEnabled } from '@/lib/local-preview';
+import { isLocalGuest } from '@/lib/local-guest';
 
 export default function TabsLayout() {
   const { loading, user } = useAuthStore();
+
+  if (isLocalGuest()) return <TabsNavigator />;
 
   if (loading) {
     return (
@@ -15,7 +17,7 @@ export default function TabsLayout() {
     );
   }
 
-  if (!user && !localPreviewEnabled) {
+  if (!user) {
     return <Redirect href="/(auth)/login" />;
   }
 

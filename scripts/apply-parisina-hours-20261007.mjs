@@ -1,0 +1,4 @@
+import fs from 'node:fs';
+const root='/Users/mateo/Documents/Playground'; const paths=[`${root}/apps/mobile/public/spots-catalog.json`,`${root}/apps/mobile/dist/spots-catalog.json`]; const now=new Date().toISOString();
+for(const file of paths){const c=JSON.parse(fs.readFileSync(file,'utf8'));const b=c.branches.find(x=>x.slug==='parisina-cali');if(b){b.hours='Lun-Jue 12:00:00-20:30:00 · Vie-Dom 12:00:00-21:30:00';b.source_url='https://www.rappi.com.co/restaurantes/900442515-parisina';b.updated_at=now;}c.generatedAt=now;fs.writeFileSync(file,JSON.stringify(c,null,2)+'\n');}
+const t=`${root}/docs/spots-ingestion-tracker.json`;const tr=JSON.parse(fs.readFileSync(t,'utf8'));const e=tr.entries?.find(x=>x.slug==='parisina');if(e)e.notes=[...(new Set([...(e.notes||[]),'Se añadió el horario de la sede principal desde Rappi.']))];tr.updatedAt=now;fs.writeFileSync(t,JSON.stringify(tr,null,2)+'\n');console.log('updated parisina-cali');

@@ -5,8 +5,10 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import { AppAvatar, AppIconButton } from '@/components/app-ui';
 import { accountUi as ui } from '@/lib/account-ui';
+import { topContentInset } from '@/lib/layout-insets';
 import { useAuthStore } from '@/lib/auth-store';
 import { supabase } from '@/lib/supabase';
+import { prepareAvatar } from '@/lib/avatar-upload';
 
 export default function EditProfile() {
   const router = useRouter();
@@ -25,13 +27,10 @@ export default function EditProfile() {
     try {
       let nextAvatar = avatarUrl ?? undefined;
       if (photo) {
-        const response = await fetch(photo.uri);
-        const bytes = await response.arrayBuffer();
-        if (bytes.byteLength > 5 * 1024 * 1024) throw new Error('La foto debe pesar menos de 5 MB.');
-        const mime = photo.mimeType || 'image/jpeg';
+        const { bytes, mime } = await prepareAvatar(photo.uri, photo.mimeType || 'image/jpeg');
         if (!['image/jpeg', 'image/png', 'image/webp'].includes(mime)) throw new Error('Usa una foto JPG, PNG o WebP.');
         const path = `${user.id}/${Date.now()}.${mime.split('/')[1]}`;
-        const upload = await supabase.storage.from('avatars').upload(path, bytes, { contentType: mime });
+        const upload = await supabase.storage.from('avatars').upload(path, bytes, { contentType: mime, cacheControl: '31536000' });
         if (upload.error) throw upload.error;
         nextAvatar = supabase.storage.from('avatars').getPublicUrl(path).data.publicUrl;
       }
@@ -46,7 +45,7 @@ export default function EditProfile() {
     finally { setBusy(false); }
   }
   return <View style={{ flex: 1, backgroundColor: ui.bg }}><Stack.Screen options={{ headerShown: false }} />
-    <View style={[s.header, { paddingTop: Math.max(insets.top, 16) }]}><AppIconButton name="arrow-back" tone="light" accessibilityLabel="Volver a ajustes" onPress={() => router.canGoBack() ? router.back() : router.replace('/settings')} /><Text style={s.title}>Editar perfil</Text><View style={{ width: 44 }} /></View>
+    <View style={[s.header, { paddingTop: topContentInset(insets) }]}><AppIconButton name="arrow-back" tone="light" accessibilityLabel="Volver a ajustes" onPress={() => router.canGoBack() ? router.back() : router.replace('/settings')} /><Text style={s.title}>Editar perfil</Text><View style={{ width: 44 }} /></View>
     <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ padding: 20, paddingBottom: insets.bottom + 24, gap: 24 }}>
       <Pressable disabled={busy} accessibilityRole="button" accessibilityLabel="Cambiar foto de perfil" style={{ alignItems: 'center', gap: 12 }} onPress={async () => {
         try { const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], allowsEditing: true, aspect: [1, 1], quality: .8 }); if (!result.canceled) setPhoto(result.assets[0]); }

@@ -1,0 +1,27 @@
+{
+  "valid": true,
+  "canAdvance": false,
+  "status": "blocked",
+  "errors": [],
+  "pending": [
+    "source instagram_session",
+    "source media_review",
+    "place:3650.description",
+    "place:3650.cover",
+    "place:3650.gallery",
+    "place:3650.branches_inventory",
+    "branch:5136.address",
+    "branch:5136.coordinates",
+    "branch:5136.map_link",
+    "branch:5136.business_status",
+    "branch:5136.weekly_hours",
+    "branch:5136.holiday_hours",
+    "branch:5136.budget_scenarios",
+    "branch:5136.access",
+    "branch:5136.visibility",
+    "remainingActions",
+    "verification"
+  ],
+  "limitation": "Validates declared coverage and evidence files, not the truth of sources or visual inspection.",
+  "cliExitCode": 1
+}

@@ -139,6 +139,14 @@ function normalizeNeighborhoodLabel(neighborhood, mall, address, slug) {
   const normalizedNeighborhood = normalizeToken(cleaned);
   const context = normalizeToken(`${mall} ${address} ${slug}`);
 
+  if (
+    normalizedNeighborhood.includes('santa monica') ||
+    context.includes('santa monica residencial') ||
+    context.includes('santa monica residential')
+  ) {
+    return 'Granada';
+  }
+
   if (context.includes('cl 9 #56-250') || context.includes('cl. 9 #56-250')) {
     return 'Pampa Linda';
   }
@@ -209,6 +217,10 @@ function normalizeNeighborhoodLabel(neighborhood, mall, address, slug) {
 
   if (normalizeToken(mall) === 'mallplaza') {
     return 'Guadalupe';
+  }
+
+  if (normalizedNeighborhood === 'lago verde' || normalizeToken(mall) === 'lago verde') {
+    return 'Pance';
   }
 
   if (normalizedNeighborhood === 'centro comercial mallplaza') {

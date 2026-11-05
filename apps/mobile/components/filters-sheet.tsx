@@ -1,4 +1,4 @@
-import { Ionicons } from '@expo/vector-icons';
+import { SpotsIcon as Ionicons } from '@/components/spots-icon';
 import { startTransition, useDeferredValue, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import {
   Animated,
@@ -39,6 +39,8 @@ import { useLocationStore } from '@/lib/location-store';
 import { useRelayoutSubscription } from '@/lib/relayout';
 import { useSpotsStore } from '@/lib/spots-store';
 import { accountUi } from '@/lib/account-ui';
+import { isInsideMapArea, type MapSearchBounds } from '@/lib/explore-map-search';
+import { registeredCommercialCenters } from '@/lib/commercial-centers';
 
 
 const MIN_PRICE = 0;
@@ -55,6 +57,7 @@ const filtersUi = {
   textTertiary: accountUi.textTertiary,
   accent: accountUi.accent,
   accentSoft: accountUi.accentSoft,
+  border: accountUi.border,
 };
 
 const chipTextBase = {
@@ -62,10 +65,10 @@ const chipTextBase = {
   fontWeight: '500' as const,
 };
 
-const chipTextDefaultColor = '#5f5f67';
-const chipTextActiveColor = '#000000';
+const chipTextDefaultColor = accountUi.textSecondary;
+const chipTextActiveColor = accountUi.text;
 
-const dayOptions = [
+export const dayOptions = [
   { label: 'Cualquier día', shortLabel: 'Cualquier día', value: 'Any' },
   { label: 'Domingo', shortLabel: 'D', value: 'Dom' },
   { label: 'Lunes', shortLabel: 'L', value: 'Lun' },
@@ -247,7 +250,7 @@ function getCategoryAllSuboptions(option: CategoryOption) {
   );
 }
 
-const categoryOptions: CategoryOption[] = [
+const unorderedCategoryOptions: CategoryOption[] = [
   {
     key: 'arte-cultura',
     label: 'Arte y cultura',
@@ -275,12 +278,8 @@ const categoryOptions: CategoryOption[] = [
       { label: 'Cerveza', value: 'Cerveza' },
       { label: 'Cocktails', value: 'Cocktails' },
       { label: 'Vino', value: 'Vino' },
-      { label: 'Café', value: 'Café' },
-      { label: 'Tardear', value: 'Tardear' },
       { label: 'Cerveza artesanal', value: 'Cerveza artesanal' },
-      { label: 'Rooftop', value: 'Rooftop' },
       { label: 'Pub', value: 'Pub' },
-      { label: 'Terraza', value: 'Terraza' },
       { label: 'Speakeasy', value: 'Speakeasy' },
       { label: 'After office', value: 'After office' },
     ],
@@ -360,6 +359,13 @@ const categoryOptions: CategoryOption[] = [
   },
 ];
 
+const categoryOrder = ['Comida', 'Tomar algo', 'Vida nocturna'];
+export const categoryOptions = [...unorderedCategoryOptions].sort((a, b) => {
+  const aIndex = categoryOrder.indexOf(a.label);
+  const bIndex = categoryOrder.indexOf(b.label);
+  return (aIndex === -1 ? categoryOrder.length : aIndex) - (bIndex === -1 ? categoryOrder.length : bIndex);
+});
+
 function inferSelectedCategoryKey(values: string[]) {
   for (const option of categoryOptions) {
     if (values.includes(option.label)) {
@@ -393,28 +399,28 @@ function normalizeFilterValue(value: string) {
     .trim();
 }
 
-const sortOptions: Array<{ label: string; value: ExploreSort }> = [
+export const sortOptions: Array<{ label: string; value: ExploreSort }> = [
   { label: 'Más nuevos', value: 'recent' },
   { label: 'Mejor calificados', value: 'topRated' },
   { label: 'Más económico', value: 'priceAsc' },
   { label: 'Más costoso', value: 'priceDesc' },
 ];
 
-const distancePresetOptions = [
+export const distancePresetOptions = [
   { label: 'Hasta 3 km', value: 3 },
   { label: 'Hasta 5 km', value: 5 },
   { label: 'Hasta 10 km', value: 10 },
   { label: 'Más de 10 km', value: -10 },
 ] as const;
 
-const budgetPresetOptions = [
+export const budgetPresetOptions = [
   { label: 'Hasta $20k', min: MIN_PRICE, max: 20000 },
   { label: '$20k – $40k', min: 20000, max: 40000 },
   { label: '$40k – $70k', min: 40000, max: 70000 },
   { label: 'Más de $70k', min: 70000, max: MAX_PRICE },
 ] as const;
 
-const peoplePresetOptions = [
+export const peoplePresetOptions = [
   { label: 'Pareja', value: 2 },
   { label: '3-4', value: 4 },
   { label: '5+', value: 5 },
@@ -439,7 +445,7 @@ const idealForOptions = [
   { label: 'Naturaleza', value: 'naturaleza' },
 ] as const;
 
-const whenPresetOptions = [
+export const whenPresetOptions = [
   { label: 'Abierto ahora', value: 'now' },
   { label: 'Fin de semana', value: 'weekend' },
   { label: 'Festivos', value: 'holiday' },
@@ -465,6 +471,8 @@ type FiltersSheetProps = {
   onApply: (filters: ExploreFilters) => void;
   onClearQuery?: () => void;
   onClose: () => void;
+  hideSort?: boolean;
+  mapArea?: MapSearchBounds | null;
 };
 
 type DynamicSectionKey =
@@ -482,6 +490,8 @@ export function FiltersSheet({
   onApply,
   onClearQuery,
   onClose,
+  hideSort = false,
+  mapArea,
 }: FiltersSheetProps) {
   useRelayoutSubscription();
   const insets = useSafeAreaInsets();
@@ -676,7 +686,7 @@ export function FiltersSheet({
   const resultsCount = useMemo(() => {
     const filteredSpots = sortSpots(
       activeData.filter((spot) =>
-        matchesSpotToFilters(spot, deferredFilters, query, userLocation),
+        (!mapArea || isInsideMapArea(spot, mapArea)) && matchesSpotToFilters(spot, deferredFilters, query, userLocation),
       ),
       sortBy,
     );
@@ -686,7 +696,7 @@ export function FiltersSheet({
     }
 
     return aggregatePlaceSpotsFromList(filteredSpots).length;
-  }, [activeData, activeTab, deferredFilters, query, sortBy, userLocation]);
+  }, [activeData, activeTab, deferredFilters, query, sortBy, userLocation, mapArea]);
   const neighborhoodOptions = useMemo(() => {
     return Array.from(
       new Set(
@@ -775,6 +785,15 @@ export function FiltersSheet({
           });
         }
       }
+    });
+
+    registeredCommercialCenters.forEach((center) => {
+      if (filteredMallSearch && ![center.name, center.neighborhood, ...center.aliases]
+        .some(label => label.toLocaleLowerCase('es').includes(filteredMallSearch))) return;
+      const key = center.name.toLocaleLowerCase('es');
+      const current = mallCounts.get(key);
+      if (current) current.sectors.add(center.neighborhood);
+      else mallCounts.set(key, { mall: center.name, count: 0, sectors: new Set([center.neighborhood]) });
     });
 
     const zones: LocationOption[] = Array.from(zoneCounts.entries())
@@ -1453,7 +1472,7 @@ export function FiltersSheet({
             contentContainerStyle={[
               styles.content,
               {
-                paddingBottom: 132 + insets.bottom,
+                paddingBottom: 12,
                 flexGrow: 1,
               },
             ]}
@@ -1462,136 +1481,32 @@ export function FiltersSheet({
             onScroll={handleFiltersScroll}
             scrollEventThrottle={16}
           >
-          <Section title="Ordenar por" expanded
-            actionLabel={sortBy !== DEFAULT_FILTERS.sortBy ? 'Quitar' : undefined}
-            onActionPress={() => setSortBy(DEFAULT_FILTERS.sortBy)}>
-            <View style={styles.sortRow}>
-              {sortOptions.map((option) => {
-                const active = sortBy === option.value;
-                return (
-                  <Pressable
-                    key={option.value}
-                    style={[styles.sortChip, active && styles.sortChipActive]}
-                    onPress={() => setSortBy(option.value)}
-                  >
-                    <Text style={[styles.sortChipText, active && styles.sortChipTextActive]}>
-                      {option.label}
-                    </Text>
-                  </Pressable>
-                );
-              })}
-            </View>
-          </Section>
-
-          <Divider />
-
-          <Section
-            title="Categoría"
-            {...accordion('category')}
-            activeCount={new Set(selectedCategories.filter(value => categorySelectionValues.includes(value))).size}
-            actionLabel={hasCategorySelection ? 'Quitar' : undefined}
-            onActionPress={hasCategorySelection ? clearCategorySelections : undefined}
-            onLayout={(event) => handleDynamicSectionLayout('category', event)}
-          >
-            <View style={styles.categoryRow}>
-              {visibleCategoryOptions.map((option) => {
-                const active = expandedCategoryKey === option.key;
-                return (
-                  <Pressable
-                    key={option.key}
-                    style={[styles.categoryPill, active && styles.categoryPillActive]}
-                    onPress={() => toggleCategory(option.key)}
-                  >
-                    <CategoryIcon category={option.label} size={20} color={active ? chipTextActiveColor : chipTextDefaultColor} />
-                    <Text style={[styles.categoryPillText, active && styles.categoryPillTextActive]}>
-                      {option.label}
-                    </Text>
-                  </Pressable>
-                );
-              })}
-            </View>
-            {expandedPrimaryCategory ? (
-              <View style={styles.subcategoryBlock}>
-                {sortedExpandedMoments.length > 0 ? (
-                  <>
-                    <View style={styles.sectionHeaderRow}>
-                      <Text style={styles.subcategoryLabel}>Momentos</Text>
-                      {hasExpandedMomentSelection ? (
-                        <Pressable onPress={clearExpandedMoments} hitSlop={8}>
-                          <Text style={styles.sectionActionText}>Quitar</Text>
-                        </Pressable>
-                      ) : null}
-                    </View>
-                    <View style={styles.subcategoryRow}>
-                      {sortedExpandedMoments.map((subcategory) => {
-                        const active = selectedCategories.includes(subcategory.value);
-                        return (
-                          <Pressable
-                            key={subcategory.value}
-                            style={[styles.subcategoryPill, active && styles.subcategoryPillActive]}
-                            onPress={() => toggleSubcategory(subcategory.value)}
-                          >
-                            <Text style={[styles.subcategoryPillText, active && styles.subcategoryPillTextActive]}>
-                              {subcategory.label}
-                            </Text>
-                          </Pressable>
-                        );
-                      })}
-                    </View>
-                  </>
-                ) : null}
-                {((sortedExpandedMoments.length === 0) || selectedFoodMomentValues.length > 0) && sortedExpandedSubcategories.length > 0 ? (
-                  <>
-                    <View style={styles.sectionHeaderRow}>
-                      <Text style={styles.subcategoryLabel}>
-                        {sortedExpandedMoments.length > 0 ? 'Relacionadas' : 'Subcategorías'}
-                      </Text>
-                      {hasExpandedSubcategorySelection ? (
-                        <Pressable onPress={clearExpandedSubcategories} hitSlop={8}>
-                          <Text style={styles.sectionActionText}>Quitar</Text>
-                        </Pressable>
-                      ) : null}
-                    </View>
-                    {visibleSubcategories.length > 0 ? (
-                      <View style={styles.subcategoryRow}>
-                        {visibleSubcategories.map((subcategory) => {
-                          const active = selectedCategories.includes(subcategory.value);
-                          return (
-                            <Pressable
-                              key={subcategory.value}
-                              style={[styles.subcategoryPill, active && styles.subcategoryPillActive]}
-                              onPress={() => toggleSubcategory(subcategory.value)}
-                            >
-                              <Text style={[styles.subcategoryPillText, active && styles.subcategoryPillTextActive]}>
-                                {subcategory.label}
-                              </Text>
-                            </Pressable>
-                          );
-                        })}
-                      </View>
-                    ) : null}
-                {sortedExpandedSubcategories.length > 10 &&
-                !(expandedPrimaryCategory ? alwaysExpandedSubcategoryCategoryKeys.has(expandedPrimaryCategory.key) : false) ? (
-                  <Pressable
-                    onPress={() => setShowAllSubcategories((current) => !current)}
-                    hitSlop={8}
-                        style={styles.inlineChevronAction}
+          {!hideSort && (
+            <>
+              <Section title="Ordenar por" expanded
+                actionLabel={sortBy !== DEFAULT_FILTERS.sortBy ? 'Quitar' : undefined}
+                onActionPress={() => setSortBy(DEFAULT_FILTERS.sortBy)}>
+                <View style={styles.sortRow}>
+                  {sortOptions.map((option) => {
+                    const active = sortBy === option.value;
+                    return (
+                      <Pressable
+                        key={option.value}
+                        style={[styles.sortChip, active && styles.sortChipActive]}
+                        onPress={() => setSortBy(option.value)}
                       >
-                        <Text style={styles.linkButtonText}>{showAllSubcategories ? 'Ver menos' : 'Ver más'}</Text>
-                        <Ionicons
-                          name={showAllSubcategories ? 'chevron-up' : 'chevron-down'}
-                          size={14}
-                          color={filtersUi.accent}
-                        />
+                        <Text style={[styles.sortChipText, active && styles.sortChipTextActive]}>
+                          {option.label}
+                        </Text>
                       </Pressable>
-                    ) : null}
-                  </>
-                ) : null}
-              </View>
-            ) : null}
-          </Section>
+                    );
+                  })}
+                </View>
+              </Section>
 
-          <Divider />
+              <Divider />
+            </>
+          )}
 
           <Section
             title="Disponibilidad"
@@ -1720,80 +1635,108 @@ export function FiltersSheet({
           <Divider />
 
           <Section
-            title="Distancia"
-            {...accordion('distance')}
-            actionLabel={distance !== DEFAULT_FILTERS.distance ? 'Quitar' : undefined}
-            onActionPress={distance !== DEFAULT_FILTERS.distance ? () => setDistance(DEFAULT_FILTERS.distance) : undefined}
-            onLayout={(event) => handleDynamicSectionLayout('distance', event)}
+            title="Categoría"
+            {...accordion('category')}
+            activeCount={new Set(selectedCategories.filter(value => categorySelectionValues.includes(value))).size}
+            actionLabel={hasCategorySelection ? 'Quitar' : undefined}
+            onActionPress={hasCategorySelection ? clearCategorySelections : undefined}
+            onLayout={(event) => handleDynamicSectionLayout('category', event)}
           >
-            {!showAdvancedDistance ? (
-              <>
-                <View style={styles.presetGrid}>
-                  {distancePresetOptions.map((option) => {
-                    const active = selectedDistancePreset === option.value;
-                    return (
-                      <Pressable
-                        key={option.label}
-                        style={[styles.filterChip, active && styles.filterChipActive]}
-                        onPress={() => applyDistancePreset(option.value)}
-                      >
-                        <Text style={[styles.filterChipText, active && styles.filterChipTextActive]}>
-                          {option.label}
-                        </Text>
-                      </Pressable>
-                    );
-                  })}
-                </View>
-              <Pressable onPress={() => setShowAdvancedDistance(true)} style={styles.inlineChevronAction}>
-                <Text style={styles.linkButtonText}>Búsqueda avanzada</Text>
-              </Pressable>
-              </>
-            ) : (
-              <View style={styles.distanceAdvancedWrap}>
-                <View style={styles.metricRow}>
-                  <Text style={styles.metricValue}>{distance} km</Text>
-                  <Pressable onPress={() => setShowAdvancedDistance(false)} hitSlop={8}>
-                    <Text style={styles.linkButtonText}>Volver a sugeridos</Text>
-                  </Pressable>
-                </View>
-                <Text style={styles.metricHint}>Ajusta la distancia exacta en pasos de 1 km</Text>
-                <View
-                  style={styles.distanceSliderWrap}
-                  onLayout={handleDistanceSliderLayout}
-                  onStartShouldSetResponder={() => true}
-                  onMoveShouldSetResponder={() => true}
-                  onResponderGrant={(event) => {
-                    setDistanceFromSliderPosition(event.nativeEvent.locationX);
-                  }}
-                  onResponderMove={(event) => {
-                    setDistanceFromSliderPosition(event.nativeEvent.locationX);
-                  }}
-                >
-                  <View style={styles.sliderTrack}>
-                    <View style={[styles.sliderFill, { width: `${distanceSliderRatio * 100}%` }]} />
-                  </View>
-                  <View
-                    pointerEvents="none"
-                    style={[
-                      styles.sliderThumbTouch,
-                      {
-                        left: `${distanceSliderRatio * 100}%`,
-                      },
-                    ]}
+            <View style={styles.categoryRow}>
+              {visibleCategoryOptions.map((option) => {
+                const active = expandedCategoryKey === option.key;
+                return (
+                  <Pressable
+                    key={option.key}
+                    style={[styles.categoryPill, active && styles.categoryPillActive]}
+                    onPress={() => toggleCategory(option.key)}
                   >
-                    <View style={styles.sliderThumb} />
-                  </View>
-                </View>
-                <View style={styles.distanceSliderLabels}>
-                  <Text style={styles.distanceSliderLabel}>0 km</Text>
-                  <Text style={styles.distanceSliderLabel}>50 km</Text>
-                </View>
+                    <CategoryIcon category={option.label} size={20} color={active ? chipTextActiveColor : chipTextDefaultColor} />
+                    <Text style={[styles.categoryPillText, active && styles.categoryPillTextActive]}>
+                      {option.label}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+            {expandedPrimaryCategory ? (
+              <View style={styles.subcategoryBlock}>
+                {sortedExpandedMoments.length > 0 ? (
+                  <>
+                    <View style={styles.sectionHeaderRow}>
+                      <Text style={styles.subcategoryLabel}>Momentos</Text>
+                      {hasExpandedMomentSelection ? (
+                        <Pressable onPress={clearExpandedMoments} hitSlop={8}>
+                          <Text style={styles.sectionActionText}>Quitar</Text>
+                        </Pressable>
+                      ) : null}
+                    </View>
+                    <View style={styles.subcategoryRow}>
+                      {sortedExpandedMoments.map((subcategory) => {
+                        const active = selectedCategories.includes(subcategory.value);
+                        return (
+                          <Pressable
+                            key={subcategory.value}
+                            style={[styles.subcategoryPill, active && styles.subcategoryPillActive]}
+                            onPress={() => toggleSubcategory(subcategory.value)}
+                          >
+                            <Text style={[styles.subcategoryPillText, active && styles.subcategoryPillTextActive]}>
+                              {subcategory.label}
+                            </Text>
+                          </Pressable>
+                        );
+                      })}
+                    </View>
+                  </>
+                ) : null}
+                {((sortedExpandedMoments.length === 0) || selectedFoodMomentValues.length > 0) && sortedExpandedSubcategories.length > 0 ? (
+                  <>
+                    <View style={styles.sectionHeaderRow}>
+                      <Text style={styles.subcategoryLabel}>
+                        {sortedExpandedMoments.length > 0 ? 'Relacionadas' : 'Subcategorías'}
+                      </Text>
+                      {hasExpandedSubcategorySelection ? (
+                        <Pressable onPress={clearExpandedSubcategories} hitSlop={8}>
+                          <Text style={styles.sectionActionText}>Quitar</Text>
+                        </Pressable>
+                      ) : null}
+                    </View>
+                    {visibleSubcategories.length > 0 ? (
+                      <View style={styles.subcategoryRow}>
+                        {visibleSubcategories.map((subcategory) => {
+                          const active = selectedCategories.includes(subcategory.value);
+                          return (
+                            <Pressable
+                              key={subcategory.value}
+                              style={[styles.subcategoryPill, active && styles.subcategoryPillActive]}
+                              onPress={() => toggleSubcategory(subcategory.value)}
+                            >
+                              <Text style={[styles.subcategoryPillText, active && styles.subcategoryPillTextActive]}>
+                                {subcategory.label}
+                              </Text>
+                            </Pressable>
+                          );
+                        })}
+                      </View>
+                    ) : null}
+                {sortedExpandedSubcategories.length > 10 &&
+                !(expandedPrimaryCategory ? alwaysExpandedSubcategoryCategoryKeys.has(expandedPrimaryCategory.key) : false) ? (
+                  <Pressable
+                    onPress={() => setShowAllSubcategories((current) => !current)}
+                    hitSlop={8}
+                        style={styles.inlineChevronAction}
+                      >
+                        <Text style={styles.linkButtonText}>{showAllSubcategories ? 'Ver menos' : 'Ver más'}</Text>
+                        <Ionicons
+                          name={showAllSubcategories ? 'chevron-up' : 'chevron-down'}
+                          size={14}
+                          color={filtersUi.accent}
+                        />
+                      </Pressable>
+                    ) : null}
+                  </>
+                ) : null}
               </View>
-            )}
-            {locationError ? (
-              <Pressable onPress={requestLocation}>
-                <Text style={styles.locationText}>Activa ubicación para usar distancia real</Text>
-              </Pressable>
             ) : null}
           </Section>
 
@@ -1965,6 +1908,86 @@ export function FiltersSheet({
               <Text style={styles.inlineHint}>
                 ${formatBudget(minBudget)} – ${formatBudget(maxBudget)}
               </Text>
+            ) : null}
+          </Section>
+
+          <Divider />
+
+          <Section
+            title="Distancia"
+            {...accordion('distance')}
+            actionLabel={distance !== DEFAULT_FILTERS.distance ? 'Quitar' : undefined}
+            onActionPress={distance !== DEFAULT_FILTERS.distance ? () => setDistance(DEFAULT_FILTERS.distance) : undefined}
+            onLayout={(event) => handleDynamicSectionLayout('distance', event)}
+          >
+            {!showAdvancedDistance ? (
+              <>
+                <View style={styles.presetGrid}>
+                  {distancePresetOptions.map((option) => {
+                    const active = selectedDistancePreset === option.value;
+                    return (
+                      <Pressable
+                        key={option.label}
+                        style={[styles.filterChip, active && styles.filterChipActive]}
+                        onPress={() => applyDistancePreset(option.value)}
+                      >
+                        <Text style={[styles.filterChipText, active && styles.filterChipTextActive]}>
+                          {option.label}
+                        </Text>
+                      </Pressable>
+                    );
+                  })}
+                </View>
+              <Pressable onPress={() => setShowAdvancedDistance(true)} style={styles.inlineChevronAction}>
+                <Text style={styles.linkButtonText}>Búsqueda avanzada</Text>
+              </Pressable>
+              </>
+            ) : (
+              <View style={styles.distanceAdvancedWrap}>
+                <View style={styles.metricRow}>
+                  <Text style={styles.metricValue}>{distance} km</Text>
+                  <Pressable onPress={() => setShowAdvancedDistance(false)} hitSlop={8}>
+                    <Text style={styles.linkButtonText}>Volver a sugeridos</Text>
+                  </Pressable>
+                </View>
+                <Text style={styles.metricHint}>Ajusta la distancia exacta en pasos de 1 km</Text>
+                <View
+                  style={styles.distanceSliderWrap}
+                  onLayout={handleDistanceSliderLayout}
+                  onStartShouldSetResponder={() => true}
+                  onMoveShouldSetResponder={() => true}
+                  onResponderGrant={(event) => {
+                    setDistanceFromSliderPosition(event.nativeEvent.locationX);
+                  }}
+                  onResponderMove={(event) => {
+                    setDistanceFromSliderPosition(event.nativeEvent.locationX);
+                  }}
+                >
+                  <View style={styles.sliderTrack}>
+                    <View style={[styles.sliderFill, { width: `${distanceSliderRatio * 100}%` }]} />
+                  </View>
+                  <View
+                    pointerEvents="none"
+                    style={[
+                      styles.sliderThumbTouch,
+                      {
+                        left: `${distanceSliderRatio * 100}%`,
+                      },
+                    ]}
+                  >
+                    <View style={styles.sliderThumb} />
+                  </View>
+                </View>
+                <View style={styles.distanceSliderLabels}>
+                  <Text style={styles.distanceSliderLabel}>0 km</Text>
+                  <Text style={styles.distanceSliderLabel}>50 km</Text>
+                </View>
+              </View>
+            )}
+            {locationError ? (
+              <Pressable onPress={requestLocation}>
+                <Text style={styles.locationText}>Activa ubicación para usar distancia real</Text>
+              </Pressable>
             ) : null}
           </Section>
 
@@ -2376,7 +2399,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#000000',
   },
   sheet: {
-    height: FILTERS_SHEET_HEIGHT,
+    maxHeight: FILTERS_SHEET_HEIGHT,
     borderTopLeftRadius: 28,
     borderTopRightRadius: 28,
     backgroundColor: filtersUi.bg,
@@ -2800,47 +2823,6 @@ const styles = StyleSheet.create({
   whenDayChipTextActive: {
     color: chipTextActiveColor,
   },
-  toggleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: 16,
-  },
-  toggleCopy: {
-    flex: 1,
-    gap: 0,
-  },
-  toggleTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: filtersUi.text,
-  },
-  toggleHint: {
-    fontSize: 13,
-    lineHeight: 18,
-    color: filtersUi.textTertiary,
-  },
-  toggleControl: {
-    width: 48,
-    height: 30,
-    borderRadius: 999,
-    paddingHorizontal: 4,
-    backgroundColor: '#dedee4',
-    justifyContent: 'center',
-  },
-  toggleControlActive: {
-    backgroundColor: '#dedee4',
-  },
-  toggleThumb: {
-    width: 22,
-    height: 22,
-    borderRadius: 11,
-    backgroundColor: '#ffffff',
-  },
-  toggleThumbActive: {
-    backgroundColor: filtersUi.text,
-    marginLeft: 18,
-  },
   whenLayout: {
     gap: 12,
   },
@@ -3032,10 +3014,7 @@ const styles = StyleSheet.create({
     color: filtersUi.text,
   },
   bottomBar: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    bottom: 0,
+    position: 'relative',
     zIndex: 24,
     paddingHorizontal: 20,
     paddingTop: 12,

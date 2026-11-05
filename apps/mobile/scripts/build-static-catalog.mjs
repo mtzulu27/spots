@@ -13,7 +13,7 @@ const envLocalPath = join(appRoot, '.env.local');
 const spotSelectColumns =
   'id,type,slug,name,short_description,cover_image_url,gallery_urls,category,city,likes,tags,moods,is_active,is_featured,created_at,updated_at';
 const branchSelectColumns =
-  'id,spot_id,slug,neighborhood,mall,hours,holiday_mode,holiday_open_time,holiday_close_time,holiday_split_open_time,holiday_split_close_time,address,min_budget,max_budget,max_people,menu_url,whatsapp,phone,instagram,latitude,longitude,is_active,sort_order,created_at,updated_at';
+  'id,spot_id,slug,neighborhood,mall,hours,holiday_mode,holiday_open_time,holiday_close_time,holiday_split_open_time,holiday_split_close_time,address,min_budget,max_budget,min_people,max_people,typical_budget,budget_basis,menu_calculation_note,google_maps_url,website_url,menu_url,menu_items,whatsapp,phone,instagram,latitude,longitude,is_active,sort_order,created_at,updated_at';
 const branchHourSelectColumns =
   'id,branch_id,day_of_week,is_closed,open_time,close_time,split_open_time,split_close_time,sort_order';
 

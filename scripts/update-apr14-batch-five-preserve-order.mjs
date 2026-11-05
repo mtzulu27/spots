@@ -122,7 +122,7 @@ const PLACEHOLDER_UPDATES = [
     category: 'Restaurantes y cafés',
     tags: ['froyo', 'yogurt helado', 'postres', 'dulce', 'antojo', 'toppings'],
     moods: ['dulce', 'antojo', 'plan tranqui', 'familiar'],
-    branchSlug: 'prote-and-co-cali',
+    branchSlug: 'prote-and-co-granada-cali',
     branchPatch: {
       instagram: 'https://www.instagram.com/proteandco.froyo/',
     },

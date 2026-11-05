@@ -1,0 +1,22 @@
+export type DesktopLoginProps = {
+  email: string;
+  password: string;
+  emailError: string;
+  passwordError: string;
+  authError: string;
+  submitting: boolean;
+  canSubmit: boolean;
+  showEmailForm: boolean;
+  showPassword: boolean;
+  onEmailChange: (value: string) => void;
+  onPasswordChange: (value: string) => void;
+  onEmailBlur: () => void;
+  onPasswordBlur: () => void;
+  onTogglePassword: () => void;
+  onShowEmail: () => void;
+  onOtherMethods: () => void;
+  onSubmit: () => void;
+  onGoogle: () => void;
+  onRecovery: () => void;
+  onExplore: () => void;
+};

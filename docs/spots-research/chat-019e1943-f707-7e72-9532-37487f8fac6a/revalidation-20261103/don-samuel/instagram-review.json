@@ -1,0 +1,72 @@
+{
+  "checkedAt": "2026-11-03",
+  "profile": "https://www.instagram.com/donsamuelbakery/",
+  "identity": "DON SAMUEL - Repostería sin azúcar",
+  "devtools": {
+    "connection": "Chrome/156.0.0.0 via MCP Chrome DevTools",
+    "pageId": 2,
+    "isolatedTab": true,
+    "session": "logged_out",
+    "httpHighlights": "not_attempted_due_to_missing_session",
+    "cleanup": "own_page_closed"
+  },
+  "iab": {
+    "browser": "iab",
+    "tabId": "2",
+    "session": "authorized_session_available",
+    "role": "visual_fallback",
+    "cleanup": "own_tab_closed_after_centralization_request"
+  },
+  "highlights": {
+    "observed": [],
+    "coverage": "No highlight folders visible on the loaded profile; public HTML did not supply an inventory. Not a claim about all historical highlights."
+  },
+  "posts": [
+    {
+      "url": "https://www.instagram.com/donsamuelbakery/p/DecP7Zbx55g/",
+      "date": "2026-10-13",
+      "review": "Image and caption visually read in full. Image contrasts 'Ir donde quedaba el punto de venta' with 'Pedir a domicilio'. Caption says the brand continues taking WhatsApp/direct orders.",
+      "decision": "Evidence against asserting that the physical point is currently open. Does not state whether its closure is temporary or permanent, nor announce a new address."
+    },
+    {
+      "url": "https://www.instagram.com/donsamuelbakery/p/DdDVao4Dgny/",
+      "date": "2026-09-08",
+      "review": "First carousel frame inspected; dessert with overlaid advertising text. Rejected for gallery; not evidence of current physical operation."
+    },
+    {
+      "url": "https://www.instagram.com/donsamuelbakery/p/DXc3o7LH53-/",
+      "date": "2026-04-22",
+      "review": "Header shows donsamuelbakery as coauthor and Parque Comercial Lago Verde location. First cheesecake photo inspected in UI and downloaded original1440x1440; no digital text plate. Physical branding incidental on utensils.",
+      "selectedAsset": "/place-media/don-samuel/photo-reviewed-10326a613f5286505824.jpg"
+    }
+  ],
+  "stories": [
+    {
+      "id": "4021732884946017962",
+      "review": "Visible card offers a stainless-steel display refrigerator for sale; no address, business hours or closure duration stated."
+    },
+    {
+      "id": "4021738081820211461",
+      "review": "Video paused preview: automatic coffee machine offered for sale. Text visible and read; video/audio not analyzed."
+    },
+    {
+      "id": "4021738147846938870",
+      "review": "Video paused preview: Ninja Slushi machine offered for sale. Visible overlay read; video/audio not analyzed."
+    },
+    {
+      "id": "4021737002695602239",
+      "review": "Paused still image visually read: vertical refrigerator, 1.70m front by 2m tall, offered for sale. No closure duration or new address stated."
+    }
+  ],
+  "limits": [
+    "Four distinct current story IDs visually read; video previews only, not full audiovisual transcription. No claim of complete historical story inventory.",
+    "Relevant recent post plus profile and official links reviewed; closure duration and possible relocation still not settled.",
+    "Work stopped for centralization requested by user in Main before finishing all visual coverage and mobile QA."
+  ],
+  "facts": {
+    "historicalMall": "Parque Comercial Lago Verde",
+    "historicalNeighborhood": "Pance",
+    "currentPhysicalBusinessStatus": "unknown_duration; existing inactive physical point preserved based on official past-tense point-of-sale notice, brand still takes orders",
+    "doNotInfer": "Equipment sales and delivery activity do not establish permanent closure or reopening."
+  }
+}

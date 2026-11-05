@@ -1,0 +1,34 @@
+{
+  "checkedAt": "2026-11-03",
+  "origin": "http://localhost:8095",
+  "mode": "Local guest enabled using existing Explorar sin cuenta UI",
+  "desktop": {
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "explore": "131 places loaded in desktop grid/map before query.",
+    "query": "Don Samuel",
+    "result": "0 lugares; No encontramos ese parche; no result cards or markers for this business.",
+    "directBranchURL": "/spot/don-samuel-cali",
+    "directBranchResult": "No encontramos este lugar."
+  },
+  "mobile": {
+    "status": "pending",
+    "reason": "Centralization request arrived before mobile viewport QA; no viewport override applied."
+  },
+  "renderingLimitation": "Inactive point intentionally absent from production surfaces. No photo crop in an active card/detail was claimed.",
+  "resources": {
+    "session": 96962,
+    "port": 8095,
+    "command": "pnpm exec expo start --web --port 8095",
+    "status": "stopped_exit130",
+    "portListenerAfterStop": false,
+    "iabTabsClosed": [
+      "2",
+      "3"
+    ],
+    "sharedBrowserClosed": false
+  },
+  "status": "partial_qa"
+}

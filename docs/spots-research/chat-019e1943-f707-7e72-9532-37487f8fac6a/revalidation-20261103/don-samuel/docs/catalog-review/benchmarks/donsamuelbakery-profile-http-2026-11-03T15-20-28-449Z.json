@@ -1,0 +1,23 @@
+{
+  "task": "extract_instagram_name_bio_links_photo",
+  "method": "node_fetch_public_profile_no_session",
+  "source": "https://www.instagram.com/donsamuelbakery/",
+  "startedAt": "2026-11-03T15:20:28.449Z",
+  "requestCount": 1,
+  "retries": 0,
+  "result": null,
+  "status": "request_failed",
+  "timingMs": {
+    "total": 70.459375
+  },
+  "notes": [
+    "No browser, cookies or credentials. No response HTML retained. No catalog changes.",
+    "Timing measures script execution; implementation and final explanation excluded."
+  ],
+  "error": {
+    "name": "TypeError",
+    "message": "fetch failed",
+    "code": "ENOTFOUND"
+  },
+  "finishedAt": "2026-11-03T15:20:28.520Z"
+}

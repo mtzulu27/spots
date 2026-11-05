@@ -1,0 +1,921 @@
+{
+  "source": "https://menupp.co/donsamuelhealthy",
+  "startedAt": "2026-11-03T15:20:58.056Z",
+  "method": "Public Firestore REST; paths observed in Menupp public JavaScript",
+  "calls": [
+    {
+      "path": "",
+      "status": 200,
+      "ms": 376.82183399999997
+    },
+    {
+      "path": "/locations?pageSize=100",
+      "status": 200,
+      "ms": 422.44037499999996
+    },
+    {
+      "path": "/externalLinks?pageSize=100",
+      "status": 200,
+      "ms": 186.25033300000007
+    },
+    {
+      "path": "/locations/4f3dd37c-dbf8-4f37-82ac-10d663165af8/menus/ya4BlHfDDweylA3e8CTO",
+      "status": 200,
+      "ms": 393.645125
+    },
+    {
+      "path": "/locations/4f3dd37c-dbf8-4f37-82ac-10d663165af8/menus/ya4BlHfDDweylA3e8CTO/categories?pageSize=100",
+      "status": 200,
+      "ms": 193.916917
+    },
+    {
+      "path": "/locations/4f3dd37c-dbf8-4f37-82ac-10d663165af8/menus/ya4BlHfDDweylA3e8CTO/products?pageSize=100",
+      "status": 200,
+      "ms": 416.27104099999997
+    },
+    {
+      "path": "/locations/4f3dd37c-dbf8-4f37-82ac-10d663165af8/menus/ya4BlHfDDweylA3e8CTO/modifiers?pageSize=100",
+      "status": 200,
+      "ms": 141.10308399999985
+    },
+    {
+      "path": "/locations/4f3dd37c-dbf8-4f37-82ac-10d663165af8/menus/ya4BlHfDDweylA3e8CTO/variants?pageSize=100",
+      "status": 200,
+      "ms": 428.0471670000002
+    }
+  ],
+  "status": "public_menu_records_received",
+  "brand": {
+    "name": "DON SAMUEL HEALTHY BAKERY",
+    "socialLinks": {
+      "facebook": "Don Samuel Healthy Bakery ",
+      "homepage": "",
+      "instagram": "donsamuelbakery",
+      "youtube": "",
+      "tiktok": "onsamuelbakery"
+    }
+  },
+  "locations": [
+    {
+      "id": "4f3dd37c-dbf8-4f37-82ac-10d663165af8",
+      "name": "Cali",
+      "address": "Lago Verde. B/Pance (Frente al Parque de los Niños)",
+      "phone": "",
+      "wa_phone": "+573337002181",
+      "location": {
+        "latitude": 3.3427734,
+        "longitude": -76.5352648
+      },
+      "openSchedule": {
+        "thursday": [
+          {
+            "end": "20:00",
+            "start": "14:00"
+          }
+        ],
+        "active": false,
+        "timeZone": "America/Bogota",
+        "friday": [
+          {
+            "end": "21:00",
+            "start": "14:00"
+          }
+        ],
+        "sunday": [
+          {
+            "end": "21:00",
+            "start": "14:00"
+          }
+        ],
+        "monday": [
+          {
+            "end": "20:00",
+            "start": "14:00"
+          }
+        ],
+        "blocked_days": [],
+        "saturdays": [
+          {
+            "end": "21:00",
+            "start": "14:00"
+          }
+        ],
+        "tuesdays": [
+          {
+            "end": "20:00",
+            "start": "14:00"
+          }
+        ],
+        "wednesday": [
+          {
+            "end": "20:00",
+            "start": "14:00"
+          }
+        ]
+      }
+    }
+  ],
+  "links": [
+    {
+      "id": "Qx64FAXGoFbnmNG9qHch",
+      "name": "Danos tu opinión",
+      "link": "/donsamuelhealthy/survey",
+      "active": true,
+      "type": "surveyButton",
+      "order": "4"
+    },
+    {
+      "id": "cJN8lMZ7whNoVSvnp02o",
+      "name": "Encuéntranos",
+      "link": "/donsamuelhealthy/locations",
+      "active": true,
+      "type": "locationsButton",
+      "order": "5"
+    },
+    {
+      "id": "eiAaFXL7X4a9rgsQb7Dq",
+      "name": "Menú",
+      "link": "https://menupp.co/donsamuelhealthy/venue/4f3dd37c-dbf8-4f37-82ac-10d663165af8/menu/ya4BlHfDDweylA3e8CTO",
+      "active": true,
+      "type": "menusButton",
+      "order": "1"
+    }
+  ],
+  "menus": [
+    {
+      "source": "https://menupp.co/donsamuelhealthy/venue/4f3dd37c-dbf8-4f37-82ac-10d663165af8/menu/ya4BlHfDDweylA3e8CTO",
+      "locationId": "4f3dd37c-dbf8-4f37-82ac-10d663165af8",
+      "metadata": {
+        "id": "ya4BlHfDDweylA3e8CTO",
+        "name": "Menú",
+        "active": true,
+        "hide": false,
+        "currency": {
+          "label": "COP",
+          "value": "COP",
+          "symbol": "$"
+        }
+      },
+      "categories": [
+        {
+          "id": "0OjRuSG0RjLLcX1zwGrM",
+          "name": "Otros",
+          "description": "",
+          "order": "2",
+          "disabled": false,
+          "hierarchy": "root",
+          "type": "hybrid"
+        },
+        {
+          "id": "1wn2iFQ6coPrAcoJdd61",
+          "name": "Cheese Cakes (Tipo Vasco)",
+          "description": "",
+          "order": "1",
+          "disabled": false,
+          "hierarchy": "root",
+          "type": "list"
+        },
+        {
+          "id": "2AtERYIQ2jMP2DG52Un1",
+          "name": "Tortas",
+          "description": "",
+          "order": "0",
+          "disabled": false,
+          "hierarchy": "root",
+          "type": "hybrid"
+        },
+        {
+          "id": "6ohnUYiO1TZ5zutGwjzI",
+          "name": "CALIENTES",
+          "description": "",
+          "order": "0",
+          "disabled": false,
+          "hierarchy": "YXtWtxoSM4ejrClcc8Xw",
+          "type": "list"
+        },
+        {
+          "id": "COnVgWwvHBZAES3KncTK",
+          "name": "Cuchareables Proteicos ",
+          "description": "",
+          "order": "3",
+          "disabled": false,
+          "hierarchy": "root",
+          "type": "list"
+        },
+        {
+          "id": "P2QSekQfv1YkpvwCCK6g",
+          "name": "Cuchareables Proteicos ",
+          "description": "",
+          "order": "1",
+          "disabled": false,
+          "hierarchy": "COnVgWwvHBZAES3KncTK",
+          "type": "list"
+        },
+        {
+          "id": "YXtWtxoSM4ejrClcc8Xw",
+          "name": "Bebidas",
+          "description": "",
+          "order": "4",
+          "disabled": false,
+          "hierarchy": "root",
+          "type": "list"
+        },
+        {
+          "id": "v5znPOPNHMUSLoh3GsxV",
+          "name": "BANNER ",
+          "description": "",
+          "order": "-1",
+          "disabled": false,
+          "hierarchy": "root",
+          "type": "ad"
+        },
+        {
+          "id": "vAmmrXPS1G7LOaykQtFQ",
+          "name": "FRÍAS",
+          "description": "",
+          "order": "1",
+          "disabled": false,
+          "hierarchy": "YXtWtxoSM4ejrClcc8Xw",
+          "type": "list"
+        },
+        {
+          "id": "xI3ykUNtvOzeROcrTkTC",
+          "name": "BANNER ISO",
+          "description": "",
+          "order": "0",
+          "disabled": false,
+          "hierarchy": "COnVgWwvHBZAES3KncTK",
+          "type": "ad"
+        }
+      ],
+      "products": [
+        {
+          "id": "1crFlxi34OYPbtGTp4Sp",
+          "product_name": "Brownie",
+          "description": "Harina de almendras, cacao en polvo, alulosa, huevo, arequipe sin azúcar, ghee, aceite de oliva.",
+          "price": [
+            {
+              "price": "19000",
+              "discountedPrice": null,
+              "label": "Porción",
+              "disable": false,
+              "noStock": false,
+              "minQuantity": "0"
+            },
+            {
+              "price": "85000",
+              "discountedPrice": null,
+              "label": "Mediana",
+              "disable": false,
+              "noStock": false,
+              "minQuantity": "0",
+              "maxQuantity": "0"
+            }
+          ],
+          "options": [],
+          "order": "0",
+          "disabled": false,
+          "product_category": "2AtERYIQ2jMP2DG52Un1",
+          "hasPriceRanges": false
+        },
+        {
+          "id": "3Ihzaw9var955ap8e9U2",
+          "product_name": "Cuchareable Proteico de Brownie",
+          "description": "Yogurt griego, queso crema, proteína ISO 100 de vainilla, esencia de vainilla, arequipe sin azúcar, bizcocho de almendras con cacao, arequipe sin azúcar, alulosa y monkfruit",
+          "price": [
+            {
+              "price": "38000",
+              "discountedPrice": null,
+              "label": "12 onz",
+              "disable": false,
+              "noStock": false,
+              "minQuantity": "0"
+            },
+            {
+              "price": "22000",
+              "discountedPrice": null,
+              "label": "8 onz",
+              "disable": false,
+              "noStock": false,
+              "minQuantity": "0",
+              "maxQuantity": "0"
+            }
+          ],
+          "options": [],
+          "order": "1",
+          "disabled": false,
+          "product_category": "P2QSekQfv1YkpvwCCK6g",
+          "hasPriceRanges": false
+        },
+        {
+          "id": "5zRRA6vSkZm47rBj9NBv",
+          "product_name": "Chocolate",
+          "description": "Harina de almendras, yogurt griego, cacao en polvo, alulosa y monkfruit, huevo, ghee, esencia de vainilla y crema de almendras.",
+          "price": [
+            {
+              "price": "29000",
+              "discountedPrice": null,
+              "label": "Porción",
+              "disable": false,
+              "noStock": false,
+              "minQuantity": "0"
+            },
+            {
+              "price": "133000",
+              "discountedPrice": null,
+              "label": "Mediana",
+              "disable": false,
+              "noStock": false,
+              "minQuantity": "0",
+              "maxQuantity": "0"
+            }
+          ],
+          "options": [],
+          "order": "0",
+          "disabled": false,
+          "product_category": "2AtERYIQ2jMP2DG52Un1",
+          "hasPriceRanges": false
+        },
+        {
+          "id": "9gwr9Ut7pBbWkhkN1Oi6",
+          "product_name": "Cheesecake Frutos Rojos",
+          "description": "Queso crema, crema de leche baja en grasa, huevo, esencia de vainilla, alulosa y monk fruit) Base de harina de almendras con alulosa y monk fruit. Bañado en mermelada de frutos rojos (Fresa, mora, arándanos, limón y monk fruit.",
+          "price": [
+            {
+              "price": "24000",
+              "discountedPrice": null,
+              "label": "Porción",
+              "disable": false,
+              "noStock": false,
+              "minQuantity": "0"
+            },
+            {
+              "price": "153000",
+              "discountedPrice": null,
+              "label": "Completo",
+              "disable": false,
+              "noStock": false,
+              "minQuantity": "0",
+              "maxQuantity": "0"
+            }
+          ],
+          "options": [],
+          "order": "3",
+          "disabled": false,
+          "product_category": "1wn2iFQ6coPrAcoJdd61",
+          "hasPriceRanges": false
+        },
+        {
+          "id": "CL4L8djdkZ5idpekDPiu",
+          "product_name": "Cuchareable proteico de Pistacho",
+          "description": "Yogurt griego, queso crema, proteína ISO 100 de vainilla, esencia de vainilla, crema de pistacho, bizcocho de almendras, pistachos triturados, alulosa y monkfruit",
+          "price": [
+            {
+              "price": "44000",
+              "discountedPrice": null,
+              "label": "",
+              "disable": false,
+              "noStock": false,
+              "minQuantity": "0"
+            }
+          ],
+          "options": [],
+          "order": "4",
+          "disabled": false,
+          "product_category": "P2QSekQfv1YkpvwCCK6g",
+          "hasPriceRanges": false
+        },
+        {
+          "id": "CkHWZkRTKy0cGxPzLxan",
+          "product_name": "Chocolate Dubai",
+          "description": "Harina de almendras, alulosa, huevo, ghee, aceite de oliva, cacao en polvo, crema de pistacho, pasta de arroz y pistacho triturado.",
+          "price": [
+            {
+              "price": "25000",
+              "discountedPrice": null,
+              "label": "Porción",
+              "disable": false,
+              "noStock": false,
+              "minQuantity": "0"
+            },
+            {
+              "price": "124000",
+              "discountedPrice": null,
+              "label": "Mediana",
+              "disable": false,
+              "noStock": false,
+              "minQuantity": "0",
+              "maxQuantity": "0"
+            }
+          ],
+          "options": [],
+          "order": "0",
+          "disabled": false,
+          "product_category": "2AtERYIQ2jMP2DG52Un1",
+          "hasPriceRanges": false
+        },
+        {
+          "id": "DKecvlSYwx55FL2sgw93",
+          "product_name": "Americano",
+          "description": "",
+          "price": [
+            {
+              "price": "6000",
+              "discountedPrice": null,
+              "label": "",
+              "disable": false,
+              "noStock": false,
+              "minQuantity": "0"
+            }
+          ],
+          "options": [],
+          "order": "0",
+          "disabled": false,
+          "product_category": "6ohnUYiO1TZ5zutGwjzI",
+          "hasPriceRanges": false
+        },
+        {
+          "id": "IJjsWebDs7XhiTJ7SfQv",
+          "product_name": "Cuchareable proteico de Maracuyá",
+          "description": "Yogurt griego, queso crema, proteína ISO 100 de vainilla, esencia de vainilla, zumo natural de maracuya, bizcocho de almendras, crumble de almendras, alulosa y monkfruit",
+          "price": [
+            {
+              "price": "38000",
+              "discountedPrice": null,
+              "label": "12 onz",
+              "disable": false,
+              "noStock": false,
+              "minQuantity": "0"
+            },
+            {
+              "price": "22000",
+              "discountedPrice": null,
+              "label": "8 onz",
+              "disable": false,
+              "noStock": false,
+              "minQuantity": "0",
+              "maxQuantity": "0"
+            }
+          ],
+          "options": [],
+          "order": "3",
+          "disabled": false,
+          "product_category": "P2QSekQfv1YkpvwCCK6g",
+          "hasPriceRanges": false
+        },
+        {
+          "id": "Ihd0GcZr89QWwq4hVnb1",
+          "product_name": "Crocante de Arequipe",
+          "description": "Harina de almendras, alulosa y monkfruit, huevo, leche de almendras, banano triturado, arequipe sin azúcar, esencia de vainilla y almendras tostadas trituradas.",
+          "price": [
+            {
+              "price": "19000",
+              "discountedPrice": null,
+              "label": "Porción",
+              "disable": false,
+              "noStock": false,
+              "minQuantity": "0"
+            },
+            {
+              "price": "85000",
+              "discountedPrice": null,
+              "label": "Mediana",
+              "disable": false,
+              "noStock": false,
+              "minQuantity": "0",
+              "maxQuantity": "0"
+            }
+          ],
+          "options": [],
+          "order": "0",
+          "disabled": false,
+          "product_category": "2AtERYIQ2jMP2DG52Un1",
+          "hasPriceRanges": false
+        },
+        {
+          "id": "KJbWzN3n2tJy0CD3dSgR",
+          "product_name": "Coca Cola Zero",
+          "description": "",
+          "price": [
+            {
+              "price": "9000",
+              "discountedPrice": null,
+              "label": "",
+              "disable": false,
+              "noStock": false,
+              "minQuantity": "0"
+            }
+          ],
+          "options": [],
+          "order": "1",
+          "disabled": false,
+          "product_category": "vAmmrXPS1G7LOaykQtFQ",
+          "hasPriceRanges": false
+        },
+        {
+          "id": "NduymWTPIi7HLvZc3SP1",
+          "product_name": "Cuchareable proteico de tiramisú ",
+          "description": "Yogurt griego, queso crema, proteína ISO 100 de vainilla, esencia de vainilla, bizcocho de almendras bañado en espresso, cacao en polvo, alulosa y monkfruit",
+          "price": [
+            {
+              "price": "38000",
+              "discountedPrice": null,
+              "label": "",
+              "disable": false,
+              "noStock": false,
+              "minQuantity": "0"
+            }
+          ],
+          "options": [],
+          "order": "6",
+          "disabled": false,
+          "product_category": "P2QSekQfv1YkpvwCCK6g",
+          "hasPriceRanges": false
+        },
+        {
+          "id": "ONVjXJQ1M0DlpHVE9jVr",
+          "product_name": "Arroz con Leche",
+          "description": "Arroz arbóreo, leche de almendras, crema de almendras, agua, alulosa y monk fruit",
+          "price": [
+            {
+              "price": "26000",
+              "discountedPrice": null,
+              "label": "",
+              "disable": false,
+              "noStock": false,
+              "minQuantity": "0"
+            }
+          ],
+          "options": [],
+          "order": "0",
+          "disabled": false,
+          "product_category": "0OjRuSG0RjLLcX1zwGrM",
+          "hasPriceRanges": false
+        },
+        {
+          "id": "UjG67emKV6FdNBLmeNo4",
+          "product_name": "Banano",
+          "description": "Harina de almendras, banano triturado, huevo, leche de almendras, crema de maní, esencia de vainilla, maní tostado triturado.",
+          "price": [
+            {
+              "price": "15000",
+              "discountedPrice": null,
+              "label": "Porción",
+              "disable": false,
+              "noStock": false,
+              "minQuantity": "0"
+            },
+            {
+              "price": "62000",
+              "discountedPrice": null,
+              "label": "Mediana",
+              "disable": false,
+              "noStock": false,
+              "minQuantity": "0",
+              "maxQuantity": "0"
+            }
+          ],
+          "options": [],
+          "order": "-1",
+          "disabled": false,
+          "product_category": "2AtERYIQ2jMP2DG52Un1",
+          "hasPriceRanges": false
+        },
+        {
+          "id": "W09ykJ0Hoglx7wi3EDSV",
+          "product_name": "Marquesa de Almendras",
+          "description": "Harina de almendras, harina de coco, alulosa con monkfruit, huevo, leche de almendras, arequipe sin azúcar y esencia de vainilla) Con una capa de frosting de queso crema y alulosa con almendras fileteadas.",
+          "price": [
+            {
+              "price": "30000",
+              "discountedPrice": null,
+              "label": "Porción",
+              "disable": false,
+              "noStock": false,
+              "minQuantity": "0"
+            },
+            {
+              "price": "160000",
+              "discountedPrice": null,
+              "label": "Mediana",
+              "disable": false,
+              "noStock": false,
+              "minQuantity": "0",
+              "maxQuantity": "0"
+            }
+          ],
+          "options": [],
+          "order": "0",
+          "disabled": false,
+          "product_category": "2AtERYIQ2jMP2DG52Un1",
+          "hasPriceRanges": false
+        },
+        {
+          "id": "XSoCdqNtAvVAxhOLa0tz",
+          "product_name": "Cheesecake Arequipe",
+          "description": "Queso crema, crema de leche baja en grasa, huevo, esencia de vainilla, alulosa y monk fruit. Base de harina de almendras con alulosa y monk fruit, bañado en salsa de arequipe sin azúcar con crema de leche.",
+          "price": [
+            {
+              "price": "24000",
+              "discountedPrice": null,
+              "label": "Porción",
+              "disable": false,
+              "noStock": false,
+              "minQuantity": "0"
+            },
+            {
+              "price": "125000",
+              "discountedPrice": null,
+              "label": "Mediana",
+              "disable": false,
+              "noStock": false,
+              "minQuantity": "0",
+              "maxQuantity": "0"
+            }
+          ],
+          "options": [],
+          "order": "1",
+          "disabled": false,
+          "product_category": "1wn2iFQ6coPrAcoJdd61",
+          "hasPriceRanges": false
+        },
+        {
+          "id": "cXFT3CJyjBSjSv4tnyZQ",
+          "product_name": "Cuchareable proteico de Limón ",
+          "description": "Yogurt griego, queso crema, proteína ISO 100 de vainilla, esencia de vainilla, zumo natural de limón , bizcocho de almendras, crumble de almendras, alulosa y monkfruit",
+          "price": [
+            {
+              "price": "34000",
+              "discountedPrice": null,
+              "label": "12 onz",
+              "disable": false,
+              "noStock": false,
+              "minQuantity": "0"
+            },
+            {
+              "price": "19000",
+              "discountedPrice": null,
+              "label": "8 onz ",
+              "disable": false,
+              "noStock": false,
+              "minQuantity": "0",
+              "maxQuantity": "0"
+            }
+          ],
+          "options": [],
+          "order": "2",
+          "disabled": false,
+          "product_category": "P2QSekQfv1YkpvwCCK6g",
+          "hasPriceRanges": false
+        },
+        {
+          "id": "e0AzCNpdJgIGNbW4HQsk",
+          "product_name": "Soda Bretaña",
+          "description": "",
+          "price": [
+            {
+              "price": "8000",
+              "discountedPrice": null,
+              "label": "",
+              "disable": false,
+              "noStock": false,
+              "minQuantity": "0"
+            }
+          ],
+          "options": [],
+          "order": "3",
+          "disabled": false,
+          "product_category": "vAmmrXPS1G7LOaykQtFQ",
+          "hasPriceRanges": false
+        },
+        {
+          "id": "nBFInPZHRNmQHrR5dui5",
+          "product_name": "Cheesecake Original",
+          "description": "Queso crema, crema de leche baja en grasa, huevo, esencia de vainilla, alulosa y monk fruit) Base de harina de almendras con alulosa y monk fruit.",
+          "price": [
+            {
+              "price": "23000",
+              "discountedPrice": null,
+              "label": "Porción",
+              "disable": false,
+              "noStock": false,
+              "minQuantity": "0"
+            },
+            {
+              "price": "118000",
+              "discountedPrice": null,
+              "label": "Mediana",
+              "disable": false,
+              "noStock": false,
+              "minQuantity": "0",
+              "maxQuantity": "0"
+            }
+          ],
+          "options": [],
+          "order": "0",
+          "disabled": false,
+          "product_category": "1wn2iFQ6coPrAcoJdd61",
+          "hasPriceRanges": false
+        },
+        {
+          "id": "niJDpB8mvBOTx7DgxQCn",
+          "product_name": "Soda Hatsu",
+          "description": "",
+          "price": [
+            {
+              "price": "7000",
+              "discountedPrice": null,
+              "label": "",
+              "disable": false,
+              "noStock": false,
+              "minQuantity": "0"
+            }
+          ],
+          "options": [],
+          "order": "2",
+          "disabled": false,
+          "product_category": "vAmmrXPS1G7LOaykQtFQ",
+          "hasPriceRanges": false
+        },
+        {
+          "id": "qKjkSLUV4iYZlhZyDwCH",
+          "product_name": "Fresas con Crema Vegana",
+          "description": "Fresa picada, crema de coco, crema de almendras, alulosa y monk fruit.",
+          "price": [
+            {
+              "price": "26000",
+              "discountedPrice": null,
+              "label": "",
+              "disable": false,
+              "noStock": false,
+              "minQuantity": "0"
+            }
+          ],
+          "options": [],
+          "order": "1",
+          "disabled": false,
+          "product_category": "0OjRuSG0RjLLcX1zwGrM",
+          "hasPriceRanges": false
+        },
+        {
+          "id": "tTr2hyMTP3ssVAMs3SHt",
+          "product_name": "Capuccino",
+          "description": "",
+          "price": [
+            {
+              "price": "9000",
+              "discountedPrice": null,
+              "label": "",
+              "disable": false,
+              "noStock": false,
+              "minQuantity": "0"
+            }
+          ],
+          "options": [],
+          "order": "1",
+          "disabled": false,
+          "product_category": "6ohnUYiO1TZ5zutGwjzI",
+          "hasPriceRanges": false
+        },
+        {
+          "id": "tkzKcQphiMZ149fCbJgJ",
+          "product_name": "Cheesecake Chocolate",
+          "description": "Queso crema, crema de leche baja en grasa, huevo, esencia de vainilla, alulosa y monk fruit) Base de harina de almendras con alulosa y monk fruit. Bañado en salsa de chocolate a base de cacao en polvo, alulosa y agua.",
+          "price": [
+            {
+              "price": "25000",
+              "discountedPrice": null,
+              "label": "Porción",
+              "disable": false,
+              "noStock": false,
+              "minQuantity": "0"
+            },
+            {
+              "price": "128000",
+              "discountedPrice": null,
+              "label": "Mediana",
+              "disable": false,
+              "noStock": false,
+              "minQuantity": "0",
+              "maxQuantity": "0"
+            }
+          ],
+          "options": [],
+          "order": "2",
+          "disabled": false,
+          "product_category": "1wn2iFQ6coPrAcoJdd61",
+          "hasPriceRanges": false
+        },
+        {
+          "id": "urEW9VRXFFduJy6R6Fo2",
+          "product_name": "Zanahoria Cheesecake",
+          "description": "Harina de almendras, alulosa y monkfruit, huevo, yogurt griego, nuez del nogal, ghee, canela en polvo, zanahoria rallada, esencia de vainilla, jengibre en polvo, queso crema y crema de leche.",
+          "price": [
+            {
+              "price": "26000",
+              "discountedPrice": null,
+              "label": "Porción",
+              "disable": false,
+              "noStock": false,
+              "minQuantity": "0"
+            },
+            {
+              "price": "119000",
+              "discountedPrice": null,
+              "label": "Mediana",
+              "disable": false,
+              "noStock": false,
+              "minQuantity": "0",
+              "maxQuantity": "0"
+            }
+          ],
+          "options": [],
+          "order": "0",
+          "disabled": false,
+          "product_category": "2AtERYIQ2jMP2DG52Un1",
+          "hasPriceRanges": false
+        },
+        {
+          "id": "v5cKxBHcQz1sfjdjmY2o",
+          "product_name": "Cuchareable Proteico de Arequipe ",
+          "description": "Yogurt griego, queso crema, proteína ISO 100 de vainilla, esencia de vainilla, arequipe sin azúcar, bizcocho de almendras, crumble de almendras, alulosa y monkfruit",
+          "price": [
+            {
+              "price": "38000",
+              "discountedPrice": null,
+              "label": "12 onz",
+              "disable": false,
+              "noStock": false,
+              "minQuantity": "0"
+            },
+            {
+              "price": "20000",
+              "discountedPrice": null,
+              "label": "8 onz ",
+              "disable": false,
+              "noStock": false,
+              "minQuantity": "0",
+              "maxQuantity": "0"
+            }
+          ],
+          "options": [],
+          "order": "0",
+          "disabled": false,
+          "product_category": "P2QSekQfv1YkpvwCCK6g",
+          "hasPriceRanges": false
+        },
+        {
+          "id": "wDwb6gXqPDMyXVrwFl8e",
+          "product_name": "Agua",
+          "description": "",
+          "price": [
+            {
+              "price": "5000",
+              "discountedPrice": null,
+              "label": "",
+              "disable": false,
+              "noStock": false,
+              "minQuantity": "0"
+            }
+          ],
+          "options": [],
+          "order": "0",
+          "disabled": false,
+          "product_category": "vAmmrXPS1G7LOaykQtFQ",
+          "hasPriceRanges": false
+        },
+        {
+          "id": "zepITnPZPBQBFC227t8U",
+          "product_name": "Cuchareable proteico de Selva Negra",
+          "description": "Yogurt griego, queso crema, proteína ISO 100 de vainilla, esencia de vainilla, cacao en polvo, bizcocho de almendras con cacao, mermelada natural de frutos rojos, alulosa y monkfruit",
+          "price": [
+            {
+              "price": "40000",
+              "discountedPrice": null,
+              "label": "",
+              "disable": false,
+              "noStock": false,
+              "minQuantity": "0"
+            }
+          ],
+          "options": [],
+          "order": "5",
+          "disabled": false,
+          "product_category": "P2QSekQfv1YkpvwCCK6g",
+          "hasPriceRanges": false
+        }
+      ],
+      "modifiers": [],
+      "variants": []
+    }
+  ],
+  "notes": [
+    "Stored schedules are source configuration, not independently verified business hours.",
+    "Check source social handles against the requested profile.",
+    "Survey and inactive links were not followed. Images were not downloaded. Menu records retain disabled flags; no averages calculated."
+  ],
+  "extractionMs": 2563.261083,
+  "finishedAt": "2026-11-03T15:21:00.621Z",
+  "saveMs": 2.1678750000000946,
+  "totalMs": 2566.258708
+}

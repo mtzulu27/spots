@@ -38,8 +38,8 @@ export function ParchesFiltersSheet({ draft, onChange, categories, zones, budget
   });
   const groups: { key: keyof Criteria; title: string; options: readonly (readonly [string, string])[]; empty: string }[] = [
     { key: 'category', title: 'Categoría del parche', options: [['', 'Todas'], ...categories.map(value => [value, value] as const)], empty: '' },
-    { key: 'budget', title: 'Presupuesto por entrada', options: budgets, empty: 'all' },
     { key: 'zone', title: 'Ubicación', options: [['', 'Toda la ciudad'], ...zones.map(value => [value, value] as const)], empty: '' },
+    { key: 'budget', title: 'Presupuesto por entrada', options: budgets, empty: 'all' },
   ];
   return <Modal transparent visible animationType="none" onRequestClose={() => dismiss()}>
     <View style={styles.overlay} pointerEvents="box-none">

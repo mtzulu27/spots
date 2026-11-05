@@ -8,7 +8,8 @@
     "dev:admin": "pnpm --dir apps/admin dev",
     "dev": "pnpm -r --parallel --filter ./apps/* dev",
     "lint": "pnpm -r lint",
-    "typecheck": "pnpm -r typecheck"
+    "typecheck": "pnpm -r typecheck",
+    "test:spots-research": "node --test scripts/spots-research/*.test.mjs"
   },
   "devDependencies": {
     "playwright": "^1.59.1",

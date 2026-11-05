@@ -6,8 +6,8 @@
   "display": "standalone",
   "display_override": ["standalone"],
   "orientation": "portrait",
-  "background_color": "#050305",
-  "theme_color": "#050305",
+  "background_color": "#1687ff",
+  "theme_color": "#1687ff",
   "icons": [
     {
       "src": "/apple-touch-icon-v2.png",

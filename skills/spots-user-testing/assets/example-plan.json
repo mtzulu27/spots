@@ -1,0 +1,9 @@
+{
+  "tasks": [
+    {"id":"discover","goal":"Busca un lugar para hoy que encaje con tu presupuesto y preferencias. Explica que informacion pudiste confirmar y cual no.","criteria":[{"id":"place","description":"La opcion existe en el catalogo visible o se demuestra que no hay una opcion que cumpla."},{"id":"fit","description":"Presupuesto, ubicacion y horario se comprueban con datos visibles; lo desconocido permanece explicitamente sin confirmar."}],"max_steps":25},
+    {"id":"compare","goal":"Compara dos lugares y averigua que sede visitarias y cuanto podria costar el plan para tu grupo.","criteria":[{"id":"comparison","description":"Se observan dos opciones reales, o se registra por que no fue posible."},{"id":"budget","description":"La explicacion distingue costo individual y total, sin inventar precios faltantes."}],"max_steps":25},
+    {"id":"contribute","goal":"Averigua como recomendarias un lugar que falta o comunicarias un problema. No envies el formulario.","criteria":[{"id":"form","description":"Se abre el formulario adecuado y se identifica la accion final sin enviarla."}],"max_steps":15}
+  ],
+  "environment":{"viewport":{"width":390,"height":844},"locale":"es-CO","timezone":"America/Bogota","auth":"guest","writes":"none"},
+  "discussion_round_limit":2
+}

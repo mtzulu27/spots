@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-04-14T16:30:51.483Z",
+  "updatedAt": "2026-10-08T00:39:26.517Z",
   "statuses": {
     "complete": "La ficha quedó lista para Spots sin campos clave pendientes.",
     "incomplete": "La ficha ya se subió a Spots, pero quedó con uno o más campos clave pendientes por completar.",
@@ -10,86 +10,70 @@
       "slug": "girl-frozen-yogurt",
       "name": "Girl Frozen Yogurt",
       "instagram": "",
-      "status": "draft",
+      "status": "incomplete",
       "internalTag": "draft-unconfirmed-lago-verde",
       "missingFields": [
-        "instagram",
-        "full_address",
-        "hours",
-        "min_budget",
-        "max_budget",
-        "phone",
-        "whatsapp",
-        "photos"
+        "logo",
+        "gallery",
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
       ],
       "notes": [
-        "Se dejó fuera de la app por falta de evidencia pública sólida.",
-        "Sigue en el catálogo interno para revisión futura si aparece un perfil o fuente confiable."
+        "Auditoría automática del catálogo: pendiente logo, gallery, menu_items, budget_scenarios, hours_by_branch, phone_by_branch, whatsapp_by_branch, coordinates_by_branch."
       ],
-      "lastReviewedAt": "2026-04-12T20:30:00.000Z"
+      "lastReviewedAt": "2026-10-08T00:39:26.517Z"
     },
     {
       "slug": "cofi-bakery",
       "name": "Cofi Bakery",
       "instagram": "",
-      "status": "draft",
+      "status": "incomplete",
       "internalTag": "draft-unconfirmed-lago-verde",
       "missingFields": [
-        "instagram",
-        "full_address",
-        "hours",
-        "min_budget",
-        "max_budget",
-        "phone",
-        "whatsapp",
-        "photos"
+        "gallery"
       ],
       "notes": [
-        "Se dejó fuera de la app por falta de evidencia pública sólida.",
-        "Sigue en el catálogo interno para revisión futura si aparece un perfil o fuente confiable."
+        "Auditoría automática del catálogo: pendiente gallery."
       ],
-      "lastReviewedAt": "2026-04-12T20:10:00.000Z"
+      "lastReviewedAt": "2026-10-08T00:39:26.517Z"
     },
     {
       "slug": "fresh-and-good",
       "name": "Fresh & Good",
       "instagram": "",
-      "status": "draft",
+      "status": "incomplete",
       "internalTag": "draft-unconfirmed-lago-verde",
       "missingFields": [
-        "instagram",
-        "full_address",
-        "hours",
-        "min_budget",
-        "max_budget",
-        "phone",
-        "whatsapp",
-        "photos"
+        "logo",
+        "cover",
+        "gallery",
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
       ],
       "notes": [
-        "Se dejó fuera de la app por falta de evidencia pública sólida.",
-        "Sigue en el catálogo interno para revisión futura si aparece un perfil o fuente confiable."
+        "Auditoría automática del catálogo: pendiente logo, cover, gallery, menu_items, budget_scenarios, hours_by_branch, phone_by_branch, whatsapp_by_branch, coordinates_by_branch."
       ],
-      "lastReviewedAt": "2026-04-12T20:10:00.000Z"
+      "lastReviewedAt": "2026-10-08T00:39:26.517Z"
     },
     {
       "slug": "memorial",
       "name": "Memorial Cervecería",
       "instagram": "https://www.instagram.com/memorial_cerveceria/",
-      "status": "incomplete",
+      "status": "complete",
       "internalTag": "followup-contact-menu",
-      "missingFields": [
-        "menu_url",
-        "phone",
-        "whatsapp"
-      ],
+      "missingFields": [],
       "notes": [
-        "Se dejaron dos fotos limpias del bar/interior en el catálogo.",
-        "Horario vigente cargado desde highlights.",
-        "Dirección principal confirmada.",
-        "Presupuesto base cargado desde menú leído por screenshots."
+        "Auditoría automática del catálogo: ficha completa."
       ],
-      "lastReviewedAt": "2026-04-12T22:31:46.356Z"
+      "lastReviewedAt": "2026-10-08T00:39:26.517Z"
     },
     {
       "slug": "fiel",
@@ -117,38 +101,25 @@
       "slug": "sorsi",
       "name": "Sorsi | Buchetta del Vino",
       "instagram": "https://www.instagram.com/sorsi_cali/",
-      "status": "incomplete",
-      "internalTag": "followup-contact",
-      "missingFields": [
-        "phone",
-        "whatsapp"
-      ],
+      "status": "complete",
+      "internalTag": "published-complete",
+      "missingFields": [],
       "notes": [
-        "Se confirmaron dirección, horarios vigentes, menú URL y fotos curadas del grid.",
-        "Los highlights relevantes fueron HORARIOS y UBICACIÓN.",
-        "El menú de Menüpp ya se leyó con navegador real y dejó precios desde 19.000 COP hasta 230.000 COP.",
-        "Se sumó una nueva tanda manual de fotos al catálogo sin reemplazar la portada ni la galería previa."
+        "Auditoría automática del catálogo: ficha completa."
       ],
-      "lastReviewedAt": "2026-04-13T21:53:00.000Z"
+      "lastReviewedAt": "2026-10-08T00:39:26.517Z"
     },
     {
       "slug": "baltazar-y-siete-lunas",
       "name": "Baltasar y Sietelunas",
       "instagram": "https://www.instagram.com/baltasarysietelunas/",
-      "status": "incomplete",
-      "internalTag": "followup-photos-menu-whatsapp",
-      "missingFields": [
-        "menu_url",
-        "whatsapp"
-      ],
+      "status": "complete",
+      "internalTag": "published-complete",
+      "missingFields": [],
       "notes": [
-        "Se sumó una nueva tanda manual de fotos de producto al catálogo sin reemplazar las anteriores.",
-        "Dirección y horarios cargados desde bio + highlight de Horario.",
-        "La mejor evidencia de horario fue la última story útil del highlight.",
-        "El highlight de menú solo muestra pizzas y nombres, sin precios; por criterio editorial se dejó presupuesto general en 40.000 COP.",
-        "Se agregó el teléfono encontrado en Google: 301 5828710."
+        "Auditoría automática del catálogo: ficha completa."
       ],
-      "lastReviewedAt": "2026-04-13T21:50:29.222Z"
+      "lastReviewedAt": "2026-10-08T00:39:26.517Z"
     },
     {
       "slug": "capriatto",
@@ -174,60 +145,58 @@
       "name": "De Pita Madre",
       "instagram": "https://www.instagram.com/depitamadrefood/",
       "status": "incomplete",
-      "internalTag": "followup-contact",
+      "internalTag": "followup-hours-contact-photos",
       "missingFields": [
+        "hours",
+        "photos",
         "phone",
         "whatsapp"
       ],
       "notes": [
         "Bio confirma Lago Verde en Pance.",
         "El highlight MENÚ dejó precios entre 7.000 COP y 60.000 COP.",
-        "Se ajustó el presupuesto mínimo a 35.000 COP para que represente un consumo realista de comida fuerte más bebida, no el ítem más barato aislado.",
-        "Se confirmó horario general: de lunes a domingo, de 12:00 PM a 11:00 PM.",
-        "Se cargó una tanda manual de fotos de producto para dejar portada y galería base del lugar."
+        "No salieron fotos útiles del grid en la corrida del scraper."
       ],
-      "lastReviewedAt": "2026-04-13T23:29:03.819Z"
+      "lastReviewedAt": "2026-10-08T00:38:30.772Z"
     },
     {
       "slug": "mimos",
       "name": "Mimo's",
       "instagram": "https://www.instagram.com/heladosmimos/",
-      "status": "draft",
-      "internalTag": "draft-low-confidence",
+      "status": "incomplete",
+      "internalTag": "followup-hours-pricing-photos",
       "missingFields": [
+        "gallery",
+        "menu_items",
+        "budget_scenarios",
         "hours_by_branch",
-        "min_budget",
-        "max_budget",
-        "photos"
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
       ],
       "notes": [
-        "Se dejó Mimo's en draft por ahora para sacarlo de la app pública mientras se reevalúa la calidad de la ficha.",
-        "Se reemplazó la ficha ficticia de Lago Verde por sedes reales encontradas para Cali.",
-        "La evidencia de sedes viene de una lista pública reciente de puntos Mimos en Cali.",
-        "El perfil de Instagram es nacional y no trae horarios ni links útiles por sede."
+        "Auditoría automática del catálogo: pendiente gallery, menu_items, budget_scenarios, hours_by_branch, phone_by_branch, whatsapp_by_branch, coordinates_by_branch."
       ],
-      "lastReviewedAt": "2026-04-14T02:40:26.473Z"
+      "lastReviewedAt": "2026-10-08T00:39:26.517Z"
     },
     {
       "slug": "lumina",
-      "name": "Ilumina",
+      "name": "Lumina",
       "instagram": "https://www.instagram.com/iluminarestaurant/",
       "status": "incomplete",
-      "internalTag": "followup-address-hours-pricing-contact",
+      "internalTag": "followup-address-hours-pricing-photos",
       "missingFields": [
-        "full_address",
-        "min_budget",
-        "max_budget",
-        "phone",
-        "whatsapp"
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
       ],
       "notes": [
-        "Se asumió que Lumina en la app corresponde a Ilumina Restaurant por coincidencia de nombre y Lago Verde/Pance.",
-        "La bio visible confirma Lago Verde, pero quedó truncada y no dio dirección completa.",
-        "Se cargó una primera tanda manual de fotos útiles: coctelería/ambiente y frente nocturno del lugar.",
-        "Se confirmó horario directo por Instagram: martes a domingo de 4:00 PM a 11:30 PM."
+        "Auditoría automática del catálogo: pendiente menu_items, budget_scenarios, hours_by_branch, phone_by_branch, whatsapp_by_branch, coordinates_by_branch."
       ],
-      "lastReviewedAt": "2026-04-14T01:46:00.000Z"
+      "lastReviewedAt": "2026-10-08T00:39:26.517Z"
     },
     {
       "slug": "santa-fusion",
@@ -236,36 +205,38 @@
       "status": "incomplete",
       "internalTag": "followup-photos-contact-pricing",
       "missingFields": [
-        "phone",
-        "whatsapp"
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
       ],
       "notes": [
-        "Se sumó una nueva tanda manual de fotos de producto y café al catálogo sin reemplazar la portada anterior.",
-        "Se leyó el menú real de Heyzine y se cargó un rango visible entre 5.500 y 49.000 COP; el min budget en Spots se ajustó a 35.000 COP para representar una visita más realista con plato y bebida.",
-        "Se cargaron horarios vigentes desde el highlight HORARIOS.",
-        "La dirección quedó a nivel de Parque Comercial Lago Verde, Pance."
+        "Auditoría automática del catálogo: pendiente menu_items, budget_scenarios, hours_by_branch, phone_by_branch, whatsapp_by_branch, coordinates_by_branch."
       ],
-      "lastReviewedAt": "2026-04-14T00:00:41.634Z"
+      "lastReviewedAt": "2026-10-08T00:39:26.517Z"
     },
     {
       "slug": "el-gran-langostino",
       "name": "El Gran Langostino",
-      "instagram": "https://www.instagram.com/elgranlangostino/",
-      "status": "draft",
-      "internalTag": "draft-low-confidence-branches",
+      "instagram": "",
+      "status": "incomplete",
+      "internalTag": "followup-instagram-contact-pricing-photos",
       "missingFields": [
-        "min_budget",
-        "max_budget",
-        "whatsapp",
-        "photos"
+        "cover",
+        "gallery",
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
       ],
       "notes": [
-        "La ficha se desactivó y quedó en draft porque la expansión multi-sede no se siente lo suficientemente confiable para publicar.",
-        "Sigue en catálogo interno por si más adelante se confirma mejor la estructura real de sedes y la ubicación pública de cada punto.",
-        "Las fotos recolectadas en esta tanda se descartaron porque eran piezas promocionales o artes con texto, no assets limpios para Spots.",
-        "Se había leído información de sucursales, horarios y PDF desde fuentes públicas, pero por ahora prefiero no dejarla visible en la app."
+        "Auditoría automática del catálogo: pendiente cover, gallery, menu_items, budget_scenarios, hours_by_branch, phone_by_branch, whatsapp_by_branch, coordinates_by_branch."
       ],
-      "lastReviewedAt": "2026-04-14T00:18:00.000Z"
+      "lastReviewedAt": "2026-10-08T00:39:26.517Z"
     },
     {
       "slug": "montolivo",
@@ -274,16 +245,12 @@
       "status": "incomplete",
       "internalTag": "followup-unconfirmed-branches-whatsapp",
       "missingFields": [
-        "whatsapp",
-        "hours_by_branch_unconfirmed",
-        "coordinates_unconfirmed"
+        "whatsapp_by_branch"
       ],
       "notes": [
-        "El menú general quedó corregido al link oficial de carta: https://montolivorestaurante.com/carta-menu/",
-        "El endpoint oficial de puntos físicos confirmó con horario, teléfono y coordenadas las sedes de Jardín Plaza y Palmetto Plaza.",
-        "Único Outlet y Mallplaza Cali siguen visibles en el highlight de IG, pero no aparecieron en el localizador oficial del sitio; por ahora quedan publicadas con dirección base, sin horarios ni coordenadas confirmadas."
+        "Auditoría automática del catálogo: pendiente whatsapp_by_branch."
       ],
-      "lastReviewedAt": "2026-04-14T00:25:02.430Z"
+      "lastReviewedAt": "2026-10-08T00:39:26.517Z"
     },
     {
       "slug": "brunch-house",
@@ -300,7 +267,7 @@
         "Los horarios de Ciudad Jardín y Santa Elena quedaron reconfirmados con capturas separadas por sede.",
         "Los menús por sede quedaron apuntando directo a los PDFs de Santa Elena y Bio Mall, sin pasar por QR intermedio."
       ],
-      "lastReviewedAt": "2026-04-14T00:43:11.990Z"
+      "lastReviewedAt": "2026-10-07T22:14:39.692Z"
     },
     {
       "slug": "parisina",
@@ -309,18 +276,12 @@
       "status": "incomplete",
       "internalTag": "followup-menu-contact",
       "missingFields": [
-        "menu_url",
-        "phone",
-        "whatsapp"
+        "phone_by_branch"
       ],
       "notes": [
-        "Se cargó la sede de Mall La Leyenda a partir de la bio del perfil.",
-        "El horario del highlight \"horaire.\" tomó prioridad sobre la bio por ser evidencia visual directa de Instagram.",
-        "El presupuesto se aterrizó leyendo el highlight de menú y pensando en un plan realista del lugar: una crêpe o baguette con bebida.",
-        "Se subieron fotos limpias del feed curadas manualmente.",
-        "Se sumó una nueva tanda manual de fotos de bebidas y producto para reforzar la ficha sin reemplazar la portada actual."
+        "Auditoría automática del catálogo: pendiente phone_by_branch."
       ],
-      "lastReviewedAt": "2026-04-14T01:00:30.000Z"
+      "lastReviewedAt": "2026-10-08T00:39:26.517Z"
     },
     {
       "slug": "fusion-wok",
@@ -361,47 +322,40 @@
         "Se cargó una tanda manual de fotos de baos, entradas y platos fuertes para Baoku.",
         "Se ajustó el min_budget a ~37.000 COP / pers. con base en los precios visibles que sí soltó el menú específico de Baoku."
       ],
-      "lastReviewedAt": "2026-04-14T12:38:08.177Z"
+      "lastReviewedAt": "2026-10-08T00:39:21.592Z"
     },
     {
       "slug": "natal-coffee",
       "name": "Natal Coffee",
       "instagram": "https://www.instagram.com/natalcoffee.col/",
-      "status": "incomplete",
-      "internalTag": "followup-budget-contact-menu-prices",
-      "missingFields": [
-        "max_budget",
-        "phone",
-        "whatsapp"
-      ],
+      "status": "complete",
+      "internalTag": "published-complete",
+      "missingFields": [],
       "notes": [
-        "Se reconstruyó la ficha con una nueva tanda manual de fotos de ambiente, brunch, coctelería y platos de Natal Coffee.",
-        "Se actualizó el horario fino desde la story del lugar: Lun-Mié 9 AM-7 PM, Jue-Vie 9 AM-8 PM, Sáb-Dom 9 AM-3 PM.",
-        "Se dejó el menú directo en app.menupp.co/menu/natal, pero Menüpp sigue sin exponer precios legibles desde esta corrida shell.",
-        "Se ajustó el min_budget a ~32.000 COP / pers. usando la lectura parcial del menú renderizado y un criterio editorial de visita realista."
+        "Auditoría automática del catálogo: ficha completa."
       ],
-      "lastReviewedAt": "2026-04-14T12:38:08.175Z"
+      "lastReviewedAt": "2026-10-08T00:39:26.517Z"
     },
     {
       "slug": "diletto",
       "name": "Diletto",
       "instagram": "",
-      "status": "draft",
+      "status": "incomplete",
       "internalTag": "draft-low-confidence",
       "missingFields": [
-        "instagram",
-        "full_address",
-        "hours",
-        "min_budget",
-        "max_budget",
-        "phone",
-        "whatsapp",
-        "photos"
+        "cover",
+        "gallery",
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
       ],
       "notes": [
-        "Se dejó en draft por baja confianza en la ficha actual y para sacarlo de la app pública hasta revisarlo mejor."
+        "Auditoría automática del catálogo: pendiente cover, gallery, menu_items, budget_scenarios, hours_by_branch, phone_by_branch, whatsapp_by_branch, coordinates_by_branch."
       ],
-      "lastReviewedAt": "2026-04-14T01:08:00.000Z"
+      "lastReviewedAt": "2026-10-08T00:39:26.517Z"
     },
     {
       "slug": "entre-costas",
@@ -418,7 +372,7 @@
         "Se cargaron horarios por sede desde el highlight \"Horarios\": Palmas Mall y Lago Verde.",
         "La sede Lago Verde quedó agregada con dirección base de centro comercial, pero sigue pendiente de coordenadas exactas."
       ],
-      "lastReviewedAt": "2026-04-14T02:14:16.201Z"
+      "lastReviewedAt": "2026-10-08T00:36:03.154Z"
     },
     {
       "slug": "makibar",
@@ -429,15 +383,15 @@
       "missingFields": [
         "min_budget",
         "max_budget",
-        "coordinates"
+        "coordinates",
+        "photos"
       ],
       "notes": [
         "Se creó la ficha a partir del Instagram oficial de Maki Bar.",
         "El highlight \"📍Sedes\" confirmó presencia en Cali dentro del Intercontinental de Cali, Av. Colombia No. 2-72.",
-        "Se cargaron teléfono, WhatsApp, menú y horario corrido 12 PM-10 PM desde la ficha de Google del lugar.",
-        "Se cargó una tanda manual de fotos de sushi, coctelería y platos de Maki Bar para reemplazar la ficha vacía inicial."
+        "Se cargaron teléfono, WhatsApp, menú y horario corrido 12 PM-10 PM desde la ficha de Google del lugar."
       ],
-      "lastReviewedAt": "2026-04-14T02:17:10.562Z"
+      "lastReviewedAt": "2026-10-08T00:36:03.154Z"
     },
     {
       "slug": "la-boheme",
@@ -446,84 +400,78 @@
       "status": "incomplete",
       "internalTag": "followup-bio-refresh-no-photos",
       "missingFields": [
-        "coordinates",
-        "photos",
-        "max_budget"
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
       ],
       "notes": [
-        "Se refrescó la ficha con la bio actual de Instagram: restaurante-bar de cocina latina moderna en San Antonio.",
-        "La dirección quedó normalizada como Calle 1 #6-09, San Antonio, Cali.",
-        "Se agregó el enlace directo de WhatsApp compartido por el lugar.",
-        "Se mantuvo el menú existente, pero queda pendiente completar medios y presupuesto máximo con mejor fuente."
+        "Auditoría automática del catálogo: pendiente menu_items, budget_scenarios, hours_by_branch, phone_by_branch, whatsapp_by_branch, coordinates_by_branch."
       ],
-      "lastReviewedAt": "2026-04-14T02:14:16.201Z"
+      "lastReviewedAt": "2026-10-08T00:39:26.517Z"
     },
     {
       "slug": "namaste",
       "name": "Namaste",
       "instagram": "https://www.instagram.com/namaste.cali.co/",
       "status": "incomplete",
-      "internalTag": "followup-menu-prices-canva-blocked",
+      "internalTag": "placeholder-backfill-ig-order-preserved",
       "missingFields": [
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ],
+      "notes": [
+        "Auditoría automática del catálogo: pendiente menu_items, budget_scenarios, hours_by_branch, phone_by_branch, whatsapp_by_branch, coordinates_by_branch."
+      ],
+      "lastReviewedAt": "2026-10-08T00:39:26.517Z"
+    },
+    {
+      "slug": "sabor-gourmet",
+      "name": "Sabor Gourmet 16",
+      "instagram": "https://www.instagram.com/saborgourmet16/",
+      "status": "complete",
+      "internalTag": "published-complete",
+      "missingFields": [],
+      "notes": [
+        "Auditoría automática del catálogo: ficha completa."
+      ],
+      "lastReviewedAt": "2026-10-08T00:39:26.517Z"
+    },
+    {
+      "slug": "cima-del-viento",
+      "name": "Cima del Viento Dapa",
+      "instagram": "https://www.instagram.com/cimadelvientodapa/",
+      "status": "incomplete",
+      "internalTag": "placeholder-backfill-ig-order-preserved",
+      "missingFields": [
+        "full_address",
+        "hours",
         "min_budget",
         "max_budget",
         "phone",
         "whatsapp",
+        "photos",
         "coordinates"
       ],
       "notes": [
-        "Se cargó una tanda manual de fotos de Namaste enfocada en fachada, ambiente, cóctel y plato.",
-        "Se cargó el horario fino desde la story del lugar: Lun-Mié 12-3 y 5-11, Jue-Vie 12-3 y 5-12, Sáb 4-12, Dom 4-11.",
-        "El menú de Canva quedó como fuente enlazada, pero desde este entorno respondió como cliente no soportado y no permitió leer precios confiables.",
-        "Se preservó el orden del feed manteniendo intactos created_at y updated_at del spot y su sede.",
-        "Se reintentó la lectura del menú de Canva y sigue bloqueada en la capa de loading, así que el budget quedó pendiente por falta de precios confiables."
+        "Se actualizó el placeholder para que apunte al perfil oficial de Cima del Viento Dapa.",
+        "Se mantuvo separado del spot ya existente de Cima del Viento Glamping para no mezclar conceptos antes de la revisión manual.",
+        "Se conservó el orden del feed manteniendo intactos created_at y updated_at."
       ],
-      "lastReviewedAt": "2026-04-14T12:38:08.177Z"
-    },
-    {
-      "slug": "sabor-gourmet",
-      "name": "Sabor Gourmet",
-      "instagram": "https://www.instagram.com/saborgourmet16/",
-      "status": "incomplete",
-      "internalTag": "followup-max-budget-coordinates-order-preserved",
-      "missingFields": [
-        "max_budget",
-        "coordinates"
-      ],
-      "notes": [
-        "Se cargó una tanda manual de fotos de Sabor Gourmet con foco en interior, café, brunch, salados y postres.",
-        "Se preservó el orden del feed manteniendo intactos created_at y updated_at del spot y su sede.",
-        "Pendiente todavía aterrizar min_budget y max_budget cuando el menú permita leer precios confiables.",
-        "El scraper ya logró leer precios útiles de Menüpp y se ajustó el min_budget a ~30.000 COP / pers. con criterio editorial de comida + bebida."
-      ],
-      "lastReviewedAt": "2026-04-14T12:38:08.177Z"
-    },
-    {
-      "slug": "cima-del-viento",
-      "name": "Cima del Viento",
-      "instagram": "https://www.instagram.com/cimadelvientodapa/",
-      "status": "incomplete",
-      "internalTag": "followup-hours-whatsapp-location-order-preserved",
-      "missingFields": [
-        "min_budget",
-        "max_budget",
-        "phone"
-      ],
-      "notes": [
-        "Se cargaron fotos manuales de ambiente y sede de Cima del Viento Dapa.",
-        "Se cargó el horario compartido por el usuario: Mié-Vie 3:30 PM-10:00 PM y Sáb-Dom/Fest 12:00 PM-10:30 PM, con Lun-Mar cerrados.",
-        "El wa.link resolvió al número 573127886205 y se normalizó a enlace de WhatsApp.",
-        "El link de ubicación no soltó una dirección textual limpia; se guardaron coordenadas exactas y una dirección conservadora como Dapa, Yumbo, Valle del Cauca.",
-        "Se quitó el website y se preservó el orden del feed manteniendo intactos created_at y updated_at del spot y su sede."
-      ],
-      "lastReviewedAt": "2026-04-14T03:25:31.215Z"
+      "lastReviewedAt": "2026-10-08T00:38:30.912Z"
     },
     {
       "slug": "combo-burgers",
       "name": "Combo",
       "instagram": "https://www.instagram.com/combo.col/",
-      "status": "draft",
-      "internalTag": "draft",
+      "status": "incomplete",
+      "internalTag": "placeholder-backfill-ig-order-preserved",
       "missingFields": [
         "full_address",
         "hours",
@@ -536,70 +484,58 @@
         "coordinates"
       ],
       "notes": [
-        "Se pasó Combo a draft por decisión editorial del usuario."
+        "Se vinculó el placeholder al Instagram oficial combo.col.",
+        "Se conservó el orden del feed sin tocar las marcas de tiempo del spot."
       ],
-      "lastReviewedAt": "2026-04-14T03:27:24.217Z"
+      "lastReviewedAt": "2026-10-08T00:38:30.912Z"
     },
     {
       "slug": "prote-and-co",
       "name": "Prote&Co",
       "instagram": "https://www.instagram.com/proteandco.froyo/",
       "status": "incomplete",
-      "internalTag": "followup-hours-branches-order-preserved",
+      "internalTag": "placeholder-backfill-ig-order-preserved",
       "missingFields": [
-        "menu_url",
-        "min_budget",
-        "max_budget",
-        "phone",
-        "whatsapp",
-        "coordinates"
+        "menu_items",
+        "budget_scenarios",
+        "coordinates_by_branch"
       ],
       "notes": [
-        "Se convirtió el placeholder en tres sedes: Granada, Las Velas y Chipichape.",
-        "Se aplicó el mismo horario de la story para las tres sedes: Lun-Jue 12-8, Vie-Dom 12-9, Fest 12-8.",
-        "Granada quedó con dirección exacta; Las Velas y Chipichape se dejaron amarradas al centro comercial sin inventar local no confirmado.",
-        "Se cargó una tanda manual de fotos centrada en producto y se preservó el orden del feed manteniendo created_at y updated_at del spot."
+        "Auditoría automática del catálogo: pendiente menu_items, budget_scenarios, coordinates_by_branch."
       ],
-      "lastReviewedAt": "2026-04-14T03:35:13.706Z"
+      "lastReviewedAt": "2026-10-08T00:39:26.517Z"
     },
     {
       "slug": "pradera-de-minca",
       "name": "Pradera de Minca",
       "instagram": "",
-      "status": "draft",
+      "status": "incomplete",
       "internalTag": "draft-low-confidence",
       "missingFields": [
-        "instagram",
-        "full_address",
-        "hours",
-        "min_budget",
-        "max_budget",
-        "phone",
-        "whatsapp",
-        "photos",
-        "coordinates"
+        "logo",
+        "cover",
+        "gallery",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
       ],
       "notes": [
-        "Se dejó Pradera de Minca en draft para sacarlo temporalmente de la app pública mientras se revisa la confiabilidad de la ficha."
+        "Auditoría automática del catálogo: pendiente logo, cover, gallery, hours_by_branch, phone_by_branch, whatsapp_by_branch, coordinates_by_branch."
       ],
-      "lastReviewedAt": "2026-04-14T02:58:48.750Z"
+      "lastReviewedAt": "2026-10-08T00:39:26.517Z"
     },
     {
       "slug": "hamburgo",
       "name": "Hamburgo",
       "instagram": "https://www.instagram.com/hamburgo_pcb/",
-      "status": "incomplete",
-      "internalTag": "followup-menupp-shell-maps-coords-order-preserved",
+      "status": "complete",
+      "internalTag": "published-complete",
       "missingFields": [],
       "notes": [
-        "Se dejó con dos sedes: Palmas Mall en Cali y Jamundí.",
-        "Los horarios se cargaron desde la story: Dom-Jue 12 PM-10 PM y Vie-Sáb 12 PM-11 PM.",
-        "El menú quedó enlazado a Menüpp, pero desde esta corrida solo respondió el shell y no soltó precios legibles.",
-        "La sede de Jamundí usa la dirección del bio y el pin de Maps solo como refuerzo de coordenadas.",
-        "Se preservó el orden del feed manteniendo intactos created_at y updated_at del spot.",
-        "El scraper ya logró leer precios útiles de Menüpp y se ajustó el min_budget a ~30.000 COP / pers."
+        "Auditoría automática del catálogo: ficha completa."
       ],
-      "lastReviewedAt": "2026-04-14T12:38:08.177Z"
+      "lastReviewedAt": "2026-10-08T00:39:26.517Z"
     },
     {
       "slug": "don-samuel",
@@ -608,19 +544,17 @@
       "status": "incomplete",
       "internalTag": "followup-menupp-shell-order-preserved",
       "missingFields": [
-        "min_budget",
-        "max_budget",
-        "phone",
-        "whatsapp",
-        "coordinates"
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
       ],
       "notes": [
-        "Se actualizó el placeholder desde el Instagram oficial de Don Samuel Bakery.",
-        "Se dejó la sede en Parque Comercial Lago Verde con horario Lun-Jue 2-8 PM y Vie-Dom 2-9 PM.",
-        "El menú quedó enlazado a Menüpp, pero desde esta corrida solo respondió el shell y no permitió leer precios confiables.",
-        "Se cargó una tanda manual de fotos de producto y se preservó el orden del feed manteniendo created_at y updated_at del spot."
+        "Auditoría automática del catálogo: pendiente menu_items, budget_scenarios, hours_by_branch, phone_by_branch, whatsapp_by_branch, coordinates_by_branch."
       ],
-      "lastReviewedAt": "2026-04-14T03:44:52.157Z"
+      "lastReviewedAt": "2026-10-08T00:39:26.517Z"
     },
     {
       "slug": "simons",
@@ -629,16 +563,31 @@
       "status": "incomplete",
       "internalTag": "followup-budget-menupp-shell-order-preserved",
       "missingFields": [
-        "max_budget",
-        "coordinates"
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
       ],
       "notes": [
-        "Se actualizó el placeholder desde el Instagram oficial de Simon's Fast Food.",
-        "Se dejó la sede en Marbella Plaza, Local 19, con horario Lun-Jue 4:30-10:30 PM y Vie-Dom/Fest 4:30 PM-12:00 AM.",
-        "Se cargó WhatsApp, menú de Menüpp y una tanda manual de fotos preservando created_at y updated_at para no mover el feed.",
-        "El link directo del menú sí soltó precios útiles y se ajustó el min_budget a ~31.000 COP / pers. con base en combo/comida accesible + bebida."
+        "Auditoría automática del catálogo: pendiente menu_items, budget_scenarios, hours_by_branch, phone_by_branch, whatsapp_by_branch, coordinates_by_branch."
       ],
-      "lastReviewedAt": "2026-04-14T16:30:51.478Z"
+      "lastReviewedAt": "2026-10-08T00:39:26.517Z"
+    },
+    {
+      "slug": "joes",
+      "name": "Joe's",
+      "instagram": "https://www.instagram.com/joesretrodiner/",
+      "status": "draft",
+      "internalTag": "discontinued-user-confirmed",
+      "missingFields": [],
+      "notes": [
+        "El usuario confirmó el 2026-10-07 que Joe's está descontinuado.",
+        "Se conserva la ficha histórica, carta y datos de contacto, pero se retira del feed activo.",
+        "Restaurant Guru también lo reporta como permanentemente cerrado: https://es.restaurantguru.com/amp/Joes-Diner-Cali"
+      ],
+      "lastReviewedAt": "2026-10-08T00:39:26.517Z"
     }
   ]
 }

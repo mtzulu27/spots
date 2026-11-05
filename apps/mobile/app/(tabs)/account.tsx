@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Ionicons } from '@expo/vector-icons';
+import { useReturnScroll } from '@/lib/use-return-scroll';
+import { SpotsIcon as Ionicons } from '@/components/spots-icon';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import {
   ActivityIndicator,
@@ -13,6 +14,7 @@ import {
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { topContentInset } from '@/lib/layout-insets';
 import { AppAvatar, AppSegmentedTabs } from '@/components/app-ui';
 import { useAuthStore } from '@/lib/auth-store';
 import { ExploreGridCard } from '@/components/explore-grid-card';
@@ -22,6 +24,7 @@ import { getDiscoveryStatus } from '@/lib/discovery-ranking';
 import { useLocationStore } from '@/lib/location-store';
 import { accountUi } from '@/lib/account-ui';
 import { useBookmarksStore } from '@/lib/bookmarks-store';
+import { useVisitedStore } from '@/lib/visited-store';
 import { getEffectiveSpotDistanceKm } from '@/lib/explore-filters';
 import {
   aggregatePlaceSpotsFromList,
@@ -29,8 +32,9 @@ import {
 } from '@/lib/mock-spots';
 import { useRelayoutSubscription } from '@/lib/relayout';
 import { useSpotsStore } from '@/lib/spots-store';
+import { DiscoveryNavigation } from '@/components/discovery-navigation';
 
-type AccountTab = 'saved' | 'parches';
+type AccountTab = 'saved' | 'visited' | 'parches';
 type RemovedBookmark = { id: string | number; name: string };
 function getPreferredDetailBranchId(spot: Spot) {
   if (spot.type !== 'place') {
@@ -72,15 +76,18 @@ function getSpotHref(spot: Spot) {
 }
 
 export default function AccountScreen() {
+  const returnScroll = useReturnScroll();
   useRelayoutSubscription();
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { avatarUrl, fullName, signOut, user } = useAuthStore();
   const { spots } = useSpotsStore();
   const { isBookmarked, toggleBookmark } = useBookmarksStore();
+  const { isVisited, getVisitedAt } = useVisitedStore();
   const params = useLocalSearchParams<{ tab?: string }>();
-  const [activeTab, setActiveTab] = useState<AccountTab>(params.tab === 'parches' ? 'parches' : 'saved');
-  useEffect(() => { if (params.tab === 'parches') setActiveTab('parches'); }, [params.tab]);
+  const requestedTab: AccountTab = params.tab === 'parches' || params.tab === 'visited' ? params.tab : 'saved';
+  const [activeTab, setActiveTab] = useState<AccountTab>(requestedTab);
+  useEffect(() => { setActiveTab(requestedTab); }, [requestedTab]);
   const [columns, setColumns] = useState<1 | 2>(1);
   const { userLocation } = useLocationStore();
   const [contentWidth, setContentWidth] = useState(0);
@@ -141,6 +148,12 @@ export default function AccountScreen() {
     () => spots.filter((spot) => spot.type === 'event' && isBookmarked(spot.likeTargetId)),
     [isBookmarked, spots],
   );
+  const visitedSpots = useMemo(
+    () => aggregatePlaceSpotsFromList(spots.filter(spot => spot.type === 'place' && isVisited(spot.likeTargetId)))
+      .sort((a, b) => Date.parse(getVisitedAt(b.likeTargetId) ?? '') - Date.parse(getVisitedAt(a.likeTargetId) ?? '')),
+    [getVisitedAt, isVisited, spots],
+  );
+  const activeItems = activeTab === 'saved' ? savedSpots : activeTab === 'visited' ? visitedSpots : parches;
 
   useFocusEffect(
     useMemo(
@@ -279,12 +292,13 @@ export default function AccountScreen() {
       </Modal>
 
       <ScrollView
+        {...returnScroll}
         style={styles.scroll}
         contentContainerStyle={[
           styles.content,
           {
-            paddingTop: insets.top + 18,
-            paddingBottom: (removedBookmark ? 120 : 32) + insets.bottom,
+            paddingTop: topContentInset(insets),
+            paddingBottom: (removedBookmark ? 196 : 112) + insets.bottom,
             flexGrow: 1,
           },
         ]}
@@ -299,15 +313,16 @@ export default function AccountScreen() {
         <View style={styles.headerRow}>
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel="Volver a explorar"
-            hitSlop={10}
-            onPress={() => router.replace('/(tabs)/explore')}
-            style={({ pressed }) => [styles.backButton, pressed && styles.controlPressed]}
+            accessibilityLabel="Editar mi perfil"
+            onPress={() => router.push('/edit-profile')}
+            style={({ pressed }) => [styles.profileRow, pressed && styles.profilePressed]}
           >
-            <Ionicons name="chevron-back" size={20} color={accountUi.text} />
+            <AppAvatar uri={avatarUrl} size={42} />
+            <View style={styles.profileCopy}>
+              <Text numberOfLines={2} style={styles.name}>{profileName}</Text>
+              <Text numberOfLines={1} style={styles.username}>{user?.email || 'Correo no disponible'}</Text>
+            </View>
           </Pressable>
-
-          <Text accessibilityRole="header" style={styles.headerTitle}>Mi cuenta</Text>
           <View style={styles.headerMenuWrap}>
             <Pressable
               accessibilityRole="button"
@@ -328,19 +343,12 @@ export default function AccountScreen() {
             transform: [{ translateY: profileTranslateY }],
           }}
         >
-        <View style={styles.profileRow}>
-          <AppAvatar uri={avatarUrl} size={42} />
-          <View style={styles.profileCopy}>
-            <Text numberOfLines={2} style={styles.name}>{profileName}</Text>
-            <Text numberOfLines={1} style={styles.username}>{user?.email || 'Correo no disponible'}</Text>
-          </View>
-        </View>
-
         <AppSegmentedTabs
           value={activeTab}
           onChange={setActiveTab}
           options={[
-            { key: 'saved', label: 'Lugares' },
+            { key: 'saved', label: 'Me gusta' },
+            { key: 'visited', label: 'Visitados' },
             { key: 'parches', label: 'Parches' },
           ]}
         />
@@ -353,35 +361,37 @@ export default function AccountScreen() {
           }}
         >
         <View onLayout={(event) => setContentWidth(event.nativeEvent.layout.width)}>
-        {(activeTab === 'saved' ? savedSpots : parches).length > 0 ? (
+        {activeItems.length > 0 ? (
           <>
             <View style={styles.resultsBar}>
               <View style={styles.resultsInfo}>
                 <Text style={styles.resultsText}>
-                  {(activeTab === 'saved' ? savedSpots : parches).length}{' '}
-                  {(activeTab === 'saved' ? savedSpots : parches).length === 1 ? 'resultado' : 'resultados'}
+                  {activeItems.length}{' '}
+                  {activeItems.length === 1 ? 'resultado' : 'resultados'}
                 </Text>
                 <Text style={styles.resultsHint}>
-                  {activeTab === 'saved' ? 'Tus lugares guardados' : 'Tus parches guardados'}
+                  {activeTab === 'saved' ? 'Los lugares que te gustan' : activeTab === 'visited' ? 'Lugares a los que ya fuiste' : 'Tus parches guardados'}
                 </Text>
               </View>
               <GridColumnSelector columns={columns} onChange={setColumns} />
             </View>
-            {renderSavedSpots(activeTab === 'saved' ? savedSpots : parches)}
+            {renderSavedSpots(activeItems)}
           </>
         ) : (
           <View style={styles.emptyState} accessibilityLiveRegion="polite">
             <View accessible={false} importantForAccessibility="no-hide-descendants">
-              <Ionicons name="bookmark-outline" size={64} color={accountUi.textTertiary} />
+              <Ionicons name={activeTab === 'visited' ? 'checkmark-circle-outline' : activeTab === 'saved' ? 'heart-outline' : 'bookmark-outline'} size={64} color={accountUi.textTertiary} />
             </View>
             <View style={styles.emptyCopy}>
               <Text accessibilityRole="header" style={styles.emptyTitle}>
-                {activeTab === 'saved' ? 'Aún no tienes lugares guardados' : 'Aún no tienes parches guardados'}
+                {activeTab === 'saved' ? 'Aún no tienes lugares en Me gusta' : activeTab === 'visited' ? 'Aún no has marcado lugares visitados' : 'Aún no tienes parches guardados'}
               </Text>
               <Text style={styles.emptyMeta}>
                 {activeTab === 'saved'
-                  ? 'Guarda los lugares que quieras visitar y encuéntralos aquí.'
-                  : 'Guarda los parches que te interesen y encuéntralos aquí.'}
+                  ? 'Marca con el corazón los lugares que te gustan.'
+                  : activeTab === 'visited'
+                    ? 'Cuando conozcas un lugar, márcalo como visitado desde su ficha.'
+                    : 'Guarda los parches que te interesen y encuéntralos aquí.'}
               </Text>
             </View>
           </View>
@@ -391,13 +401,13 @@ export default function AccountScreen() {
 
       </ScrollView>
       {removedBookmark && (
-        <Entrance trigger={String(removedBookmark.id)} style={[styles.undoBar, { bottom: insets.bottom + 16 }]}>
+        <Entrance trigger={String(removedBookmark.id)} style={[styles.undoBar, { bottom: insets.bottom + 96 }]}>
           <Text accessibilityLiveRegion="polite" numberOfLines={2} style={styles.undoMessage}>
-            Quitaste {removedBookmark.name} de guardados
+            Quitaste {removedBookmark.name} de Me gusta
           </Text>
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel={`Deshacer: volver a guardar ${removedBookmark.name}`}
+            accessibilityLabel={`Deshacer: volver a añadir ${removedBookmark.name} a Me gusta`}
             onPress={() => void undoRemoval()}
             style={({ pressed }) => [styles.undoButton, pressed && styles.undoButtonPressed]}
           >
@@ -405,6 +415,7 @@ export default function AccountScreen() {
           </Pressable>
         </Entrance>
       )}
+      <DiscoveryNavigation active="account" onExplore={() => router.replace('/explore')} onMap={() => router.replace({ pathname: '/(tabs)/explore', params: { view: 'map' } })} onParches={() => router.replace('/today')} onContribute={() => router.replace('/contribute')} onAccount={() => undefined} />
     </View>
   );
 }
@@ -432,24 +443,8 @@ const styles = StyleSheet.create({
   headerRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: 12,
+    justifyContent: 'flex-end',
     zIndex: 30,
-  },
-  backButton: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: accountUi.surface,
-  },
-  headerTitle: {
-    flex: 1,
-    fontSize: 18,
-    fontWeight: '600',
-    color: accountUi.text,
-    textAlign: 'center',
   },
   controlPressed: {
     backgroundColor: accountUi.surfaceMuted,
@@ -502,7 +497,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
-    marginBottom: 28,
+    flex: 1,
+    borderRadius: 16,
+    paddingVertical: 6,
+    paddingHorizontal: 6,
+    marginLeft: -6,
+  },
+  profilePressed: {
+    backgroundColor: accountUi.surfaceMuted,
   },
   profileCopy: {
     flex: 1,

@@ -11,6 +11,13 @@ const distDir = join(appRoot, 'dist');
 const envLocalPath = join(appRoot, '.env.local');
 const envDeployPath = join(appRoot, '..', '..', '.env.deploy.local');
 const remoteManifestName = '.spots-deploy-manifest.json';
+const frontendOnly = process.argv.includes('--frontend-only');
+const dryRun = process.argv.includes('--dry-run');
+const preserveRemoteFiles = process.argv.includes('--preserve-remote-files');
+
+function isFrontendFile(pathname) {
+  return pathname === 'index.html' || pathname.startsWith('_expo/') || pathname.startsWith('assets/');
+}
 
 function parseEnvFile(pathname) {
   if (!existsSync(pathname)) {
@@ -84,6 +91,7 @@ function buildManifest(rootDir) {
 
   files.forEach((file) => {
     const relPath = relative(rootDir, file).replaceAll('\\', '/');
+    if (frontendOnly && !isFrontendFile(relPath)) return;
     const stats = statSync(file);
     entries[relPath] = {
       sha1: sha1File(file),
@@ -111,12 +119,26 @@ function runCurl(args, options = {}) {
   });
 }
 
+const ftpCurlOptions = [
+  '--ftp-pasv',
+  '--connect-timeout',
+  '15',
+  '--max-time',
+  '180',
+  '--retry',
+  '5',
+  '--retry-delay',
+  '3',
+  '--retry-all-errors',
+];
+
 function tryReadRemoteManifest({ host, port, username, password, basePath }) {
   try {
     const output = runCurl(
       [
         '--silent',
         '--show-error',
+        ...ftpCurlOptions,
         '--user',
         `${username}:${password}`,
         ftpUrl(host, port, basePath, remoteManifestName),
@@ -140,6 +162,7 @@ function uploadFile({ host, port, username, password, basePath, localPath, remot
   runCurl([
     '--silent',
     '--show-error',
+    ...ftpCurlOptions,
     '--ftp-create-dirs',
     '--user',
     `${username}:${password}`,
@@ -154,6 +177,7 @@ function deleteRemoteFile({ host, port, username, password, basePath, remotePath
     runCurl([
       '--silent',
       '--show-error',
+      ...ftpCurlOptions,
       '--user',
       `${username}:${password}`,
       ftpUrl(host, port, basePath),
@@ -170,7 +194,7 @@ function main() {
     throw new Error('No existe dist. Corre el export antes del deploy.');
   }
 
-  const host = readEnvValue('HOSTINGER_FTP_HOST', '145.223.107.61');
+  const host = readEnvValue('HOSTINGER_FTP_HOST', 'ftp.spots.com.co');
   const port = readEnvValue('HOSTINGER_FTP_PORT', '21');
   const username = readEnvValue('HOSTINGER_FTP_USERNAME');
   const password = readEnvValue('HOSTINGER_FTP_PASSWORD');
@@ -183,6 +207,9 @@ function main() {
   }
 
   const localManifest = buildManifest(distDir);
+  if (frontendOnly && !localManifest.files['index.html']) {
+    throw new Error('Frontend-only deploy requires a completed export with index.html.');
+  }
   const remoteManifest = tryReadRemoteManifest({
     host,
     port,
@@ -190,6 +217,9 @@ function main() {
     password,
     basePath,
   });
+  if (frontendOnly && !remoteManifest?.files) {
+    throw new Error('Frontend-only deploy requires a readable remote manifest; nothing was uploaded.');
+  }
 
   const remoteFiles = remoteManifest?.files && typeof remoteManifest.files === 'object'
     ? remoteManifest.files
@@ -206,7 +236,14 @@ function main() {
     );
   });
 
-  const deletedFiles = Object.keys(remoteFiles).filter((pathname) => !(pathname in localFiles));
+  const deletedFiles = frontendOnly || preserveRemoteFiles ? [] : Object.keys(remoteFiles).filter((pathname) => !(pathname in localFiles));
+
+  // Keep the old entry point valid until every new hashed asset is available.
+  changedOrNewFiles.sort((a, b) => Number(a === 'index.html') - Number(b === 'index.html') || a.localeCompare(b));
+  if (dryRun) {
+    console.log(JSON.stringify({ frontendOnly, preserveRemoteFiles, upload: changedOrNewFiles, delete: deletedFiles }, null, 2));
+    return;
+  }
 
   changedOrNewFiles.forEach((pathname) => {
     const localPath = join(distDir, pathname);
@@ -237,7 +274,10 @@ function main() {
   const manifestTempDir = join(tmpdir(), 'spots-deploy');
   const manifestTempPath = join(manifestTempDir, remoteManifestName);
   ensureParentDir(manifestTempPath);
-  writeFileSync(manifestTempPath, JSON.stringify(localManifest), 'utf8');
+  const publishedManifest = frontendOnly || preserveRemoteFiles
+    ? { ...remoteManifest, generatedAt: localManifest.generatedAt, files: { ...remoteFiles, ...localFiles } }
+    : localManifest;
+  writeFileSync(manifestTempPath, JSON.stringify(publishedManifest), 'utf8');
 
   console.log(`Uploading ${remoteManifestName}`);
   uploadFile({
@@ -258,6 +298,9 @@ function main() {
 try {
   main();
 } catch (error) {
-  console.error(error instanceof Error ? error.message : error);
+  let message = error instanceof Error ? error.message : String(error);
+  const password = readEnvValue('HOSTINGER_FTP_PASSWORD');
+  if (password) message = message.replaceAll(password, '[redacted]');
+  console.error(message);
   process.exit(1);
 }

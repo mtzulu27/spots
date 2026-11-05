@@ -1,6 +1,42 @@
+import { findRegisteredCommercialCenter } from '@/lib/commercial-centers'
+
 export type SpotType = 'place' | 'event'
 
+export type MenuItemCategory =
+  | 'mains'
+  | 'starters'
+  | 'desserts'
+  | 'drinks'
+  | 'cover'
+  | 'tickets'
+  | 'extras'
+
+export type MenuCatalogItem = {
+  name: string
+  price: number
+  presentation?: string
+  category: MenuItemCategory
+  menuSection?: string | null
+  sourceUrl?: string | null
+  verifiedAt?: string | null
+  sourcePage?: number
+  unit?: string
+  variants?: string[]
+  calculationIncluded?: boolean
+  exclusionReason?: string
+  source_url?: string | null
+  source?: string | null
+  officialMenuUrl?: string | null
+  menuUrl?: string | null
+  sourceCategory?: string | null
+  sourceScope?: string | null
+  source_page?: number
+  available?: boolean
+  availability?: string
+}
+
 export type Spot = {
+  businessStatus?: 'operational' | 'temporarily_closed' | 'permanently_closed' | 'unknown'
   id: string
   spotId: number
   branchId: number | null
@@ -16,6 +52,11 @@ export type Spot = {
   startsAt?: string | null
   endsAt?: string | null
   ticketPrice?: number | null
+  venueSpotId?: number | null
+  venueBranchId?: number | null
+  venueBranchSlug?: string | null
+  venueName?: string | null
+  venueLogoUrl?: string | null
   name: string
   brandName: string
   branchName: string
@@ -26,11 +67,20 @@ export type Spot = {
   city: string
   likes: string
   image: string
+  logoUrl?: string
   galleryImages: string[]
   shortDescription: string
   description: string
   interests: string[]
   maxPeople: number
+  minPeople?: number
+  typicalBudget?: number
+  budgetPilot?: boolean
+  budgetScenarios?: import('./budget-scenarios').BudgetScenario[]
+  budgetBasis?: string
+  menuCalculationNote?: string
+  googleMapsUrl?: string
+  websiteUrl?: string
   days: string[]
   distanceKm: number
   minBudget: number
@@ -41,6 +91,8 @@ export type Spot = {
   whatsapp: string
   phone: string
   menuUrl: string
+  menuItems?: MenuCatalogItem[]
+  menuItemsVerifiedAt?: string | null
   tags: string[]
   moods: string[]
   latitude?: number
@@ -72,6 +124,8 @@ function toFiniteBudget(value: number | undefined, fallback: number | undefined)
 }
 
 export function normalizeCommercialCenterLabel(value: string) {
+  const registered = findRegisteredCommercialCenter(value);
+  if (registered) return registered.name;
   const cleaned = value
     .replace(/\bCentro Comercial\b/gi, '')
     .replace(/\bParque Comercial\b/gi, '')
@@ -291,6 +345,7 @@ export function aggregatePlaceBranches(branches: Spot[]) {
 
   return {
     ...primary,
+    businessStatus: branches.every(branch => branch.businessStatus === 'temporarily_closed') ? 'temporarily_closed' as const : branches.some(branch => branch.businessStatus === 'operational') ? 'operational' as const : 'unknown' as const,
     branchId: null,
     name: primary.brandName,
     manuallyAdjusted: branches.some((branch) => branch.manuallyAdjusted),
@@ -357,8 +412,8 @@ export function getOtherBranches(current: Spot) {
   return getOtherBranchesFromList(emptySpots, current)
 }
 
-function parseLikes(value: string) {
-  const normalized = value.trim().toUpperCase()
+function parseLikes(value: string | null | undefined) {
+  const normalized = (value ?? '').trim().toUpperCase()
   if (normalized.endsWith('K')) {
     return Math.round(Number(normalized.replace('K', '')) * 1000)
   }

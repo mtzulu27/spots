@@ -1,0 +1,44 @@
+{
+  "task": "extract_instagram_name_bio_links_photo",
+  "method": "node_fetch_public_profile_no_session",
+  "source": "https://www.instagram.com/donsamuelbakery/",
+  "startedAt": "2026-11-03T15:20:36.621Z",
+  "requestCount": 1,
+  "retries": 0,
+  "result": {
+    "username": "donsamuelbakery",
+    "displayName": "DON SAMUEL - Repostería sin azúcar",
+    "biography": "REPOSTERÍA SIN AZÚCAR 💚\nSin Gluten 💘\nAgenda tu pedido 👩🏻‍🍳👩🏼‍🍳",
+    "links": [
+      "https://menupp.co/donsamuelhealthy"
+    ],
+    "profilePhotoUrl": "https://scontent.cdninstagram.com/v/t51.82787-19/649525124_18570898141034818_8642971591992925089_n.jpg?stp=dst-jpg_s150x150_tt6&_nc_cat=100&ig_cache_key=GIT3tiZCOdsqIvpBAKHbh9jeAPJ3bmNDAQAB1501500j-ccb7-5&ccb=7-5&_nc_sid=669407&efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLnd3dy4xMDgwLkMzIn0%3D&_nc_ohc=-6jMvapryvYQ7kNvwFTnSMB&_nc_oc=AdpseBBQNjeQFRgGYeUtYw5k7bSo1YrTrUClCfx7TulW4DSg8GsCOJnYCW8XYAo-ssY&_nc_zt=24&_nc_ht=scontent.cdninstagram.com&_nc_gid=FwEiqsvYZoLKqMviTZtPDw&_nc_ss=7c689&oh=00_AQTiY9Z8qUz95TuK3B_xykC1_kMwnP-rDnAKNRaMa12q8A&oe=6AEFD43A",
+    "logoVerified": false,
+    "highlights": {
+      "inventory": [],
+      "status": "inventory_not_available_in_public_html",
+      "coverage": "Only embedded highlights with matching owner; absence does not mean the profile has no highlights."
+    },
+    "coverage": {
+      "name": "embedded_profile",
+      "biography": "embedded_profile",
+      "links": "embedded_bio_links",
+      "profilePhoto": "candidate_only"
+    },
+    "note": "URL de foto de perfil, no logo validado; campos ausentes no se infieren de textos promocionales. No se descargan imagenes."
+  },
+  "status": "extracted",
+  "timingMs": {
+    "toHeaders": 315.65450000000004,
+    "downloadComplete": 733.609417,
+    "parse": 26.718707999999992,
+    "total": 760.353417
+  },
+  "notes": [
+    "No browser, cookies or credentials. No response HTML retained. No catalog changes.",
+    "Timing measures script execution; implementation and final explanation excluded."
+  ],
+  "httpStatus": 200,
+  "bytesReceived": 765608,
+  "finishedAt": "2026-11-03T15:20:37.382Z"
+}

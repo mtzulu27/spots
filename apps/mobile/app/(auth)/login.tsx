@@ -1,4 +1,4 @@
-import { Ionicons } from '@expo/vector-icons';
+import { SpotsIcon as Ionicons } from '@/components/spots-icon';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'expo-router';
 import {
@@ -6,6 +6,7 @@ import {
   Animated,
   Easing,
   Image,
+  Platform,
   Pressable,
   StyleSheet,
   Text,
@@ -13,13 +14,16 @@ import {
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { topContentInset } from '@/lib/layout-insets';
 import {
   PrimaryAction,
   WireframeField,
 } from '@/components/auth-wireframe';
 import { useRelayoutSubscription } from '@/lib/relayout';
 import { useAuthStore } from '@/lib/auth-store';
-import { enterLocalPreview, localPreviewAvailable } from '@/lib/local-preview';
+import { startLocalGuest } from '@/lib/local-guest';
+import { DesktopLogin } from '@/components/desktop-login';
+import { DESKTOP_AUTH_MIN_WIDTH } from '@/lib/desktop-auth-policy';
 
 const spotsLogo = require('../../assets/logo_spots_blanco.png');
 const welcomeBackground = require('../../assets/auth_welcome_bg.png');
@@ -32,7 +36,7 @@ function isValidEmail(value: string) {
 
 export default function LoginScreen() {
   useRelayoutSubscription();
-  const { height } = useWindowDimensions();
+  const { height, width } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { signInWithEmail, signInWithProvider, signUpWithEmail } = useAuthStore();
@@ -60,7 +64,7 @@ export default function LoginScreen() {
       : 'La contraseña debe tener al menos 8 caracteres';
   }, [password]);
 
-  const canSubmit = (localPreviewAvailable || (isValidEmail(email.trim()) && password.length >= 8)) && !submitting;
+  const canSubmit = isValidEmail(email.trim()) && password.length >= 8 && !submitting;
   const isCompactHeight = height < 780;
   const collapsedStageHeight = isCompactHeight ? 182 : 198;
   const expandedStageHeight = isCompactHeight ? 300 : 320;
@@ -92,7 +96,6 @@ export default function LoginScreen() {
   }, [formProgress, showEmailForm]);
 
   async function handleEmailContinue() {
-    if (enterLocalPreview()) return;
     if (!canSubmit) {
       setEmailTouched(true);
       setPasswordTouched(true);
@@ -139,7 +142,6 @@ export default function LoginScreen() {
   }
 
   async function handleSocial(provider: 'google' | 'apple') {
-    if (enterLocalPreview()) return;
     if (submitting) return;
 
     setSubmitting(true);
@@ -184,6 +186,26 @@ export default function LoginScreen() {
     outputRange: [20, 0],
   });
 
+  if (Platform.OS === 'web' && width >= DESKTOP_AUTH_MIN_WIDTH) {
+    return <DesktopLogin
+      email={email} password={password}
+      emailError={emailTouched ? emailError : ''}
+      passwordError={passwordTouched ? passwordError : ''}
+      authError={authError} submitting={submitting} canSubmit={canSubmit}
+      showEmailForm={showEmailForm} showPassword={showPassword}
+      onEmailChange={setEmail} onPasswordChange={setPassword}
+      onEmailBlur={() => setEmailTouched(true)}
+      onPasswordBlur={() => setPasswordTouched(true)}
+      onTogglePassword={() => setShowPassword((current) => !current)}
+      onShowEmail={() => setShowEmailForm(true)}
+      onOtherMethods={() => setShowEmailForm(false)}
+      onSubmit={handleEmailContinue}
+      onGoogle={() => handleSocial('google')}
+      onRecovery={() => router.push('/(auth)/forgot-password')}
+      onExplore={() => { startLocalGuest(); router.replace('/explore'); }}
+    />;
+  }
+
   return (
     <View style={styles.screen}>
       <Image
@@ -196,7 +218,7 @@ export default function LoginScreen() {
         style={[
           styles.content,
           {
-            paddingTop: Math.max(insets.top, 16) + 12,
+            paddingTop: topContentInset(insets),
             paddingBottom: Math.max(insets.bottom, 16) + 20,
           },
           isCompactHeight ? styles.contentCompact : null,
@@ -280,7 +302,11 @@ export default function LoginScreen() {
               <Pressable
                 style={[styles.providerButton, styles.emailButton]}
                 onPress={() => {
-                  if (!enterLocalPreview()) setShowEmailForm(true);
+                  if (startLocalGuest()) {
+                    router.replace('/explore');
+                    return;
+                  }
+                  setShowEmailForm(true);
                 }}
               >
                 <View style={styles.providerContent}>

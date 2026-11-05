@@ -1,12 +1,13 @@
 import { Stack, usePathname } from 'expo-router';
 import { useFonts } from 'expo-font';
 import { StatusBar } from 'expo-status-bar';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { AppState, Platform, View } from 'react-native';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { AppState, Animated, Image, Platform, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { AuthStoreProvider } from '@/lib/auth-store';
 import { BookmarksStoreProvider } from '@/lib/bookmarks-store';
+import { VisitedStoreProvider } from '@/lib/visited-store';
 import { LikesStoreProvider } from '@/lib/likes-store';
 import { LocationStoreProvider } from '@/lib/location-store';
 import { emitRelayout } from '@/lib/relayout';
@@ -14,6 +15,8 @@ import { PlaceUpdatesProvider } from '@/lib/place-updates-store';
 import { SpotsStoreProvider } from '@/lib/spots-store';
 import { applyGlobalTypographyDefaults, MONTSERRAT_FONTS } from '@/lib/typography';
 import { registerWebPushServiceWorker } from '@/lib/web-push';
+import { darkAccountUi, lightAccountUi } from '@/lib/account-ui';
+import { useUserPreferences } from '@/lib/user-preferences';
 
 type RecoveryState = {
   epoch: number;
@@ -27,6 +30,8 @@ const VIEWPORT_RECOVERY_FAILSAFE_DELAY = 1400;
 const HARD_RECOVERY_SESSION_KEY = 'spots-hard-recovery';
 const PRE_RESUMPTION_HEIGHT_KEY = 'spots-pre-resumption-height';
 const ENABLE_WEB_VIEWPORT_RECOVERY = false;
+
+
 
 function isKeyboardFocusActive() {
   if (Platform.OS !== 'web' || typeof document === 'undefined') {
@@ -50,15 +55,44 @@ function isKeyboardFocusActive() {
 export default function RootLayout() {
   const pathname = usePathname();
   const darkChrome = pathname === '/' || /login|signup|welcome|profile-setup|onboarding/.test(pathname);
+  const { preferences } = useUserPreferences();
+  const isDebugScreen = pathname === '/debug';
+  const isPlaceDetail = pathname.startsWith('/spot/');
+  const translucentChrome = darkChrome || isDebugScreen || pathname === '/place-map' || pathname.startsWith('/spot/');
+  const appDark = preferences.dark && !darkChrome && !isDebugScreen;
   useEffect(() => {
     if (Platform.OS !== 'web') return;
-    const color = darkChrome ? '#050305' : '#f5f5f7';
+    const palette = appDark ? darkAccountUi : lightAccountUi;
+    const color = isDebugScreen ? '#1687ff' : darkChrome ? '#050305' : isPlaceDetail ? '#000000' : palette.bg;
+    const root = document.documentElement;
+    root.classList.toggle('spot-detail', isPlaceDetail);
+    root.style.setProperty('--spots-bg', palette.bg);
+    root.style.setProperty('--spots-surface', palette.surface);
+    root.style.setProperty('--spots-surface-muted', palette.surfaceMuted);
+    root.style.setProperty('--spots-text', palette.text);
+    root.style.setProperty('--spots-text-secondary', palette.textSecondary);
+    root.style.setProperty('--spots-text-tertiary', palette.textTertiary);
+    root.style.setProperty('--spots-border', palette.border);
+    root.style.setProperty('--spots-accent', palette.accent);
+    root.style.setProperty('--spots-accent-soft', palette.accentSoft);
+    root.style.setProperty('--spots-scrim', palette.scrim);
+    root.style.setProperty('--spots-caption', palette.caption);
+    root.style.colorScheme = isPlaceDetail || appDark || darkChrome ? 'dark' : 'light';
+    root.dataset.spotsTheme = appDark || darkChrome ? 'dark' : 'light';
     document.querySelector('meta[name="theme-color"]')?.setAttribute('content', color);
-    document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]')?.setAttribute('content', darkChrome ? 'black' : 'default');
-    document.documentElement.style.backgroundColor = color;
+    root.style.backgroundColor = color;
     document.body.style.backgroundColor = color;
-  }, [darkChrome]);
+  }, [appDark, darkChrome, isDebugScreen, isPlaceDetail, translucentChrome]);
   const [fontsLoaded] = useFonts(MONTSERRAT_FONTS);
+  const [bootSplashVisible, setBootSplashVisible] = useState(true);
+  useLayoutEffect(() => {
+    if (Platform.OS !== 'web') return;
+    const root = document.documentElement;
+    root.dataset.spotsBootSplash = String(bootSplashVisible);
+    return () => { delete root.dataset.spotsBootSplash; };
+  }, [bootSplashVisible]);
+  const bootSplashOpacity = useRef(new Animated.Value(1)).current;
+  const bootSplashScale = useRef(new Animated.Value(0.82)).current;
   const frameRef = useRef<number | null>(null);
   const timeoutRefs = useRef<Array<ReturnType<typeof setTimeout>>>([]);
   const stableHeightRef = useRef(0);
@@ -92,26 +126,6 @@ export default function RootLayout() {
 
     if (!roundedHeight) {
       return null;
-    }
-
-    // iOS PWA: visualViewport.height can report a wrong (smaller) value after
-    // OAuth return or app resume in the same browsing context. Reloading does not
-    // fix it because the context is reused. Instead, if we are in standalone
-    // portrait mode and the measured height is more than 30px below screen.height,
-    // use screen.height directly so the wrong value is never committed.
-    if (
-      typeof navigator !== 'undefined' &&
-      (navigator as Navigator & { standalone?: boolean }).standalone === true &&
-      window.screen?.height
-    ) {
-      const screenH = window.screen.height;
-      const orientation =
-        window.screen?.orientation?.angle ??
-        (window as Window & { orientation?: number }).orientation ??
-        0;
-      if (orientation % 180 === 0 && screenH - roundedHeight > 30) {
-        roundedHeight = screenH;
-      }
     }
 
     const stableHeight = stableHeightRef.current;
@@ -430,21 +444,6 @@ export default function RootLayout() {
           let measuredHeight = readViewportHeight() ?? 0;
           if (
             measuredHeight > 0 &&
-            typeof navigator !== 'undefined' &&
-            (navigator as Navigator & { standalone?: boolean }).standalone === true &&
-            window.screen?.height
-          ) {
-            const screenH = window.screen.height;
-            const orient =
-              window.screen?.orientation?.angle ??
-              (window as Window & { orientation?: number }).orientation ??
-              0;
-            if (orient % 180 === 0 && screenH - measuredHeight > 30) {
-              measuredHeight = screenH;
-            }
-          }
-          if (
-            measuredHeight > 0 &&
             Math.abs(measuredHeight - stableHeightRef.current) <= VIEWPORT_STABILITY_TOLERANCE
           ) {
             return;
@@ -466,21 +465,6 @@ export default function RootLayout() {
       // If the viewport height is already correct, avoid a heavier recovery path.
       if (stableHeightRef.current > 0) {
         let measuredHeight = readViewportHeight() ?? 0;
-        if (
-          measuredHeight > 0 &&
-          typeof navigator !== 'undefined' &&
-          (navigator as Navigator & { standalone?: boolean }).standalone === true &&
-          window.screen?.height
-        ) {
-          const screenH = window.screen.height;
-          const orient =
-            window.screen?.orientation?.angle ??
-            (window as Window & { orientation?: number }).orientation ??
-            0;
-          if (orient % 180 === 0 && screenH - measuredHeight > 30) {
-            measuredHeight = screenH;
-          }
-        }
         if (
           measuredHeight > 0 &&
           Math.abs(measuredHeight - stableHeightRef.current) <= VIEWPORT_STABILITY_TOLERANCE
@@ -585,26 +569,100 @@ export default function RootLayout() {
   setTimeout(fix, 1200);
 }, [fontsLoaded]);
 
-  if (!fontsLoaded) {
-    return null;
-  }
+  useEffect(() => {
+    if (!fontsLoaded) return;
 
-  
+    Animated.spring(bootSplashScale, {
+      toValue: 1,
+      friction: 5,
+      tension: 75,
+      useNativeDriver: true,
+    }).start();
+
+    let hideTimer: ReturnType<typeof setTimeout> | null = null;
+
+    const hideBootSplash = () => {
+      if (hideTimer) clearTimeout(hideTimer);
+      hideTimer = setTimeout(() => {
+        Animated.timing(bootSplashOpacity, {
+          toValue: 0,
+          duration: 220,
+          useNativeDriver: true,
+        }).start(({ finished }) => {
+          if (finished) setBootSplashVisible(false);
+        });
+      }, 420);
+    };
+
+    const showBootSplash = () => {
+      if (hideTimer) clearTimeout(hideTimer);
+      bootSplashOpacity.stopAnimation();
+      bootSplashOpacity.setValue(1);
+      setBootSplashVisible(true);
+      hideBootSplash();
+    };
+
+    const handleAppState = (state: string) => {
+      if (state === 'active') {
+        showBootSplash();
+      } else if (state === 'background' || state === 'inactive') {
+        setBootSplashVisible(true);
+        bootSplashOpacity.setValue(1);
+      }
+    };
+
+    const hideTimerOnStart = setTimeout(() => {
+      Animated.timing(bootSplashOpacity, {
+        toValue: 0,
+        duration: 220,
+        useNativeDriver: true,
+      }).start(({ finished }) => {
+        if (finished) setBootSplashVisible(false);
+      });
+    }, 420);
+
+    const appStateSubscription = AppState.addEventListener('change', handleAppState);
+    const handleVisibility = () => {
+      if (typeof document !== 'undefined' && document.visibilityState === 'visible') {
+        showBootSplash();
+      }
+    };
+
+    if (Platform.OS === 'web' && typeof document !== 'undefined') {
+      document.addEventListener('visibilitychange', handleVisibility);
+    }
+
+    return () => {
+      clearTimeout(hideTimerOnStart);
+      if (hideTimer) clearTimeout(hideTimer);
+      appStateSubscription.remove();
+      if (Platform.OS === 'web' && typeof document !== 'undefined') {
+        document.removeEventListener('visibilitychange', handleVisibility);
+      }
+    };
+  }, [bootSplashOpacity, bootSplashScale, fontsLoaded]);
 
   return (
     <ErrorBoundary>
+      <SafeAreaProvider>
       <AuthStoreProvider>
         <SpotsStoreProvider>
           <PlaceUpdatesProvider>
           <LocationStoreProvider>
             <LikesStoreProvider>
               <BookmarksStoreProvider>
+                <VisitedStoreProvider>
                 <View
                   style={{
                     flex: 1,
-                    backgroundColor: '#050305',
+                    backgroundColor: '#ffffff',
                   }}
                 >
+                  {Platform.OS === 'web' ? <style>{`
+                    html[data-spots-boot-splash="true"] [data-spots-navigation-host] {
+                      visibility: hidden !important;
+                    }
+                  `}</style> : null}
                   {ENABLE_WEB_VIEWPORT_RECOVERY && recoveryState.recovering && recoveryState.ready ? (
                     <View
                       pointerEvents="none"
@@ -615,27 +673,62 @@ export default function RootLayout() {
                         right: 0,
                         bottom: 0,
                         zIndex: 9999,
-                        backgroundColor: '#050305',
+                        backgroundColor: '#ffffff',
                       }}
                     />
                   ) : null}
-                  <StatusBar style={darkChrome ? "light" : "dark"} translucent backgroundColor="transparent" />
+                  <StatusBar
+                    style={pathname.startsWith('/spot/') || appDark || darkChrome || isDebugScreen ? 'light' : 'dark'}
+                    translucent={translucentChrome}
+                    backgroundColor={Platform.OS === 'web'
+                      ? translucentChrome
+                        ? 'transparent'
+                        : (isDebugScreen ? '#1687ff' : appDark || darkChrome ? '#050305' : lightAccountUi.bg)
+                      : translucentChrome ? 'transparent' : lightAccountUi.bg}
+                  />
                   <Stack
                     screenOptions={{
                       headerShown: false,
                       contentStyle: {
-                        backgroundColor: '#050305',
+                        backgroundColor: isDebugScreen ? '#1687ff' : darkChrome || appDark ? '#050305' : lightAccountUi.bg,
                         flex: 1,
                       },
                     }}
                   />
+                  {bootSplashVisible ? (
+                    <Animated.View
+                      testID="spots-boot-splash"
+                      pointerEvents="auto"
+                      style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        zIndex: 10000,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        backgroundColor: '#ffffff',
+                        opacity: bootSplashOpacity,
+                      }}
+                    >
+                      <Animated.Image
+                        source={require('../assets/splash-logo-rojo.png')}
+                        resizeMode="contain"
+                        style={{ width: 148, height: 72, transform: [{ scale: bootSplashScale }] }}
+                        accessibilityLabel="Spots"
+                      />
+                    </Animated.View>
+                  ) : null}
                 </View>
+                </VisitedStoreProvider>
               </BookmarksStoreProvider>
             </LikesStoreProvider>
           </LocationStoreProvider>
         </PlaceUpdatesProvider>
         </SpotsStoreProvider>
       </AuthStoreProvider>
+      </SafeAreaProvider>
     </ErrorBoundary>
   );
 }

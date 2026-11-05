@@ -1,0 +1,43 @@
+{
+  "checkedAt": "2026-11-03T15:36:44.659Z",
+  "status": "passed",
+  "catalogSha256": "f574f9d547eaa59b98870803e5a472b04957030725c972c779d039f29a0bd119",
+  "ids": {
+    "place": 3650,
+    "branches": [
+      5136
+    ]
+  },
+  "fields": "Persisted local values match consolidated reviewed fields; identity and branch preserved.",
+  "visibility": "Actual mapRowsToSpots adapter omits the inactive historical branch and does not synthesize a branchless place.",
+  "mappedBranches": 282,
+  "menu": {
+    "products": 26,
+    "presentations": 41,
+    "visitCalculationEnabled": false
+  },
+  "budget": "Empty scenarios return null, not a zero-cost visit; explicit pending basis persisted.",
+  "media": [
+    {
+      "url": "/place-media/don-samuel/instagram-logo.jpg",
+      "bytes": 37703,
+      "sha256": "8c39c4806099fa64e10b4cdfe2e495a227745ed4ea04de257b0a2c2099aad6ea"
+    },
+    {
+      "url": "/place-media/don-samuel/photo-reviewed-31063188c37641bf0bff.jpg",
+      "bytes": 254232,
+      "sha256": "31063188c37641bf0bff6a8be5336cca34f706ae82dc34efdedfe93ac98483c7"
+    },
+    {
+      "url": "/place-media/don-samuel/photo-reviewed-a4dc576a8eac39af72a4.jpg",
+      "bytes": 376354,
+      "sha256": "a4dc576a8eac39af72a472165124b43a81be87f939b3a40cd5a04882e6858dcf"
+    },
+    {
+      "url": "/place-media/don-samuel/photo-reviewed-10326a613f5286505824.jpg",
+      "bytes": 188853,
+      "sha256": "10326a613f5286505824723e4034d7a15000b0973731ad3edec059e403a8545a"
+    }
+  ],
+  "unrelatedGeneralTest": "test-commercial-status.cjs fails its fixed Chilitaco count (expects 8, catalog contains 7 eligible). The failed assertion concerns spot 35, not this integration."
+}

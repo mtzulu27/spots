@@ -1,0 +1,1932 @@
+{
+  "generatedAt": "2026-10-08T00:39:26.517Z",
+  "total": 144,
+  "complete": 15,
+  "incomplete": 128,
+  "places": [
+    {
+      "requestedName": "Sorsi | Buchetta del Vino",
+      "slug": "sorsi",
+      "branches": 1,
+      "status": "complete",
+      "missing": []
+    },
+    {
+      "requestedName": "Baltasar y Sietelunas",
+      "slug": "baltazar-y-siete-lunas",
+      "branches": 1,
+      "status": "complete",
+      "missing": []
+    },
+    {
+      "requestedName": "Girl Frozen Yogurt",
+      "slug": "girl-frozen-yogurt",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "logo",
+        "gallery",
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Cofi Bakery",
+      "slug": "cofi-bakery",
+      "branches": 3,
+      "status": "incomplete",
+      "missing": [
+        "gallery"
+      ]
+    },
+    {
+      "requestedName": "Mimo's",
+      "slug": "mimos",
+      "branches": 11,
+      "status": "incomplete",
+      "missing": [
+        "gallery",
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Fresh & Good",
+      "slug": "fresh-and-good",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "logo",
+        "cover",
+        "gallery",
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Ilumina",
+      "slug": "lumina",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Santa Fusión",
+      "slug": "santa-fusion",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "El Gran Langostino",
+      "slug": "el-gran-langostino",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "cover",
+        "gallery",
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Memorial Cervecería",
+      "slug": "memorial",
+      "branches": 1,
+      "status": "complete",
+      "missing": []
+    },
+    {
+      "requestedName": "Montolivo",
+      "slug": "montolivo",
+      "branches": 4,
+      "status": "incomplete",
+      "missing": [
+        "whatsapp_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Parisina",
+      "slug": "parisina",
+      "branches": 1,
+      "status": "incomplete",
+      "missing": [
+        "phone_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Diletto",
+      "slug": "diletto",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "cover",
+        "gallery",
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Natal Coffee",
+      "slug": "natal-coffee",
+      "branches": 1,
+      "status": "complete",
+      "missing": []
+    },
+    {
+      "requestedName": "Namaste",
+      "slug": "namaste",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Sabor Gourmet",
+      "slug": "sabor-gourmet",
+      "branches": 1,
+      "status": "complete",
+      "missing": []
+    },
+    {
+      "requestedName": "Pradera de Minca",
+      "slug": "pradera-de-minca",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "logo",
+        "cover",
+        "gallery",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Prote&Co",
+      "slug": "prote-and-co",
+      "branches": 4,
+      "status": "incomplete",
+      "missing": [
+        "menu_items",
+        "budget_scenarios",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Hamburgo",
+      "slug": "hamburgo",
+      "branches": 2,
+      "status": "complete",
+      "missing": []
+    },
+    {
+      "requestedName": "Don Samuel Bakery",
+      "slug": "don-samuel",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Simon's",
+      "slug": "simons",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Vinyl Bar",
+      "slug": "vinyl-bar",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "logo",
+        "cover",
+        "gallery",
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Joe's",
+      "slug": "joes",
+      "branches": 0,
+      "status": "discontinued",
+      "missing": []
+    },
+    {
+      "requestedName": "Chelita Go Mex",
+      "slug": "chelita-go-mex",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "La Churrería Antigua",
+      "slug": "la-churreria-antigua",
+      "branches": 5,
+      "status": "incomplete",
+      "missing": [
+        "hours_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Mi Sol Radiante",
+      "slug": "mi-sol-radiante",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Brunch Duquesa",
+      "slug": "brunch-duquesa",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "cover",
+        "gallery",
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Vé de Bistro",
+      "slug": "ve-de-bistro",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "King Papa",
+      "slug": "king-papa",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Mo Sushi",
+      "slug": "mo-sushi",
+      "branches": 5,
+      "status": "complete",
+      "missing": []
+    },
+    {
+      "requestedName": "Tribal Llanero",
+      "slug": "tribal-llanero-lago-verde",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "cover",
+        "gallery",
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Madelo",
+      "slug": "madelo-lago-verde",
+      "branches": 1,
+      "status": "incomplete",
+      "missing": [
+        "phone_by_branch",
+        "whatsapp_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Maki Bar Cali",
+      "slug": "maki-bar",
+      "branches": 1,
+      "status": "complete",
+      "missing": []
+    },
+    {
+      "requestedName": "Domingo",
+      "slug": "domingo",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "New Anchor Caffè",
+      "slug": "new-anchor-caffe",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "La Puerta Bakery",
+      "slug": "la-puerta-bakery",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Kumo Sushi Bar",
+      "slug": "kumo-sushi-bar",
+      "branches": 1,
+      "status": "complete",
+      "missing": []
+    },
+    {
+      "requestedName": "Selvah Rooftop",
+      "slug": "selvah-rooftop",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Maranello",
+      "slug": "maranello",
+      "branches": 2,
+      "status": "complete",
+      "missing": []
+    },
+    {
+      "requestedName": "Paintball Cali Norte",
+      "slug": "paintball-cali-norte",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Busca Por Dentro",
+      "slug": "busca-por-dentro",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Yonkers",
+      "slug": "yonkers-grill-and-drinks",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "La Libélula Hotel",
+      "slug": "la-libelula-hotel",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "cover",
+        "gallery",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Papi",
+      "slug": "papi",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Intrepid 83 Club",
+      "slug": "intrepid-83-club-rooftop",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Donde León",
+      "slug": "donde-leon-cocina-dulce",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Tierradentro Café & Co.",
+      "slug": "tierradentro-cafe-co",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "La Chocolatada",
+      "slug": "la-chocolatada",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Patti Gelateria",
+      "slug": "patti-gelateria",
+      "branches": 3,
+      "status": "incomplete",
+      "missing": [
+        "whatsapp_by_branch"
+      ]
+    },
+    {
+      "requestedName": "La Querencia",
+      "slug": "la-querencia",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Odiseo Bistro",
+      "slug": "odiseo-bistro",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "ZUR",
+      "slug": "zur",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Cabo Leones",
+      "slug": "cabo-leones",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Winkle Waffle",
+      "slug": "winkle-waffle",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Patolandia",
+      "slug": "patolandia",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Terraza San Camilo",
+      "slug": "terraza-san-camilo",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "La Buena Vida",
+      "slug": "la-buena-vida",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Caruzo Rooftop",
+      "slug": "caruzo-rooftop",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "La Azotea",
+      "slug": "la-azotea",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Guadalupe Café",
+      "slug": "guadalupe-cafe",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Montallegro Gelateria Italiana",
+      "slug": "montallegro-gelateria-italiana",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "gallery",
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Zuly Arepas",
+      "slug": "zuly-arepas",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Ramiros Hamburguesas",
+      "slug": "ramiros-hamburguesas",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Pizza Della Madonna",
+      "slug": "pizza-della-madonna",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "logo",
+        "gallery",
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Nuevo Leon",
+      "slug": "nuevo-leon",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "gallery",
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Ostinato Pasta para Tutti",
+      "slug": "ostinato-pasta-para-tutti",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "gallery",
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Sattvica Cafe Bistro",
+      "slug": "sattvica-cafe-bistro",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Sonoma Restaurante Peruano",
+      "slug": "sonoma",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "gallery",
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Mantra Rooftop",
+      "slug": "mantra-rooftop",
+      "branches": 1,
+      "status": "complete",
+      "missing": []
+    },
+    {
+      "requestedName": "La Romanezca",
+      "slug": "la-romanezca",
+      "branches": 2,
+      "status": "complete",
+      "missing": []
+    },
+    {
+      "requestedName": "La Bohème",
+      "slug": "la-boheme",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Sonido Central",
+      "slug": "sonido-central",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "gallery",
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Bengala & Bandolero",
+      "slug": "bengala-bandolero",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "El Colibri",
+      "slug": "el-colibri",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "gallery",
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Kora Vibes",
+      "slug": "kora-vibes",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "gallery",
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Miyamoto",
+      "slug": "miyamoto",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Huna Huna Social Club",
+      "slug": "huna-huna-social-club",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "gallery",
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Pampa Malbec",
+      "slug": "pampa-malbec",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "gallery",
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Penélope Martini",
+      "slug": "penelope-martini",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "gallery",
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Tom Glen",
+      "slug": "tom-glen",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "gallery",
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Lengua de Mariposa",
+      "slug": "lengua-de-mariposa",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "gallery",
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Once Once Restaurante Bar",
+      "slug": "once-once",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Hacienda del Bosque",
+      "slug": "hacienda-del-bosque",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "gallery",
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Saipan Airsoft",
+      "slug": "saipan-airsoft",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "gallery",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Zorro Azul",
+      "slug": "zorro-azul",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "gallery",
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Dosé Sky Lounge",
+      "slug": "dose-sky-lounge",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "logo",
+        "gallery",
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Storia d’Amore",
+      "slug": "storia-damore",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "gallery",
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Karen's Pizza",
+      "slug": "karens-pizza",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "gallery",
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Mister Wings",
+      "slug": "mister-wings",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "gallery",
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Space Jump",
+      "slug": "space-jump",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "gallery",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Greens Bolos Club",
+      "slug": "greens-bolos-club",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "gallery",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "La Fugitiva",
+      "slug": "la-fugitiva",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "gallery",
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "La Topa Tolondra",
+      "slug": "la-topa-tolondra",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "gallery",
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Platillos Voladores",
+      "slug": "platillos-voladores",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "gallery",
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "T4",
+      "slug": "t4",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Rainbow Bakery",
+      "slug": "rainbow-bakery",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Nami Reposteria",
+      "slug": "nami-reposteria",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Artesapan Gourmet",
+      "slug": "artesapan-gourmet",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Milagro de Junio",
+      "slug": "cafe-milagro-de-junio",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "gallery",
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Le Croissant",
+      "slug": "panaderia-le-croissant",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "La Gaucha Angus",
+      "slug": "la-gaucha-angus",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Renata Tacos",
+      "slug": "renata-tacos",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "gallery",
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Vinciatti",
+      "slug": "vinciatti",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "gallery",
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Ultimate Padel",
+      "slug": "ultimate-padel",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "gallery",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Local Burger",
+      "slug": "local-burger",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Kyomu Sushi",
+      "slug": "kyomu-sushi",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "gallery",
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "La Corte de la Carne",
+      "slug": "la-corte-de-la-carne",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Turk House",
+      "slug": "turk-house",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "gallery",
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "UKI",
+      "slug": "uki-fresh-food",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Chacalacas",
+      "slug": "taqueria-chalacas",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Mushu",
+      "slug": "mushu",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "gallery",
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Wetsunday",
+      "slug": "wetsunday",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "gallery",
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "La Botella Malecon",
+      "slug": "la-botella-malecon",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "logo",
+        "gallery",
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Palo Mulata",
+      "slug": "palo-mulata",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "gallery",
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Klub Berry Acai",
+      "slug": "klub-berry-acai",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "gallery",
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Vital Bistro",
+      "slug": "vital-bistro",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "gallery",
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "La Propia Burger",
+      "slug": "la-propia-burger",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "gallery",
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Mr. Tenders",
+      "slug": "mr-tenders",
+      "branches": 3,
+      "status": "complete",
+      "missing": []
+    },
+    {
+      "requestedName": "El Chuzo de Nando",
+      "slug": "el-chuzo-de-nando",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "gallery",
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Jugos Parque del Perro",
+      "slug": "jugos-parque-del-perro",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "logo",
+        "gallery",
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Sushi Green",
+      "slug": "sushi-green",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "gallery",
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Nikkei 232",
+      "slug": "nikkei-232",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "logo",
+        "gallery",
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "El Toro Enamorao",
+      "slug": "el-toro-enamorao",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "gallery",
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Valle Catalina",
+      "slug": "valle-catalina",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "gallery",
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Purist Cafe",
+      "slug": "purist-cafe",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "gallery",
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Hoi An Cocina Vietnamita",
+      "slug": "hoi-an-cocina-vietnamita",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "gallery",
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "La Pergola Clandestina",
+      "slug": "la-pergola-clandestina",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Jardin Botanico de Cali",
+      "slug": "jardin-botanico-de-cali",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "gallery",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Zoologico de Cali",
+      "slug": "zoologico-de-cali",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Museo Caliwood",
+      "slug": "museo-caliwood",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Museo La Tertulia",
+      "slug": "museo-la-tertulia",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "gallery",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Lakasia",
+      "slug": "lakasia",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "gallery",
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Luci Bakery",
+      "slug": "luci-bakery",
+      "branches": 1,
+      "status": "complete",
+      "missing": []
+    },
+    {
+      "requestedName": "Mantra Coffee Club",
+      "slug": "mantra-coffee-club",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "logo",
+        "gallery",
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Loco Por Ti",
+      "slug": "loco-por-ti",
+      "branches": 1,
+      "status": "incomplete",
+      "missing": [
+        "gallery"
+      ]
+    },
+    {
+      "requestedName": "Izumi",
+      "slug": "izumi",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "gallery",
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "La Corteza",
+      "slug": "la-corteza",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "gallery",
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Maki Bar",
+      "slug": "maki-bar",
+      "branches": 1,
+      "status": "complete",
+      "missing": []
+    },
+    {
+      "requestedName": "Múgari",
+      "slug": "mugari",
+      "branches": 1,
+      "status": "incomplete",
+      "missing": [
+        "menu_items",
+        "budget_scenarios"
+      ]
+    },
+    {
+      "requestedName": "Pork House",
+      "slug": "pork-house",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "gallery",
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Delio",
+      "slug": "delio",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "cover",
+        "gallery",
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Gagalto Playground",
+      "slug": "playground",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "cover",
+        "gallery",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Next Reality",
+      "slug": "next-reality",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "gallery",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    },
+    {
+      "requestedName": "Tortelli",
+      "slug": "tortelli",
+      "branches": 0,
+      "status": "incomplete",
+      "missing": [
+        "cover",
+        "gallery",
+        "menu_items",
+        "budget_scenarios",
+        "hours_by_branch",
+        "phone_by_branch",
+        "whatsapp_by_branch",
+        "coordinates_by_branch"
+      ]
+    }
+  ]
+}

@@ -1,8 +1,10 @@
 import { useMemo, useState } from 'react';
+import { useReturnScroll } from '@/lib/use-return-scroll';
 import { useFocusEffect, useRouter } from 'expo-router';
-import { ActivityIndicator, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { ActivityIndicator, Animated, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { SpotsIcon as Ionicons } from '@/components/spots-icon';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { topContentInset } from '@/lib/layout-insets';
 import { AppIconButton, SearchField } from '@/components/app-ui';
 import { ParchesFiltersSheet } from '@/components/parches-filters-sheet';
 import { Entrance } from '@/components/entrance';
@@ -20,6 +22,7 @@ type Criteria = { category: string; zone: string; budget: string };
 const noFilters: Criteria = { category: '', zone: '', budget: 'all' };
 
 export default function ParchesScreen() {
+  const returnScroll = useReturnScroll();
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { spots, loading, error, refresh } = useSpotsStore();
@@ -27,7 +30,7 @@ export default function ParchesScreen() {
   const [now, setNow] = useState(() => new Date());
   useFocusEffect(useMemo(() => () => { setNow(new Date()); const timer = setInterval(() => setNow(new Date()), 60000); return () => clearInterval(timer); }, []));
   const today = cityDate(now);
-  const [period, setPeriod] = useState<EventPeriod>('today');
+  const [period, setPeriod] = useState<EventPeriod>('upcoming');
   const [date, setDate] = useState(today);
   const [month, setMonth] = useState(today.slice(0, 7));
   const [sheet, setSheet] = useState<'filters' | 'date' | null>(null);
@@ -37,6 +40,27 @@ export default function ParchesScreen() {
   const [columns, setColumns] = useState<1 | 2>(1);
   const [width, setWidth] = useState(0);
   const [limit, setLimit] = useState(18);
+  const revealOpacity = useState(() => new Animated.Value(0))[0];
+  const revealTranslateY = useState(() => new Animated.Value(18))[0];
+  useFocusEffect(useMemo(() => () => {
+    revealOpacity.setValue(0);
+    revealTranslateY.setValue(18);
+    Animated.parallel([
+      Animated.timing(revealOpacity, {
+        toValue: 1,
+        duration: 220,
+        useNativeDriver: true,
+      }),
+      Animated.spring(revealTranslateY, {
+        toValue: 0,
+        damping: 18,
+        stiffness: 170,
+        mass: 0.9,
+        useNativeDriver: true,
+      }),
+    ]).start();
+    return () => undefined;
+  }, [revealOpacity, revealTranslateY]));
   const events = useMemo(() => spots.filter(spot => spot.type === 'event'), [spots]);
   const categories = useMemo(() => [...new Set(events.map(e => e.category).filter(Boolean))].sort(), [events]);
   const zones = useMemo(() => [...new Set(events.map(e => e.neighborhood || e.hubName).filter(Boolean))].sort(), [events]);
@@ -66,12 +90,8 @@ export default function ParchesScreen() {
     return <Pressable key={key} accessibilityRole="button" accessibilityState={{ selected }} onPress={onPress} style={[s.chip, selected && s.selected]}><Text style={[s.chipLabel, selected && s.selectedLabel]}>{label}</Text></Pressable>;
   }
   return <View style={s.screen}>
-    <ScrollView keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false} contentContainerStyle={[s.page, { paddingTop: insets.top + 18, paddingBottom: insets.bottom + 112 }]}>
-      <View style={s.header}>
-        <AppIconButton name="chevron-back" tone="light" size={42} accessibilityLabel="Volver a Explore" onPress={() => router.replace('/explore')} />
-        <Text accessibilityRole="header" style={s.title}>Parches</Text>
-        <View style={{ width: 42 }} />
-      </View>
+    <Animated.View style={{ flex: 1, opacity: revealOpacity, transform: [{ translateY: revealTranslateY }] }}>
+    <ScrollView {...returnScroll} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false} contentContainerStyle={[s.page, { paddingTop: topContentInset(insets), paddingBottom: insets.bottom + 112 }]}> 
       <View style={s.search}>
         <View style={s.searchInput}><SearchField value={query} onChangeText={value => { setQuery(value); setLimit(18); }} placeholder="Busca un evento o un plan" height={48} backgroundColor={ui.surface} showClearButton={Boolean(query)} /></View>
         <Pressable accessibilityRole="button" accessibilityLabel={`Filtrar parches${criteriaCount ? `, ${criteriaCount} filtros activos` : ''}`} onPress={() => { setDraft(filters); setSheet('filters'); }} style={s.filter}><Ionicons name="options-outline" size={20} color={ui.text} />{criteriaCount > 0 && <View style={s.badge}><Text style={s.badgeText}>{criteriaCount}</Text></View>}</Pressable>
@@ -85,11 +105,12 @@ export default function ParchesScreen() {
           <Text style={[s.title, s.center]}>{!events.length ? 'Pronto habrá parches por aquí' : query || criteriaCount ? 'No encontramos ese parche' : 'No hay parches para esta fecha'}</Text>
           <Text style={s.emptyText}>{!events.length ? 'Aquí encontrarás conciertos, ferias, talleres y otros eventos locales cuando estén disponibles.' : query || criteriaCount ? 'Prueba otro nombre, zona o presupuesto.' : 'Prueba otra fecha para descubrir qué viene.'}</Text>
           <View style={s.actions}>{(query || criteriaCount > 0) ? chip('Limpiar búsqueda y filtros', true, reset) : null}{period !== 'upcoming' && events.length > 0 ? chip(upcoming.length ? `Ver próximos (${upcoming.length})` : 'Ver todos los parches', true, () => { setPeriod('upcoming'); setLimit(18); }) : null}</View>
-        </View> : <View style={s.grid} onLayout={event => setWidth(event.nativeEvent.layout.width)}>{width > 0 && results.slice(0, limit).map(event => <Entrance key={event.id} trigger={`${period}:${date}:${columns}`} style={{ width: (width - 16 * (columns - 1)) / columns }}><ExploreGridCard spot={event} columnCount={columns} label="" distance={null} bookmarked={isBookmarked(event.likeTargetId)} onToggleBookmark={() => toggleBookmark(event.likeTargetId)} onPress={() => router.push(`/spot/${event.id}`)} /></Entrance>)}</View>}
+        </View> : <View style={s.grid} onLayout={event => setWidth(event.nativeEvent.layout.width)}>{width > 0 && results.slice(0, limit).map(event => <Entrance key={event.id} trigger={`${period}:${date}:${columns}`} style={{ width: (width - 16 * (columns - 1)) / columns }}><ExploreGridCard spot={event} columnCount={columns} label="" distance={null} showLogo bookmarked={isBookmarked(event.likeTargetId)} onToggleBookmark={() => toggleBookmark(event.likeTargetId)} onVenuePress={() => { if (event.venueBranchSlug) router.push(`/spot/${event.venueBranchSlug}`); }} onPress={() => router.push(`/spot/${event.id}`)} /></Entrance>)}</View>}
         {results.length > limit && chip('Mostrar más parches', false, () => setLimit(value => value + 18))}
       </View>
     </ScrollView>
-    <DiscoveryNavigation active="parches" onExplore={() => router.replace('/explore')} onMap={() => router.replace('/explore?view=map')} onParches={() => { setPeriod('today'); reset(); }} onFeedback={() => router.replace('/explore?action=feedback')} onSuggest={() => router.replace('/explore?action=suggest')} />
+    </Animated.View>
+    <DiscoveryNavigation active="parches" onExplore={() => router.replace('/explore')} onMap={() => router.replace({ pathname: '/(tabs)/explore', params: { view: 'map' } })} onParches={() => { setPeriod('upcoming'); reset(); }} onContribute={() => router.replace('/contribute')} onAccount={() => router.replace('/account')} />
     {sheet === 'filters' && <ParchesFiltersSheet draft={draft} onChange={setDraft} categories={categories} zones={zones} budgets={budgets} resultsCount={draftCount} onClear={() => setDraft(noFilters)} onClose={() => setSheet(null)} onApply={() => { setFilters(draft); setLimit(18); setSheet(null); }} />}
     <Modal visible={sheet === 'date'} transparent animationType="slide" onRequestClose={() => setSheet(null)}>
       <View style={s.modalRoot}>
@@ -107,9 +128,8 @@ export default function ParchesScreen() {
 }
 const s = StyleSheet.create({
   screen: { flex: 1, backgroundColor: ui.bg }, page: { paddingHorizontal: 20, gap: 24 },
-  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   title: { fontSize: 18, lineHeight: 24, fontWeight: '600', color: ui.text }, meta: { fontSize: 12, lineHeight: 17, color: ui.textSecondary },
-  search: { flexDirection: 'row', alignItems: 'center', borderRadius: 999, borderWidth: 1, borderColor: '#d6d6dc', backgroundColor: ui.surface, paddingRight: 4 }, searchInput: { flex: 1, minWidth: 0, overflow: 'hidden', borderRadius: 999 }, filter: { width: 40, height: 40, borderRadius: 20, backgroundColor: ui.accentSoft, alignItems: 'center', justifyContent: 'center' },
+  search: { flexDirection: 'row', alignItems: 'center', borderRadius: 999, borderWidth: 1, borderColor: ui.border, backgroundColor: ui.surface, paddingRight: 4 }, searchInput: { flex: 1, minWidth: 0, overflow: 'hidden', borderRadius: 999 }, filter: { width: 40, height: 40, borderRadius: 20, backgroundColor: ui.accentSoft, alignItems: 'center', justifyContent: 'center' },
   badge: { position: 'absolute', top: -5, right: -5, minWidth: 20, height: 20, paddingHorizontal: 4, borderRadius: 10, backgroundColor: ui.accent, alignItems: 'center', justifyContent: 'center' }, badgeText: { fontSize: 10, color: ui.surface, fontWeight: '700' },
   rail: { marginRight: -20 }, railContent: { paddingRight: 20, gap: 8 }, chip: { minHeight: 42, paddingHorizontal: 14, paddingVertical: 10, borderRadius: 999, backgroundColor: ui.surface, alignItems: 'center', justifyContent: 'center' }, selected: { backgroundColor: ui.accentSoft }, chipLabel: { fontSize: 12, color: ui.textSecondary }, selectedLabel: { fontWeight: '600', color: ui.text },
   section: { gap: 16 }, sectionHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12 }, sectionCopy: { flex: 1, gap: 4 }, grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 16 },

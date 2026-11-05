@@ -14,7 +14,8 @@
     "deploy:web": "pnpm export:web && node scripts/deploy-hostinger.mjs",
     "lint": "expo lint",
     "typecheck": "tsc --noEmit",
-    "build:updates": "node scripts/build-place-updates.mjs"
+    "build:updates": "node scripts/build-place-updates.mjs",
+    "test:menu-catalog": "node --test ../../scripts/test-menu-catalog.mjs"
   },
   "dependencies": {
     "@expo-google-fonts/montserrat": "^0.4.2",

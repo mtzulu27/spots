@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { useEffect, useRef, useState } from 'react';
-import { Ionicons } from '@expo/vector-icons';
+import { SpotsIcon as Ionicons } from '@/components/spots-icon';
 import {
   ActivityIndicator,
   Animated,
@@ -15,17 +15,18 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import { accountUi } from '@/lib/account-ui';
 
 export const appColors = {
-  background: '#f7f3f0',
-  surface: '#ffffff',
-  surfaceMuted: '#f4edf1',
-  text: '#2d1830',
-  textMuted: '#7f7480',
+  background: accountUi.bg,
+  surface: accountUi.surface,
+  surfaceMuted: accountUi.surfaceMuted,
+  text: accountUi.text,
+  textMuted: accountUi.textSecondary,
   primary: '#ff4e76',
-  primaryDark: '#5f2e61',
+  primaryDark: accountUi.text,
   primarySoft: '#f8d7df',
-  border: '#e7dce3',
+  border: accountUi.border,
   yellow: '#f6c01e',
   darkSurface: '#171115',
 };
@@ -133,6 +134,7 @@ export function AppIconButton({
   outlined = false,
   iconColor,
   size = 38,
+  selected,
 }: {
   name: keyof typeof Ionicons.glyphMap;
   accessibilityLabel?: string;
@@ -141,6 +143,7 @@ export function AppIconButton({
   outlined?: boolean;
   iconColor?: string;
   size?: number;
+  selected?: boolean;
 }) {
   const resolvedColor =
     iconColor ?? (tone === 'dark' || tone === 'glass' ? spotsUi.textPrimary : appColors.primaryDark);
@@ -150,6 +153,7 @@ export function AppIconButton({
       onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel}
+      accessibilityState={selected === undefined ? undefined : { selected }}
       style={[
         styles.iconButton,
         tone === 'dark' && styles.iconButtonDark,
@@ -282,6 +286,7 @@ export function AppBookmarkButton({
   outlined = false,
   backgroundColor,
   style,
+  containerStyle,
   iconSize = 20,
 }: {
   bookmarked: boolean;
@@ -292,6 +297,7 @@ export function AppBookmarkButton({
   outlined?: boolean;
   backgroundColor?: string;
   style?: StyleProp<ViewStyle>;
+  containerStyle?: StyleProp<ViewStyle>;
   iconSize?: number;
 }) {
   const scale = useRef(new Animated.Value(1)).current;
@@ -324,14 +330,12 @@ export function AppBookmarkButton({
 
   return (
     <Animated.View
-      style={{
-        transform: [{ scale }],
-      }}
+      style={[{ transform: [{ scale }] }, containerStyle]}
     >
       <Pressable
         onPress={onPress}
         accessibilityRole="button"
-        accessibilityLabel={bookmarked ? 'Quitar de guardados' : 'Guardar lugar'}
+        accessibilityLabel={bookmarked ? 'Quitar de Me gusta' : 'Marcar como Me gusta'}
         accessibilityState={{ selected: bookmarked }}
         style={[
           styles.iconButton,
@@ -343,9 +347,73 @@ export function AppBookmarkButton({
         ]}
       >
         <Ionicons
-          name={bookmarked ? 'bookmark' : 'bookmark-outline'}
+          name={bookmarked ? 'heart' : 'heart-outline'}
           size={iconSize}
           color={bookmarked ? activeColor : inactiveColor ?? defaultColor}
+        />
+      </Pressable>
+    </Animated.View>
+  );
+}
+
+export function AppVisitedButton({
+  visited,
+  onPress,
+  tone = 'light',
+  activeColor = '#EF3857',
+  inactiveColor,
+}: {
+  visited: boolean;
+  onPress?: () => void;
+  tone?: 'light' | 'dark' | 'glass';
+  activeColor?: string;
+  inactiveColor?: string;
+}) {
+  const scale = useRef(new Animated.Value(1)).current;
+  const mountedRef = useRef(false);
+
+  useEffect(() => {
+    if (!mountedRef.current) {
+      mountedRef.current = true;
+      return;
+    }
+
+    Animated.sequence([
+      Animated.timing(scale, {
+        toValue: visited ? 1.12 : 0.92,
+        duration: 90,
+        useNativeDriver: true,
+      }),
+      Animated.spring(scale, {
+        toValue: 1,
+        damping: 12,
+        stiffness: 240,
+        mass: 0.88,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, [scale, visited]);
+
+  const defaultColor =
+    tone === 'dark' || tone === 'glass' ? spotsUi.textPrimary : appColors.primaryDark;
+
+  return (
+    <Animated.View style={{ transform: [{ scale }] }}>
+      <Pressable
+        onPress={onPress}
+        accessibilityRole="button"
+        accessibilityLabel={visited ? 'Quitar lugar de visitados' : 'Marcar lugar como visitado'}
+        accessibilityState={{ selected: visited }}
+        style={[
+          styles.iconButton,
+          tone === 'dark' && styles.iconButtonDark,
+          tone === 'glass' && styles.iconButtonGlass,
+        ]}
+      >
+        <Ionicons
+          name={visited ? 'checkmark-circle' : 'checkmark-circle-outline'}
+          size={20}
+          color={visited ? activeColor : inactiveColor ?? defaultColor}
         />
       </Pressable>
     </Animated.View>
@@ -367,6 +435,9 @@ export function AppPrimaryButton({
 }) {
   return (
     <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      accessibilityState={{ disabled: loading, busy: loading }}
       onPress={onPress}
       disabled={loading}
       style={[
@@ -597,13 +668,13 @@ const styles = StyleSheet.create({
     width: 38,
     height: 38,
     borderRadius: 19,
-    backgroundColor: 'rgba(255,255,255,0.92)',
+    backgroundColor: accountUi.surface,
     alignItems: 'center',
     justifyContent: 'center',
   },
   iconButtonOutlined: {
     borderWidth: 2,
-    borderColor: '#141417',
+    borderColor: accountUi.text,
   },
   iconButtonDark: {
     backgroundColor: 'rgba(255,255,255,0.16)',
@@ -681,7 +752,7 @@ const styles = StyleSheet.create({
     width: '100%',
     padding: 4,
     borderRadius: 18,
-    backgroundColor: '#ededf0',
+    backgroundColor: accountUi.surfaceMuted,
     position: 'relative',
   },
   segmentedTabsThumb: {
@@ -690,7 +761,7 @@ const styles = StyleSheet.create({
     bottom: 4,
     left: 4,
     borderRadius: 14,
-    backgroundColor: '#ffffff',
+    backgroundColor: accountUi.surface,
     shadowColor: '#000000',
     shadowOpacity: 0.04,
     shadowRadius: 8,
@@ -709,7 +780,7 @@ const styles = StyleSheet.create({
   segmentedTabsLabel: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#5f5f67',
+    color: accountUi.textSecondary,
   },
   segmentedTabsLabelActive: {
     color: '#141417',

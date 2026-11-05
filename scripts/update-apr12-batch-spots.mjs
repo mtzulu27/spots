@@ -185,7 +185,7 @@ function updateCatalog(catalogPath) {
   catalog.hours = upsertHoursWithClosed(catalog.hours, santaFusionBranch.id, santaFusionRows, nextHoursId);
 
   const gran = spotsBySlug['el-gran-langostino'];
-  const granBranch = branchesBySlug['el-gran-langostino-cali'];
+  const granBranch = branchesBySlug['el-gran-langostino-alameda-cali'];
   gran.short_description =
     'Una referencia clásica para comprar y comer mariscos en Cali, más de almuerzo potente y antojo de pescado o camarón que de parche largo. Entra al catálogo con la sede de Alameda para tener una ficha real y útil.';
   gran.tags = ['mariscos', 'pescados', 'comida de mar', 'alameda', 'almuerzo'];

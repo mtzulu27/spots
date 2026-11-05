@@ -48,12 +48,13 @@ if (existsSync(placeMediaSourcePath)) {
 }
 
 const headInjection = `
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover" />
-    <meta name="theme-color" content="#f5f5f7" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, shrink-to-fit=no" />
+    <meta name="theme-color" content="#000000" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Spots" />
     <meta name="mobile-web-app-capable" content="yes" />
+    <style>:root { --safe-top: env(safe-area-inset-top, 0px); --safe-bottom: env(safe-area-inset-bottom, 0px); --safe-left: env(safe-area-inset-left, 0px); --safe-right: env(safe-area-inset-right, 0px); }</style>
     <link rel="manifest" href="/manifest.json" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon-v2.png" />
     <link rel="apple-touch-icon-precomposed" sizes="180x180" href="/apple-touch-icon-v2.png" />
@@ -61,9 +62,11 @@ const headInjection = `
 
 const viewportScript = `(function () {
   var authChrome = window.location.pathname === '/' || /login|signup|welcome|profile-setup|onboarding/.test(window.location.pathname);
-  var chromeColor = authChrome ? '#050305' : '#f5f5f7';
+  var debugChrome = window.location.pathname === '/debug';
+  var isPlaceDetail = window.location.pathname.indexOf('/spot/') === 0;
+  document.documentElement.classList.toggle('spot-detail', isPlaceDetail);
+  var chromeColor = debugChrome ? '#1687ff' : authChrome ? '#050305' : isPlaceDetail ? 'transparent' : '#f5f5f7';
   document.querySelector('meta[name="theme-color"]').setAttribute('content', chromeColor);
-  document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]').setAttribute('content', authChrome ? 'black' : 'default');
   document.documentElement.style.backgroundColor = chromeColor;
   var stableHeight = 0;
   var pendingShrinkHeight = null;
@@ -251,6 +254,10 @@ html, body, #root {
   font-family: 'Montserrat', 'Segoe UI', sans-serif;
   -webkit-text-size-adjust: 100%;
   overflow: hidden;
+}
+
+html.spot-detail, html.spot-detail body, html.spot-detail #root {
+  background: transparent !important;
 }
 
 input,

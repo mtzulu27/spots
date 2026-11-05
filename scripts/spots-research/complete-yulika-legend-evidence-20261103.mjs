@@ -1,0 +1,34 @@
+import fs from 'node:fs/promises';
+import assert from 'node:assert/strict';
+import {integrateCatalog} from './integrate-catalog.mjs';
+
+const root='docs/catalog-review/discovery/profiles-20261102',catalog='apps/mobile/public/spots-catalog.json';
+const read=async p=>JSON.parse(await fs.readFile(p,'utf8'));
+const save=(p,x)=>fs.writeFile(p,JSON.stringify(x,null,2)+'\n');
+const y=await read('docs/catalog-review/benchmarks/www.heladosyulika.com-website-2026-11-03T04-55-03-488Z.json');
+const home=y.pages.find(p=>p.finalUrl==='https://www.heladosyulika.com/');
+const entity=home.structuredData.find(e=>e['@type']==='Restaurant');
+assert.equal(entity.name,'Yulika Frozen Yogurt');
+assert.equal(entity.address.streetAddress,'#17N-12 Avenida 9A');
+assert.ok(home.text.includes('granada es nuestra sede principal'));
+const c=await read(catalog),spot=c.spots.find(s=>s.slug==='yulika-frozen-yogurt'),branch=c.branches.find(b=>b.slug==='yulika-granada'&&b.spot_id===spot.id);
+const days={Sunday:0,Monday:1,Tuesday:2,Wednesday:3,Thursday:4,Friday:5,Saturday:6};
+const weeklyHours=entity.openingHoursSpecification.map(h=>({day_of_week:days[h.dayOfWeek],is_closed:false,open_time:h.opens,close_time:h.closes}));
+assert.equal(weeklyHours.length,6);
+assert.ok(weeklyHours.every(h=>Number.isInteger(h.day_of_week)));
+const data={id:branch.id,slug:branch.slug,address:'Avenida 9A #17N-12, Granada, Cali',latitude:Number(entity.geo.latitude),longitude:Number(entity.geo.longitude),supplemental_info:{...(branch.supplemental_info??{}),locationEvidence:'Dirección, coordenadas y seis días de horario publicados en JSON-LD del sitio oficial, cuya portada identifica Granada como sede principal. Corroboración Google Places pendiente; lunes sin dato.',contactEvidence:'Se conserva el contacto visible del sitio; el teléfono diferente del JSON-LD no se prioriza.'},missing_fields:(branch.missing_fields??[]).filter(k=>!['address','coordinates'].includes(k))};
+const input={schemaVersion:1,data:{id:spot.id,slug:spot.slug},write:{mode:'update',fields:[]},branches:[{data,write:{mode:'update',fields:Object.keys(data).filter(k=>!['id','slug'].includes(k)),hours:'replace'},weeklyHours}],fieldDecisions:[{fields:['address','latitude','longitude','hours'],source:home.finalUrl,status:'preferred',reason:'Datos estructurados Restaurant asociados a la sede principal Granada por el texto de la misma portada. No extrapolar a Pance ni Unicentro.'},{fields:['phone'],source:home.finalUrl,status:'conflict',reason:'JSON-LD publica 6610905 y el texto visible 3849899 / 3147551546. Se conserva el contacto visible previamente integrado; requiere corroboración.'}],coverage:{address:'official_structured_data',coordinates:'official_structured_data_not_places_verified',hours:'six_days_monday_unknown',googlePlaces:'blocked_missing_api_key',highlights:'blocked_missing_devtools'},pending:['Lunes sin dato: no se marca cerrado.','No hay precio por gramo verificable; presupuesto pendiente.','Las otras dos sedes requieren dirección y ubicación propias.']};
+await save(`${root}/heladosyulika/granada-consolidated.json`,input);
+await save(`${root}/heladosyulika/granada-integration.json`,await integrateCatalog(`${root}/heladosyulika/granada-consolidated.json`,catalog,{}));
+
+const legend=await read('docs/catalog-review/benchmarks/legend-menupp-links-2026-11-03T05-16-21-233Z.json');
+const active=await read('docs/catalog-review/benchmarks/legendbar-menupp-links-2026-11-03T05-41-37-247Z.json');
+assert.equal(legend.brand.socialLinks.instagram,active.brand.socialLinks.instagram);
+assert.ok(legend.links.some(l=>l.active&&l.link==='https://menupp.co/legendbar'));
+const location=legend.locations.find(l=>l.name==='Granada, Cali');
+const cc=await read(catalog),ls=cc.spots.find(s=>s.slug==='the-pub-legend'),lb=cc.branches.find(b=>b.spot_id===ls.id);
+const ld={id:lb.id,slug:lb.slug,menu_url:active.menus[0].source,phone:location.phone,whatsapp:'https://wa.me/573177817659',latitude:location.location.latitude,longitude:location.location.longitude,supplemental_info:{...(lb.supplemental_info??{}),locationEvidence:'Coordenadas del registro público Menupp legend, misma cuenta Instagram y enlace activo a legendbar. Pendiente corroboración independiente con Places; no representan verificación de la puerta exacta.'}};
+const li={schemaVersion:1,data:{id:ls.id,slug:ls.slug},write:{mode:'update',fields:[]},branches:[{data:ld,write:{mode:'update',fields:Object.keys(ld).filter(k=>!['id','slug'].includes(k))}}],fieldDecisions:[{fields:['menu_url','phone','whatsapp','latitude','longitude'],source:legend.source,status:'preferred',reason:'Registro oficial de Granada con identidad coincidente y enlace explícito a la nueva carta activa.'}],coverage:{menu:'active_legendbar_reviewed',googlePlaces:'blocked_missing_api_key',highlights:'blocked_missing_devtools'},pending:['Horario almacenado inactivo: no se utiliza.','Coordenadas oficiales pendientes de corroboración independiente.']};
+await save(`${root}/thepublegend/contact-consolidated.json`,li);
+await save(`${root}/thepublegend/contact-integration.json`,await integrateCatalog(`${root}/thepublegend/contact-consolidated.json`,catalog,{}));
+console.log(JSON.stringify({yulikaGranada:{address:data.address,weeklyDays:weeklyHours.length},legend:{menu:ld.menu_url,phone:ld.phone}}));

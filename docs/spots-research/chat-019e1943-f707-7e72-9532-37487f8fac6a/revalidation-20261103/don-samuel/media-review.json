@@ -1,0 +1,40 @@
+{
+  "checkedAt": "2026-11-03",
+  "profile": "https://www.instagram.com/donsamuelbakery/",
+  "logo": {
+    "candidateHash": "c3004d835211f0e19c0a702053b99139b32a40d50c7de7eaaa25f8864f698043",
+    "candidateVerdict": "brand_logo_visually_confirmed",
+    "helperDisposition": "cleanup; not assigned",
+    "existingPath": "/place-media/don-samuel/instagram-logo.jpg",
+    "existingHash": "8c39c4806099fa64e10b4cdfe2e495a227745ed4ea04de257b0a2c2099aad6ea",
+    "existingVerdict": "Same brand lettering and colors; existing 1080px asset decoded and visually reviewed. Preserve it."
+  },
+  "photos": [
+    {
+      "path": "/place-media/don-samuel/photo-reviewed-31063188c37641bf0bff.jpg",
+      "sha256": "31063188c37641bf0bff6a8be5336cca34f706ae82dc34efdedfe93ac98483c7",
+      "verdict": "Photograph of display counter and pink interior, no digital advertising plate. Decoded and visually reviewed; historical, current point operation not confirmed."
+    },
+    {
+      "path": "/place-media/don-samuel/photo-reviewed-a4dc576a8eac39af72a4.jpg",
+      "sha256": "a4dc576a8eac39af72a472165124b43a81be87f939b3a40cd5a04882e6858dcf",
+      "verdict": "Real facade, physical logo incidental to actual place; decoded and visually reviewed. Historical, not proof of current operations."
+    },
+    {
+      "path": "/place-media/don-samuel/photo-reviewed-10326a613f5286505824.jpg",
+      "sha256": "10326a613f5286505824723e4034d7a15000b0973731ad3edec059e403a8545a",
+      "source": "https://www.instagram.com/donsamuelbakery/p/DXc3o7LH53-/",
+      "role": "gallery",
+      "dimensions": {
+        "width": 1440,
+        "height": 1440
+      },
+      "verdict": "Real pistachio cheesecake on plate, no digital text overlay. Physical branding incidental on utensils. Official coauthor header verified. Exact original decoded/read before stable copy.",
+      "download": "IAB pageAssets narrow bundle asset e1090c8ca361e47c; temporary image and manifest cleaned after stable copy."
+    }
+  ],
+  "sourceEvidence": "/Users/mateo/Documents/Playground/docs/catalog-review/photo-audit-20261010/don-samuel-source-review.json",
+  "pending": [
+    "Public card/detail do not render the inactive point. Desktop absence checked; mobile QA and any approved isolated crop review remain pending on transfer."
+  ]
+}

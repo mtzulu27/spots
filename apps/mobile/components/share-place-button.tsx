@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { Ionicons } from '@expo/vector-icons';
+import { SpotsIcon as Ionicons } from '@/components/spots-icon';
 import { Modal, Platform, Pressable, Share, StyleSheet, Text, View } from 'react-native';
 import * as Linking from 'expo-linking';
 import { AppIconButton } from './app-ui';
@@ -45,8 +45,8 @@ export function SharePlaceButton({ spot }: { spot: Spot }) {
   }
 
   return <>
-    <AppIconButton name="share-social-outline" tone="light" accessibilityLabel="Compartir lugar" onPress={() => void share()} />
-    <Modal visible={fallback} transparent animationType="fade" onRequestClose={() => setFallback(false)}>
+    <AppIconButton name="share-outline" tone="light" accessibilityLabel="Compartir lugar" onPress={() => void share()} />
+    <Modal visible={fallback} transparent animationType="slide" onRequestClose={() => setFallback(false)}>
       <View style={s.backdrop}>
         <Pressable style={StyleSheet.absoluteFill} accessibilityLabel="Cerrar compartir" onPress={() => setFallback(false)} />
         <View style={s.panel} accessibilityViewIsModal>

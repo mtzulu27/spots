@@ -1,15 +1,17 @@
 import { Redirect } from 'expo-router';
-import { ActivityIndicator, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Platform, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { appColors } from '@/components/app-ui';
 import { useAuthStore } from '@/lib/auth-store';
-import { localPreviewEnabled } from '@/lib/local-preview';
+import DebugScreen from './debug';
+import { getPostAuthDestination } from '@/lib/desktop-auth-policy';
 
 export default function Home() {
-  const { loading, user, profileCompleted, interests, onboardingCompleted } =
+  const { width } = useWindowDimensions();
+  const { loading, user, profileCompleted, onboardingCompleted } =
     useAuthStore();
 
-  if (localPreviewEnabled) {
-    return <Redirect href="/(tabs)/explore" />;
+  if (SAFE_AREA_DIAGNOSTIC) {
+    return <DebugScreen />;
   }
 
   if (loading) {
@@ -22,20 +24,12 @@ export default function Home() {
     );
   }
 
-  if (!user) {
-    return <Redirect href="/(auth)/login" />;
-  }
-
-  if (!profileCompleted) {
-    return <Redirect href="/(setup)/profile-setup" />;
-  }
-
-  if (!onboardingCompleted) {
-    return <Redirect href="/(onboarding)/welcome" />;
-  }
-
-  return <Redirect href="/(tabs)/explore" />;
+  return <Redirect href={getPostAuthDestination({
+    platform: Platform.OS, width, authenticated: Boolean(user), profileCompleted, onboardingCompleted,
+  })} />;
 }
+
+const SAFE_AREA_DIAGNOSTIC = false;
 
 const styles = StyleSheet.create({
   screen: {

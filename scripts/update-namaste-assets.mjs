@@ -14,11 +14,9 @@ const BRANCH_SLUG = 'namaste-cali';
 const MENU_URL =
   'https://www.canva.com/design/DAGud9MEdZE/rFXiqqaI_KEioqsl2qjICA/view';
 const IMAGE_PATHS = [
-  '/Users/mateo/Downloads/(3) Instagram/imgi_49_539266648_18519644800003739_4862912815681712724_n.jpg',
-  '/Users/mateo/Downloads/(3) Instagram/imgi_27_567329826_18297379285251522_341973573842818754_n.jpg',
-  '/Users/mateo/Downloads/(3) Instagram/imgi_29_565415804_18296805331251522_5785003261013508140_n.jpg',
-  '/Users/mateo/Downloads/(3) Instagram/imgi_35_547542455_1132383995625708_2651096792547473629_n.jpg',
-  '/Users/mateo/Downloads/(3) Instagram/imgi_48_539383308_1147380770618080_8753987334383290620_n.jpg',
+  '/Users/mateo/Documents/Playground/apps/mobile/public/place-media/namaste/instagram-1.jpg',
+  '/Users/mateo/Documents/Playground/apps/mobile/public/place-media/namaste/instagram-2.jpg',
+  '/Users/mateo/Documents/Playground/apps/mobile/public/place-media/namaste/instagram-3.jpg',
 ];
 const TRACKER_UPDATED_AT = new Date().toISOString();
 

@@ -160,7 +160,7 @@ async function main() {
     spot.updated_at = spotUpdatedAt;
 
     branch.address = 'Parque Comercial Lago Verde, Cali';
-    branch.neighborhood = 'Lago Verde';
+    branch.neighborhood = 'Pance';
     branch.mall = 'Parque Comercial Lago Verde';
     branch.phone = '';
     branch.whatsapp = '';

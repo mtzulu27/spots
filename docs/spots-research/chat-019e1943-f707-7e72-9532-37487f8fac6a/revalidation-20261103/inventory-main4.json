@@ -1,0 +1,777 @@
+{
+  "version": 1,
+  "chat": {
+    "id": "019e1943-f707-7e72-9532-37487f8fac6a",
+    "title": "Main 4"
+  },
+  "compiledAt": "2026-11-03",
+  "historyReview": {
+    "method": "read_thread, three pages through hasMore=false",
+    "reviewedUserMessageCount": 26,
+    "conclusion": "No explicit request to create or upload new Spots places in this chat. A global mall/sector correction touched Don Samuel historically; user later requested revalidation of work from this chat."
+  },
+  "explicitNewPlaceRequests": [],
+  "taxonomyRequests": [
+    {
+      "name": "Lago Verde",
+      "sourceUserMessageId": "item-72",
+      "requestText": "quita Lago verde como sector, lago verde es un mall",
+      "scope": "Classification as mall rather than sector; historical changes observed in Don Samuel and general taxonomy normalizer.",
+      "affectedScripts": [
+        "scripts/update-don-samuel-bakery.mjs",
+        "scripts/normalize-branch-location-taxonomy.mjs"
+      ],
+      "state": "correction_corrobated_by_official_menupp",
+      "note": "Lago Verde is not a new venue ingestion request."
+    }
+  ],
+  "revalidationJobs": [
+    {
+      "name": "Don Samuel Bakery",
+      "instagram": "https://www.instagram.com/donsamuelbakery/",
+      "officialMenu": "https://menupp.co/donsamuelhealthy",
+      "placeId": 3650,
+      "slug": "don-samuel",
+      "branches": [
+        {
+          "id": 5136,
+          "slug": "don-samuel-cali",
+          "mall": "Parque Comercial Lago Verde",
+          "neighborhood": "Pance",
+          "requestedAsNew": false,
+          "state": "integrated_historical_inactive_branch",
+          "discovery": "Existing single catalog branch; corroborated by stored official Menupp location, current physical inventory not completely reconciled."
+        }
+      ],
+      "state": "integrated_qa_partial_closure_blocked",
+      "completionValidated": false,
+      "validatorExitCode": 1,
+      "published": false,
+      "completed": [
+        "Official profile identity reviewed.",
+        "Official Menupp26 products/41 price presentations reviewed; brand inventory integrated with calculationIncluded=false.",
+        "Taxonomy mall Lago Verde / neighborhood Pance corroborated.",
+        "Official WhatsApp integrated.",
+        "Existing stable logo retained; three distinct real photos reviewed and persisted.",
+        "Mall centroid removed as invalid exact bakery pin.",
+        "Inactive source schedule and stale visit budget replaced with explicit pending data.",
+        "Desktop app search0, no map result and direct branch unavailable observed.",
+        "Local adapter/persistence/menu/media hashes checks passed."
+      ],
+      "pending": [
+        "Finish visual/source coverage and current physical branch inventory.",
+        "Resolve actual current onsite operation, temporary/permanent closure classification or document genuine exhaustion.",
+        "Exact business coordinates/map link remain unresolved; two searches rejected all non-business matches.",
+        "Current onsite weekly/holiday hours, visiting conditions and budget unresolved.",
+        "Responsive mobile QA and final expected hidden-surface/media checks.",
+        "Final completion gate: current manifest structurally valid but blocked, cannot advance."
+      ],
+      "evidence": {
+        "directory": "/Users/mateo/Documents/Playground/docs/spots-research/chat-019e1943-f707-7e72-9532-37487f8fac6a/revalidation-20261103/don-samuel",
+        "completion": "/Users/mateo/Documents/Playground/docs/spots-research/chat-019e1943-f707-7e72-9532-37487f8fac6a/revalidation-20261103/don-samuel/completion.json",
+        "consolidated": "/Users/mateo/Documents/Playground/docs/spots-research/chat-019e1943-f707-7e72-9532-37487f8fac6a/revalidation-20261103/don-samuel/consolidated.json",
+        "integration": "/Users/mateo/Documents/Playground/docs/spots-research/chat-019e1943-f707-7e72-9532-37487f8fac6a/revalidation-20261103/don-samuel/integration.json",
+        "localVerification": "/Users/mateo/Documents/Playground/docs/spots-research/chat-019e1943-f707-7e72-9532-37487f8fac6a/revalidation-20261103/don-samuel/local-verification.json",
+        "appReview": "/Users/mateo/Documents/Playground/docs/spots-research/chat-019e1943-f707-7e72-9532-37487f8fac6a/revalidation-20261103/don-samuel/app-review.json",
+        "instagramReview": "/Users/mateo/Documents/Playground/docs/spots-research/chat-019e1943-f707-7e72-9532-37487f8fac6a/revalidation-20261103/don-samuel/instagram-review.json",
+        "menuReview": "/Users/mateo/Documents/Playground/docs/spots-research/chat-019e1943-f707-7e72-9532-37487f8fac6a/revalidation-20261103/don-samuel/menu-review.json",
+        "mediaReview": "/Users/mateo/Documents/Playground/docs/spots-research/chat-019e1943-f707-7e72-9532-37487f8fac6a/revalidation-20261103/don-samuel/media-review.json",
+        "validation": "/Users/mateo/Documents/Playground/docs/spots-research/chat-019e1943-f707-7e72-9532-37487f8fac6a/revalidation-20261103/don-samuel/validation.json"
+      },
+      "warnings": [
+        "Do not interpret the hidden point as global brand permanent closure: official post continues WhatsApp/delivery orders.",
+        "Unknown subtype plus inactive branch is explicitly based on past-tense physical-point notice, not missing data. Review this choice centrally before declaring closure complete.",
+        "General test-commercial-status.cjs fails fixed count8 for Chilitaco, current eligible7; unrelated to Don Samuel."
+      ],
+      "resources": {
+        "devtoolsOwnPage2": "closed_previous_turn",
+        "iabOwnTabs2and3": "closed",
+        "previewPort8095": "stopped",
+        "previewSession96962": "exit130",
+        "temporaryBundle": "cleaned",
+        "sharedBrowser": "preserved"
+      }
+    }
+  ],
+  "discardedAssignments": [],
+  "candidateRejections": {
+    "scope": "Places search matches rejected as wrong identities; not discarded ingestion assignments.",
+    "evidence": [
+      "/Users/mateo/Documents/Playground/docs/spots-research/chat-019e1943-f707-7e72-9532-37487f8fac6a/revalidation-20261103/don-samuel/google-places.json",
+      "/Users/mateo/Documents/Playground/docs/spots-research/chat-019e1943-f707-7e72-9532-37487f8fac6a/revalidation-20261103/don-samuel/google-places-address-rescue.json"
+    ]
+  },
+  "diagnosticNonAssignments": {
+    "originalUserMessageId": "01a1a1f0-0545-7741-839d-4f1235de9cff",
+    "requestText": "listame los lugares del catalogo local que esté inactivos o no visibles en el feed",
+    "note": "These records were listed, not requested for upload/update. Do not promote them to an ingestion queue without a user request.",
+    "snapshot": {
+      "checkedAt": "2026-11-03T15:42:15.702Z",
+      "inactive": [
+        {
+          "id": 3674,
+          "name": "Girl Frozen Yogurt",
+          "slug": "girl-frozen-yogurt"
+        },
+        {
+          "id": 3670,
+          "name": "Fresh & Good",
+          "slug": "fresh-and-good"
+        },
+        {
+          "id": 3667,
+          "name": "El Gran Langostino",
+          "slug": "el-gran-langostino"
+        },
+        {
+          "id": 3661,
+          "name": "Diletto",
+          "slug": "diletto"
+        },
+        {
+          "id": 3653,
+          "name": "Pradera de Minca",
+          "slug": "pradera-de-minca"
+        },
+        {
+          "id": 3648,
+          "name": "Vinyl Bar",
+          "slug": "vinyl-bar"
+        },
+        {
+          "id": 3645,
+          "name": "Joe's",
+          "slug": "joes"
+        },
+        {
+          "id": 3638,
+          "name": "Brunch Duquesa",
+          "slug": "brunch-duquesa"
+        },
+        {
+          "id": 3633,
+          "name": "Tribal Llanero",
+          "slug": "tribal-llanero-lago-verde"
+        },
+        {
+          "id": 3555,
+          "name": "La Libélula Hotel",
+          "slug": "la-libelula-hotel"
+        },
+        {
+          "id": 3525,
+          "name": "Pizza Della Madonna",
+          "slug": "pizza-della-madonna"
+        },
+        {
+          "id": 3496,
+          "name": "Dosé Sky Lounge",
+          "slug": "dose-sky-lounge"
+        },
+        {
+          "id": 81,
+          "name": "La Botella Malecon",
+          "slug": "la-botella-malecon"
+        },
+        {
+          "id": 39,
+          "name": "Jugos Parque del Perro",
+          "slug": "jugos-parque-del-perro"
+        },
+        {
+          "id": 33,
+          "name": "Nikkei 232",
+          "slug": "nikkei-232"
+        },
+        {
+          "id": 12,
+          "name": "Mantra Coffee Club",
+          "slug": "mantra-coffee-club"
+        },
+        {
+          "id": 3682,
+          "name": "Delio",
+          "slug": "delio"
+        },
+        {
+          "id": 3686,
+          "name": "Gagalto Playground",
+          "slug": "playground"
+        },
+        {
+          "id": 3689,
+          "name": "Tortelli",
+          "slug": "tortelli"
+        }
+      ],
+      "withoutActiveBranches": [
+        {
+          "id": 3669,
+          "name": "Ilumina",
+          "slug": "lumina"
+        },
+        {
+          "id": 3668,
+          "name": "Santa Fusión",
+          "slug": "santa-fusion"
+        },
+        {
+          "id": 3657,
+          "name": "Namaste",
+          "slug": "namaste"
+        },
+        {
+          "id": 3650,
+          "name": "Don Samuel Bakery",
+          "slug": "don-samuel"
+        },
+        {
+          "id": 3649,
+          "name": "Simon's",
+          "slug": "simons"
+        },
+        {
+          "id": 3643,
+          "name": "Chelita Go Mex",
+          "slug": "chelita-go-mex"
+        },
+        {
+          "id": 3639,
+          "name": "Mi Sol Radiante",
+          "slug": "mi-sol-radiante"
+        },
+        {
+          "id": 3637,
+          "name": "Vé de Bistro",
+          "slug": "ve-de-bistro"
+        },
+        {
+          "id": 3636,
+          "name": "King Papa",
+          "slug": "king-papa"
+        },
+        {
+          "id": 3630,
+          "name": "Domingo",
+          "slug": "domingo"
+        },
+        {
+          "id": 3629,
+          "name": "New Anchor Caffè",
+          "slug": "new-anchor-caffe"
+        },
+        {
+          "id": 3628,
+          "name": "La Puerta Bakery",
+          "slug": "la-puerta-bakery"
+        },
+        {
+          "id": 3626,
+          "name": "Selvah Rooftop",
+          "slug": "selvah-rooftop"
+        },
+        {
+          "id": 3558,
+          "name": "Paintball Cali Norte",
+          "slug": "paintball-cali-norte"
+        },
+        {
+          "id": 3557,
+          "name": "Busca Por Dentro",
+          "slug": "busca-por-dentro"
+        },
+        {
+          "id": 3556,
+          "name": "Yonkers",
+          "slug": "yonkers-grill-and-drinks"
+        },
+        {
+          "id": 3554,
+          "name": "Papi",
+          "slug": "papi"
+        },
+        {
+          "id": 3552,
+          "name": "Intrepid 83 Club",
+          "slug": "intrepid-83-club-rooftop"
+        },
+        {
+          "id": 3551,
+          "name": "Donde León",
+          "slug": "donde-leon-cocina-dulce"
+        },
+        {
+          "id": 3550,
+          "name": "Tierradentro Café & Co.",
+          "slug": "tierradentro-cafe-co"
+        },
+        {
+          "id": 3549,
+          "name": "La Chocolatada",
+          "slug": "la-chocolatada"
+        },
+        {
+          "id": 3547,
+          "name": "La Querencia",
+          "slug": "la-querencia"
+        },
+        {
+          "id": 3544,
+          "name": "Odiseo Bistro",
+          "slug": "odiseo-bistro"
+        },
+        {
+          "id": 3543,
+          "name": "ZUR",
+          "slug": "zur"
+        },
+        {
+          "id": 3540,
+          "name": "Winkle Waffle",
+          "slug": "winkle-waffle"
+        },
+        {
+          "id": 3538,
+          "name": "Patolandia",
+          "slug": "patolandia"
+        },
+        {
+          "id": 3536,
+          "name": "Terraza San Camilo",
+          "slug": "terraza-san-camilo"
+        },
+        {
+          "id": 3535,
+          "name": "La Buena Vida",
+          "slug": "la-buena-vida"
+        },
+        {
+          "id": 3534,
+          "name": "Caruzo Rooftop",
+          "slug": "caruzo-rooftop"
+        },
+        {
+          "id": 3533,
+          "name": "La Azotea",
+          "slug": "la-azotea"
+        },
+        {
+          "id": 3530,
+          "name": "Guadalupe Café",
+          "slug": "guadalupe-cafe"
+        },
+        {
+          "id": 3528,
+          "name": "Montallegro Gelateria Italiana",
+          "slug": "montallegro-gelateria-italiana"
+        },
+        {
+          "id": 3527,
+          "name": "Zuly Arepas",
+          "slug": "zuly-arepas"
+        },
+        {
+          "id": 3526,
+          "name": "Ramiros Hamburguesas",
+          "slug": "ramiros-hamburguesas"
+        },
+        {
+          "id": 3524,
+          "name": "Nuevo Leon",
+          "slug": "nuevo-leon"
+        },
+        {
+          "id": 3523,
+          "name": "Ostinato Pasta para Tutti",
+          "slug": "ostinato-pasta-para-tutti"
+        },
+        {
+          "id": 3522,
+          "name": "Sattvica Cafe Bistro",
+          "slug": "sattvica-cafe-bistro"
+        },
+        {
+          "id": 3521,
+          "name": "Sonoma Restaurante Peruano",
+          "slug": "sonoma"
+        },
+        {
+          "id": 3515,
+          "name": "La Bohème",
+          "slug": "la-boheme"
+        },
+        {
+          "id": 3514,
+          "name": "Sonido Central",
+          "slug": "sonido-central"
+        },
+        {
+          "id": 3512,
+          "name": "El Colibri",
+          "slug": "el-colibri"
+        },
+        {
+          "id": 3511,
+          "name": "Kora Vibes",
+          "slug": "kora-vibes"
+        },
+        {
+          "id": 3507,
+          "name": "Miyamoto",
+          "slug": "miyamoto"
+        },
+        {
+          "id": 3506,
+          "name": "Huna Huna Social Club",
+          "slug": "huna-huna-social-club"
+        },
+        {
+          "id": 3505,
+          "name": "Pampa Malbec",
+          "slug": "pampa-malbec"
+        },
+        {
+          "id": 3504,
+          "name": "Penélope Martini",
+          "slug": "penelope-martini"
+        },
+        {
+          "id": 3503,
+          "name": "Tom Glen",
+          "slug": "tom-glen"
+        },
+        {
+          "id": 3502,
+          "name": "Lengua de Mariposa",
+          "slug": "lengua-de-mariposa"
+        },
+        {
+          "id": 3501,
+          "name": "Once Once Restaurante Bar",
+          "slug": "once-once"
+        },
+        {
+          "id": 3500,
+          "name": "Hacienda del Bosque",
+          "slug": "hacienda-del-bosque"
+        },
+        {
+          "id": 3498,
+          "name": "Saipan Airsoft",
+          "slug": "saipan-airsoft"
+        },
+        {
+          "id": 3497,
+          "name": "Zorro Azul",
+          "slug": "zorro-azul"
+        },
+        {
+          "id": 3495,
+          "name": "Storia d’Amore",
+          "slug": "storia-damore"
+        },
+        {
+          "id": 3494,
+          "name": "Karen's Pizza",
+          "slug": "karens-pizza"
+        },
+        {
+          "id": 3493,
+          "name": "Mister Wings",
+          "slug": "mister-wings"
+        },
+        {
+          "id": 3492,
+          "name": "Space Jump",
+          "slug": "space-jump"
+        },
+        {
+          "id": 3489,
+          "name": "La Topa Tolondra",
+          "slug": "la-topa-tolondra"
+        },
+        {
+          "id": 3487,
+          "name": "Platillos Voladores",
+          "slug": "platillos-voladores"
+        },
+        {
+          "id": 1526,
+          "name": "T4",
+          "slug": "t4"
+        },
+        {
+          "id": 1525,
+          "name": "Rainbow Bakery",
+          "slug": "rainbow-bakery"
+        },
+        {
+          "id": 1524,
+          "name": "Nami Reposteria",
+          "slug": "nami-reposteria"
+        },
+        {
+          "id": 1523,
+          "name": "Artesapan Gourmet",
+          "slug": "artesapan-gourmet"
+        },
+        {
+          "id": 1522,
+          "name": "Milagro de Junio",
+          "slug": "cafe-milagro-de-junio"
+        },
+        {
+          "id": 1521,
+          "name": "Le Croissant",
+          "slug": "panaderia-le-croissant"
+        },
+        {
+          "id": 1520,
+          "name": "La Gaucha Angus",
+          "slug": "la-gaucha-angus"
+        },
+        {
+          "id": 1519,
+          "name": "Renata Tacos",
+          "slug": "renata-tacos"
+        },
+        {
+          "id": 1518,
+          "name": "Vinciatti",
+          "slug": "vinciatti"
+        },
+        {
+          "id": 987,
+          "name": "Ultimate Padel",
+          "slug": "ultimate-padel"
+        },
+        {
+          "id": 950,
+          "name": "Local Burger",
+          "slug": "local-burger"
+        },
+        {
+          "id": 949,
+          "name": "Kyomu Sushi",
+          "slug": "kyomu-sushi"
+        },
+        {
+          "id": 117,
+          "name": "La Corte de la Carne",
+          "slug": "la-corte-de-la-carne"
+        },
+        {
+          "id": 115,
+          "name": "Turk House",
+          "slug": "turk-house"
+        },
+        {
+          "id": 112,
+          "name": "UKI",
+          "slug": "uki-fresh-food"
+        },
+        {
+          "id": 107,
+          "name": "Chacalacas",
+          "slug": "taqueria-chalacas"
+        },
+        {
+          "id": 84,
+          "name": "Mushu",
+          "slug": "mushu"
+        },
+        {
+          "id": 82,
+          "name": "Wetsunday",
+          "slug": "wetsunday"
+        },
+        {
+          "id": 79,
+          "name": "Klub Berry Acai",
+          "slug": "klub-berry-acai"
+        },
+        {
+          "id": 78,
+          "name": "Vital Bistro",
+          "slug": "vital-bistro"
+        },
+        {
+          "id": 77,
+          "name": "La Propia Burger",
+          "slug": "la-propia-burger"
+        },
+        {
+          "id": 75,
+          "name": "El Chuzo de Nando",
+          "slug": "el-chuzo-de-nando"
+        },
+        {
+          "id": 36,
+          "name": "Sushi Green",
+          "slug": "sushi-green"
+        },
+        {
+          "id": 31,
+          "name": "El Toro Enamorao",
+          "slug": "el-toro-enamorao"
+        },
+        {
+          "id": 29,
+          "name": "Valle Catalina",
+          "slug": "valle-catalina"
+        },
+        {
+          "id": 28,
+          "name": "Purist Cafe",
+          "slug": "purist-cafe"
+        },
+        {
+          "id": 27,
+          "name": "Hoi An Cocina Vietnamita",
+          "slug": "hoi-an-cocina-vietnamita"
+        },
+        {
+          "id": 25,
+          "name": "La Pergola Clandestina",
+          "slug": "la-pergola-clandestina"
+        },
+        {
+          "id": 20,
+          "name": "Jardin Botanico de Cali",
+          "slug": "jardin-botanico-de-cali"
+        },
+        {
+          "id": 19,
+          "name": "Zoologico de Cali",
+          "slug": "zoologico-de-cali"
+        },
+        {
+          "id": 18,
+          "name": "Museo Caliwood",
+          "slug": "museo-caliwood"
+        },
+        {
+          "id": 17,
+          "name": "Museo La Tertulia",
+          "slug": "museo-la-tertulia"
+        },
+        {
+          "id": 16,
+          "name": "Lakasia",
+          "slug": "lakasia"
+        },
+        {
+          "id": 10,
+          "name": "Izumi",
+          "slug": "izumi"
+        },
+        {
+          "id": 6,
+          "name": "La Corteza",
+          "slug": "la-corteza"
+        },
+        {
+          "id": 3678,
+          "name": "Maki Bar",
+          "slug": "makibar"
+        },
+        {
+          "id": 3681,
+          "name": "Pork House",
+          "slug": "pork-house"
+        },
+        {
+          "id": 3687,
+          "name": "Next Reality",
+          "slug": "next-reality"
+        }
+      ],
+      "partiallyHidden": [
+        {
+          "id": 3677,
+          "name": "Fiel Frozen Yogurt & Açaí",
+          "slug": "fiel"
+        },
+        {
+          "id": 3663,
+          "name": "Cappriato",
+          "slug": "capriatto"
+        },
+        {
+          "id": 3662,
+          "name": "Parisina",
+          "slug": "parisina"
+        },
+        {
+          "id": 3660,
+          "name": "Fusion Wok",
+          "slug": "fusion-wok"
+        },
+        {
+          "id": 3659,
+          "name": "Baoku",
+          "slug": "baoku"
+        },
+        {
+          "id": 3655,
+          "name": "Cima del Viento Dapa",
+          "slug": "cima-del-viento"
+        },
+        {
+          "id": 3548,
+          "name": "Patti Gelateria",
+          "slug": "patti-gelateria"
+        },
+        {
+          "id": 3508,
+          "name": "Crepes & Waffles",
+          "slug": "crepes-y-waffles"
+        },
+        {
+          "id": 442,
+          "name": "Café Gardenia",
+          "slug": "cafe-gardenia"
+        },
+        {
+          "id": 113,
+          "name": "Café Pintado",
+          "slug": "cafe-pintado"
+        },
+        {
+          "id": 110,
+          "name": "El Paso",
+          "slug": "el-paso"
+        },
+        {
+          "id": 108,
+          "name": "BBC Cerveceria",
+          "slug": "bbc"
+        },
+        {
+          "id": 35,
+          "name": "Chilitaco",
+          "slug": "chilitaco"
+        },
+        {
+          "id": 3683,
+          "name": "Alma Romero",
+          "slug": "alma-romero"
+        },
+        {
+          "id": 4012,
+          "name": "Dejamú",
+          "slug": "dejamu"
+        }
+      ]
+    }
+  },
+  "outOfScopeNotes": [
+    "Earlier UI/design probes and a separate temporary travel geolocation request were not Spots ingestion requests; no additional venue queue."
+  ],
+  "centralization": {
+    "destination": "Main",
+    "threadId": "019db73f-0ff4-7d81-b2e8-5c7185932f14",
+    "userInstructionVerified": "Read actual user message01a1a20d-f477-75c3-9082-bea221508ca8 in Main: asks to use one chat and collect complete lists from active chats.",
+    "state": "Stop new acquisitions/catalog writes here; hand off exact incomplete state."
+  }
+}

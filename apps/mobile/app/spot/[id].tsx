@@ -1,10 +1,12 @@
 import { DiscoveryPlaceCard } from '@/components/discovery-place-card'
 import { SharePlaceButton } from '@/components/share-place-button'
 import { getCategoryLabel } from '@/lib/category-icons';
+import { formatPeopleLabel } from '@/lib/people-label'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Ionicons } from '@expo/vector-icons'
+import { SpotsIcon as Ionicons } from '@/components/spots-icon';
 import { Entrance } from '@/components/entrance'
 import { accountUi } from '@/lib/account-ui'
+import { discoverySurfaceShadow } from '@/lib/discovery-surface'
 import { CategoryIcon } from '@/components/category-icon'
 import { Link, useLocalSearchParams, useRouter } from 'expo-router'
 import * as Linking from 'expo-linking'
@@ -26,15 +28,17 @@ import {
   View,
 } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { AppBookmarkButton, AppIconButton, AppLikeButton, AppPrimaryButton, appColors, spotsUi } from '@/components/app-ui'
+import { topContentInset } from '@/lib/layout-insets'
+import { AppBookmarkButton, AppIconButton, AppPrimaryButton, AppVisitedButton, appColors, spotsUi } from '@/components/app-ui'
 import { useBookmarksStore } from '@/lib/bookmarks-store'
+import { useVisitedStore } from '@/lib/visited-store'
 import { formatApproxBudgetPerPersonLabel, getEffectiveSpotDistanceKm } from '@/lib/explore-filters'
-import { formatLikesCount, useLikesStore } from '@/lib/likes-store'
 import { useLocationStore } from '@/lib/location-store'
 import { useRelayoutSubscription } from '@/lib/relayout'
 import {
   getOpenStatusFromSchedule,
   getScheduleDayRows,
+  getHolidayScheduleRow,
   getScheduleDisplayLabel,
   getScheduleLabel,
   getTodayScheduleLabel,
@@ -53,6 +57,10 @@ import {
   type Spot,
 } from '@/lib/mock-spots'
 import { useSpotsStore } from '@/lib/spots-store'
+import { isRecentlyAdded } from '@/lib/discovery-ranking'
+import { NewPlaceBadge } from '@/components/new-place-badge'
+import { PlanBudgetCalculator } from '@/components/plan-budget-calculator'
+import { getPlaceHeroScrollMetrics, PLACE_HERO_HEIGHT, PLACE_HERO_SCROLL_START } from '@/lib/place-hero-scroll.mjs'
 
 const exploreFoodIcon = require('../../assets/explore_food_icon.png')
 const exploreCinemaIcon = require('../../assets/explore_cinema_icon.png')
@@ -111,12 +119,25 @@ const emptySpotForActions: Spot = {
 }
 
 const detailUi = accountUi
+const DETAIL_ICON_SIZE = 18
+const DETAIL_ACTION_ICON_SIZE = 16
 
 function getPriceLabel(spot: Spot) {
-  return formatApproxBudgetPerPersonLabel(spot.minBudget, spot.maxBudget).replace(' COP', '')
+  return formatApproxBudgetPerPersonLabel(spot.minBudget, spot.maxBudget, spot.typicalBudget, spot.budgetPilot, spot.budgetBasis).replace(' COP', '')
 }
 
-function getMenuActionLabel(category: Spot['category']) {
+function isMenuppUrl(value: string) {
+  try {
+    const hostname = new URL(value).hostname.toLowerCase()
+    return hostname === 'menupp.co' || hostname.endsWith('.menupp.co')
+  } catch {
+    return false
+  }
+}
+
+function getMenuActionLabel(category: Spot['category'], menuUrl: string) {
+  if (isMenuppUrl(menuUrl)) return 'Menu'
+
   const normalizedCategory = normalizeSpotCategory(category)
   return normalizedCategory === 'Comida' || normalizedCategory === 'Restaurantes' || normalizedCategory === 'Bares y noche'
     ? 'Menu'
@@ -180,19 +201,27 @@ function buildGalleryImages(detailSpot: Spot) {
   ).slice(0, 10)
 }
 
-function getOpenStatus(schedule: string) {
-  return getOpenStatusFromSchedule(schedule)
+function getOpenStatus(spot: Spot) {
+  return getOpenStatusFromSchedule(spot.hours, new Date(), spot.businessStatus)
 }
 
 export default function SpotDetailScreen() {
+  const [isStandalonePwa, setIsStandalonePwa] = useState(Platform.OS !== 'web');
+  useEffect(() => {
+    if (Platform.OS !== 'web' || typeof window === 'undefined') return;
+    setIsStandalonePwa(
+      window.matchMedia('(display-mode: standalone)').matches ||
+      Boolean((navigator as Navigator & { standalone?: boolean }).standalone),
+    );
+  }, []);
   useRelayoutSubscription()
   const router = useRouter()
   const insets = useSafeAreaInsets()
   const { width: windowWidth, height: windowHeight } = useWindowDimensions()
   const { id, branch } = useLocalSearchParams<{ id: string; branch?: string }>()
   const { spots, loading } = useSpotsStore()
-  const { getLikesCount, isLiked, toggleLike } = useLikesStore()
   const { isBookmarked, toggleBookmark } = useBookmarksStore()
+  const { isVisited, toggleVisited } = useVisitedStore()
   const { userLocation } = useLocationStore()
   const [, forceResumeRender] = useState(0)
   const [selectedBranchId, setSelectedBranchId] = useState<string | null>(null)
@@ -203,6 +232,7 @@ export default function SpotDetailScreen() {
   const [scheduleExpanded, setScheduleExpanded] = useState(false)
   const [scheduleContentMounted, setScheduleContentMounted] = useState(false)
   const [scheduleContentHeight, setScheduleContentHeight] = useState(0)
+  const [budgetCalculatorOpen, setBudgetCalculatorOpen] = useState(false)
   const [galleryViewportWidth, setGalleryViewportWidth] = useState(windowWidth)
   const GALLERY_VELOCITY_PROJECTION = 160
   const galleryDragStartIndexRef = useRef(0)
@@ -238,7 +268,7 @@ export default function SpotDetailScreen() {
   }, [])
 
   const spot =
-    getSpotByIdFromList(spots, id ?? '1') ?? getSpotByIdFromList(spots, spots[0]?.id ?? '1')
+    getSpotByIdFromList(spots, id ?? '')
   const isEvent = spot?.type === 'event'
   const brandBranches = useMemo(
     () => (spot && !isEvent ? getBrandBranchesFromList(spots, spot) : []),
@@ -383,10 +413,11 @@ export default function SpotDetailScreen() {
       setScheduleContentMounted(true)
       Animated.timing(scheduleExpandProgress, {
         toValue: 1,
-        duration: 180,
+        duration: 340,
+        easing: Easing.bezier(0.22, 1, 0.36, 1),
         useNativeDriver: false,
       }).start()
-      return
+      return () => scheduleExpandProgress.stopAnimation()
     }
 
     if (!scheduleContentMounted) {
@@ -395,11 +426,13 @@ export default function SpotDetailScreen() {
 
     Animated.timing(scheduleExpandProgress, {
       toValue: 0,
-      duration: 150,
+      duration: 280,
+      easing: Easing.bezier(0.22, 1, 0.36, 1),
       useNativeDriver: false,
-    }).start(() => {
-      setScheduleContentMounted(false)
+    }).start(({ finished }) => {
+      if (finished) setScheduleContentMounted(false)
     })
+    return () => scheduleExpandProgress.stopAnimation()
   }, [scheduleContentMounted, scheduleExpanded, scheduleExpandProgress])
 
   useEffect(() => {
@@ -459,13 +492,13 @@ export default function SpotDetailScreen() {
       const multiBranchPlace = !isEvent && brandBranches.length > 1 && !selectedBranch
       const idealFor =
         contextSpot.moods.length > 0 ? contextSpot.moods.slice(0, 3).join(' · ') : 'Parche casual'
-      const scheduleStatus = multiBranchPlace ? null : getOpenStatus(contextSpot.hours)
+      const scheduleStatus = multiBranchPlace ? null : getOpenStatus(contextSpot)
 
       return [
         {
           icon: 'people-outline',
           label: 'Personas',
-          value: `1 - ${contextSpot.maxPeople}`,
+          value: formatPeopleLabel(contextSpot.minPeople, contextSpot.maxPeople),
         },
         {
           icon: 'time-outline',
@@ -502,14 +535,17 @@ export default function SpotDetailScreen() {
 
   const resolvedContextSpot = (contextSpot ?? detailSpot) as Spot | undefined
   const selectedBranchOpenStatus =
-    !isEvent && resolvedContextSpot ? getOpenStatus(resolvedContextSpot.hours) : null
+    !isEvent && resolvedContextSpot ? getOpenStatus(resolvedContextSpot) : null
   const hasSelectedBranchStatus = Boolean(selectedBranchOpenStatus)
-  const todayScheduleLabel = resolvedContextSpot ? getTodayScheduleLabel(resolvedContextSpot.hours) : ''
-  const weeklyScheduleRows = resolvedContextSpot ? getScheduleDayRows(resolvedContextSpot.hours) : []
+  const todayScheduleLabel = resolvedContextSpot?.businessStatus === 'temporarily_closed'
+    ? 'Cerrado temporalmente'
+    : resolvedContextSpot ? getTodayScheduleLabel(resolvedContextSpot.hours) : ''
+  const weeklyScheduleRows = resolvedContextSpot
+    ? [...getScheduleDayRows(resolvedContextSpot.hours), getHolidayScheduleRow(resolvedContextSpot.hours)]
+    : []
 
-  const likeCount = detailSpot ? getLikesCount(detailSpot.likeTargetId) : 0
-  const liked = detailSpot ? isLiked(detailSpot.likeTargetId) : false
   const bookmarked = detailSpot ? isBookmarked(detailSpot.likeTargetId) : false
+  const visited = detailSpot ? isVisited(detailSpot.likeTargetId) : false
   const similarSpots = detailSpot
     ? isEvent
       ? getSimilarSpotsFromList(spots, detailSpot)
@@ -535,25 +571,35 @@ export default function SpotDetailScreen() {
   )
   const hasMenu = resolvedContextSpot ? hasValueLink(resolvedContextSpot.menuUrl) : false
   const hasInstagram = resolvedContextSpot ? hasValueLink(resolvedContextSpot.instagram) : false
+  const placeInstagram = detailSpot?.instagram ?? ''
+  const hasPlaceInstagram = hasValueLink(placeInstagram)
   const hasWhatsApp = resolvedContextSpot ? hasValueLink(resolvedContextSpot.whatsapp) : false
   const hasPhone = resolvedContextSpot ? hasValueText(resolvedContextSpot.phone) : false
-  const showMenu = hasMenu && resolvedContextSpot?.category !== 'Eventos'
-  const menuActionLabel = resolvedContextSpot ? getMenuActionLabel(resolvedContextSpot.category) : 'Menu'
+  const showMenu =
+    hasMenu &&
+    (resolvedContextSpot?.category !== 'Eventos' || isMenuppUrl(resolvedContextSpot.menuUrl))
+  const menuActionLabel = resolvedContextSpot
+    ? getMenuActionLabel(resolvedContextSpot.category, resolvedContextSpot.menuUrl)
+    : 'Menu'
+  const googleMapsUrl = resolvedContextSpot ? getGoogleMapsUrl(resolvedContextSpot) : null
+  const openPlaceMap = () => {
+    if (!resolvedContextSpot) return
+    router.push({ pathname: '/place-map', params: { branch: resolvedContextSpot.id, returnSpot: id } })
+  }
   const primaryAction = getPrimaryAction({
     hasWhatsApp,
     hasPhone,
     hasMenu: showMenu,
     hasInstagram,
     spot: resolvedContextSpot ?? spot ?? emptySpotForActions,
+    onMap: openPlaceMap,
   })
   const categoryIcon = getCategoryIcon(detailSpot?.category ?? 'Comida')
-  const baseHeroHeight = 382
-  const heroPanelOverlap = 28
+  const baseHeroHeight = PLACE_HERO_HEIGHT
   const sheetMaxOffset = Math.max(1, windowHeight - baseHeroHeight)
-  const panelCompressionFactor = 1
   const baseHeroHeightValue = useRef(new Animated.Value(baseHeroHeight)).current
-  const baseSheetTopValue = useRef(new Animated.Value(baseHeroHeight - heroPanelOverlap)).current
   const sheetTranslateY = useRef(new Animated.Value(0)).current
+  const infoScrollPosition = useRef(new Animated.Value(0)).current
   const [galleryHeaderHidden, setGalleryHeaderHidden] = useState(false)
   useEffect(() => {
     const listener = sheetTranslateY.addListener(({ value }) => {
@@ -574,24 +620,24 @@ export default function SpotDetailScreen() {
   const sheetOffsetRef = useRef(0)
   const galleryLastTap = useRef<{ time: number; x: number; y: number } | null>(null)
   const infoScrollY = useRef(0)
-  const upwardScrollDistance = useRef(0)
-  const scrollCollapseTriggered = useRef(false)
   const sheetAnimating = useRef(false)
-  const [infoScrollLocked, setInfoScrollLocked] = useState(false)
   const infoScrollRef = useRef<ScrollView>(null)
-  const scrollSettleTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const pendingScrollTarget = useRef<number | null>(null)
-  const scrollLayoutSettledAt = useRef(0)
-  useEffect(() => () => {
-    if (scrollSettleTimer.current) clearTimeout(scrollSettleTimer.current)
-  }, [])
-  const collapseDistance = Math.max(0, baseHeroHeight - heroPanelOverlap - (insets.top + 72))
-  const effectiveSheetOffset = sheetTranslateY.interpolate({
-    inputRange: [-collapseDistance, 0, sheetMaxOffset],
-    outputRange: [-collapseDistance, 0, sheetMaxOffset],
+  const handleDragStart = useRef(0)
+  const { distance: collapseDistance } = getPlaceHeroScrollMetrics(0, insets.top)
+  const scrollCollapse = infoScrollPosition.interpolate({
+    inputRange: [PLACE_HERO_SCROLL_START, PLACE_HERO_SCROLL_START + Math.max(1, collapseDistance)],
+    outputRange: [0, collapseDistance],
+    extrapolate: 'clamp',
+  })
+  const effectiveSheetOffset = Animated.subtract(sheetTranslateY, scrollCollapse)
+  const coverFocus = effectiveSheetOffset.interpolate({
+    inputRange: [-Math.max(1, collapseDistance), 0],
+    outputRange: [1, 0],
     extrapolate: 'clamp',
   })
   const heroAnimatedHeight = Animated.add(effectiveSheetOffset, baseHeroHeightValue)
+  // Collapse only the clipped cover, not its flow footprint: scroll geometry stays stable.
+  const heroFootprintHeight = Animated.add(baseHeroHeightValue, sheetTranslateY)
   const galleryCornerRadius = effectiveSheetOffset.interpolate({
     inputRange: [0, sheetMaxOffset],
     outputRange: [44, 0],
@@ -602,13 +648,6 @@ export default function SpotDetailScreen() {
     outputRange: [0, insets.bottom],
     extrapolate: 'clamp',
   })
-  const sheetAnimatedTop = Animated.add(
-    baseSheetTopValue,
-    effectiveSheetOffset.interpolate({
-      inputRange: [-collapseDistance, 0, sheetMaxOffset],
-      outputRange: [-collapseDistance, 0, sheetMaxOffset * panelCompressionFactor],
-    }),
-  )
   const heroContentOpacity = sheetTranslateY.interpolate({
     inputRange: [0, sheetMaxOffset * 0.55, sheetMaxOffset],
     outputRange: [1, 0.4, 0],
@@ -624,16 +663,6 @@ export default function SpotDetailScreen() {
     outputRange: [0, 16],
     extrapolate: 'clamp',
   })
-  const heroGalleryOpacity = sheetTranslateY.interpolate({
-    inputRange: [sheetMaxOffset * 0.28, sheetMaxOffset * 0.62, sheetMaxOffset],
-    outputRange: [0, 0.5, 1],
-    extrapolate: 'clamp',
-  })
-  const heroImageOpacity = sheetTranslateY.interpolate({
-    inputRange: [sheetMaxOffset * 0.4, sheetMaxOffset],
-    outputRange: [1, 0.08],
-    extrapolate: 'clamp',
-  })
   const galleryDotsOpacity = sheetTranslateY.interpolate({
     inputRange: [sheetMaxOffset * 0.5, sheetMaxOffset],
     outputRange: [0, 1],
@@ -645,6 +674,13 @@ export default function SpotDetailScreen() {
     galleryTranslateRef.current = 0
     galleryGestureStartTranslateRef.current = 0
     galleryTranslateX.setValue(0)
+    sheetTranslateY.stopAnimation()
+    sheetTranslateY.setValue(0)
+    sheetOffsetRef.current = 0
+    sheetAnimating.current = false
+    infoScrollY.current = 0
+    infoScrollPosition.setValue(0)
+    infoScrollRef.current?.scrollTo({ y: 0, animated: false })
   }, [detailSpot?.id])
 
   useEffect(() => {
@@ -700,23 +736,17 @@ export default function SpotDetailScreen() {
     }).start()
   }
 
-  function snapSheet(toValue: number, fromScroll = false) {
-    pendingScrollTarget.current = null
-    if (scrollSettleTimer.current) {
-      clearTimeout(scrollSettleTimer.current)
-      scrollSettleTimer.current = null
-    }
-    upwardScrollDistance.current = 0
-    scrollCollapseTriggered.current = toValue < 0
+  function snapSheet(toValue: number) {
+    sheetTranslateY.stopAnimation((value) => {
+      if (typeof value === 'number') sheetOffsetRef.current = value
+    })
     sheetAnimating.current = true
-    setInfoScrollLocked(true)
-    infoScrollRef.current?.scrollTo({ y: infoScrollY.current, animated: false })
-    const animation = fromScroll ? Animated.timing(sheetTranslateY, {
-      toValue,
-      duration: 550,
-      easing: Easing.inOut(Easing.cubic),
-      useNativeDriver: false,
-    }) : Animated.spring(sheetTranslateY, {
+    if (toValue > 0) {
+      infoScrollY.current = 0
+      infoScrollPosition.setValue(0)
+      infoScrollRef.current?.scrollTo({ y: 0, animated: false })
+    }
+    const animation = Animated.spring(sheetTranslateY, {
       toValue,
       damping: 18,
       stiffness: 220,
@@ -728,10 +758,46 @@ export default function SpotDetailScreen() {
       if (finished) {
         sheetOffsetRef.current = toValue
         sheetAnimating.current = false
-        setInfoScrollLocked(false)
-        scrollLayoutSettledAt.current = Date.now() + 180
       }
     })
+  }
+
+  function handleBackPress() {
+    const navigateBack = () => {
+      if (router.canGoBack()) {
+        router.back()
+        return
+      }
+
+      router.replace('/(tabs)/explore')
+    }
+
+    if (sheetAnimating.current) {
+      sheetTranslateY.stopAnimation((value) => {
+        const currentValue = typeof value === 'number' ? value : sheetOffsetRef.current
+        sheetAnimating.current = false
+        sheetOffsetRef.current = currentValue
+        if (currentValue < -1) {
+          navigateBack()
+        } else {
+          snapSheet(0)
+        }
+      })
+      return
+    }
+
+    if (sheetOffsetRef.current >= sheetMaxOffset * 0.8) {
+      snapSheet(0)
+      return
+    }
+
+    navigateBack()
+  }
+
+  function handleInfoScroll(event: any) {
+    const y = Math.max(0, event.nativeEvent.contentOffset.y)
+    infoScrollY.current = y
+    infoScrollPosition.setValue(y)
   }
 
   const sheetPanResponder = useMemo(
@@ -741,52 +807,37 @@ export default function SpotDetailScreen() {
           Math.abs(gestureState.dy) > Math.abs(gestureState.dx) &&
           Math.abs(gestureState.dy) > 3,
         onPanResponderGrant: () => {
-          if (scrollSettleTimer.current) clearTimeout(scrollSettleTimer.current)
           sheetTranslateY.stopAnimation((value) => {
             sheetAnimating.current = false
-            setInfoScrollLocked(false)
             sheetOffsetRef.current = typeof value === 'number' ? value : 0
+            handleDragStart.current = sheetOffsetRef.current - getPlaceHeroScrollMetrics(infoScrollY.current, insets.top).collapse
           })
         },
         onPanResponderMove: (_, gestureState) => {
-          const nextValue = clamp(sheetOffsetRef.current + gestureState.dy, -collapseDistance, sheetMaxOffset)
-          sheetTranslateY.setValue(nextValue)
+          const nextValue = clamp(handleDragStart.current + gestureState.dy, -collapseDistance, sheetMaxOffset)
+          sheetTranslateY.setValue(Math.max(0, nextValue))
+          const y = nextValue < 0 ? PLACE_HERO_SCROLL_START - nextValue : 0
+          infoScrollY.current = y
+          infoScrollPosition.setValue(y)
+          infoScrollRef.current?.scrollTo({ y, animated: false })
         },
         onPanResponderRelease: (_, gestureState) => {
-          const currentValue = clamp(sheetOffsetRef.current + gestureState.dy, -collapseDistance, sheetMaxOffset)
-          const startedInGallery = sheetOffsetRef.current >= sheetMaxOffset * 0.8
-          if (startedInGallery && (gestureState.dy <= -14 || (gestureState.dy < -3 && gestureState.vy < -0.25))) {
-            snapSheet(0)
-            return
-          }
-          // A short downward gesture restores the cover instead of requiring a full drag.
-          const startedCollapsed = collapseDistance > 0 && sheetOffsetRef.current <= -collapseDistance * 0.8
-          if (startedCollapsed && (gestureState.dy >= 14 || (gestureState.dy > 3 && gestureState.vy > 0.25))) {
-            snapSheet(0)
-            return
-          }
-          if (gestureState.vy < -0.6 || currentValue < -collapseDistance * 0.5) {
-            snapSheet(-collapseDistance)
-            return
-          }
-          if (gestureState.vy > 0.6 || currentValue > sheetMaxOffset * 0.5) {
-            snapSheet(sheetMaxOffset)
-            return
-          }
-
-          snapSheet(0)
+          const currentValue = clamp(handleDragStart.current + gestureState.dy, -collapseDistance, sheetMaxOffset)
+          sheetOffsetRef.current = Math.max(0, currentValue)
+          // Scroll-controlled sizes never snap on release; gallery opening still settles.
+          if (currentValue > 0) snapSheet(currentValue > sheetMaxOffset * 0.5 || gestureState.vy > 0.6 ? sheetMaxOffset : 0)
         },
         onPanResponderTerminate: () => {
-          snapSheet(sheetOffsetRef.current > sheetMaxOffset * 0.5 ? sheetMaxOffset : 0)
+          if (infoScrollY.current === 0) snapSheet(sheetOffsetRef.current > sheetMaxOffset * 0.5 ? sheetMaxOffset : 0)
         },
       }),
-    [sheetMaxOffset, sheetTranslateY, collapseDistance],
+    [sheetMaxOffset, sheetTranslateY, collapseDistance, insets.top],
   )
 
   const galleryPanResponder = useMemo(
     () =>
       PanResponder.create({
-        onStartShouldSetPanResponder: () => !sheetAnimating.current,
+        onStartShouldSetPanResponder: () => true,
         onMoveShouldSetPanResponder: (_, gestureState) =>
           galleryImages.length > 1 &&
           Math.abs(gestureState.dx) > Math.abs(gestureState.dy) &&
@@ -852,29 +903,52 @@ export default function SpotDetailScreen() {
 
   return (
     <Entrance style={styles.screen}>
+      <ScrollView
+        ref={infoScrollRef}
+        testID="place-detail-scroll"
+        stickyHeaderIndices={Platform.OS === 'web' ? undefined : [0]}
+        removeClippedSubviews={false}
+        style={styles.pageScroll}
+        contentContainerStyle={[styles.pageScrollContent, {
+          paddingBottom: isStandalonePwa ? insets.bottom : 12,
+          minHeight: windowHeight + PLACE_HERO_SCROLL_START + collapseDistance,
+        }]}
+        bounces={false}
+        overScrollMode="never"
+        scrollEventThrottle={16}
+        onScroll={handleInfoScroll}
+        showsVerticalScrollIndicator={false}
+      >
+      {/* RN Web's generated sticky wrapper intercepts taps below the clipped hero. */}
       <Animated.View
+        pointerEvents="box-none"
+        style={[
+          { height: heroFootprintHeight },
+          Platform.OS === 'web' ? ({ position: 'sticky', top: 0, zIndex: 10 } as never) : null,
+        ]}
+      >
+      <Animated.View
+        testID="place-detail-hero"
         style={[
           styles.heroStage,
           {
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
             height: heroAnimatedHeight,
             borderBottomLeftRadius: galleryCornerRadius,
             borderBottomRightRadius: galleryCornerRadius,
             opacity: heroIntroOpacity,
             transform: [{ translateY: heroIntroTranslateY }],
           },
+          Platform.OS === 'web'
+            ? ({ position: 'sticky', top: 0 } as never)
+            : null,
         ]}
       >
-        <Animated.View style={[styles.heroBaseWrap, { opacity: heroImageOpacity }]}>
-          <ImageBackground
-            source={{ uri: detailSpot.image }}
-            style={styles.heroBaseImage}
-            imageStyle={styles.heroImage}
-          />
-          <View pointerEvents="none" style={styles.heroOverlay} />
-          <View pointerEvents="none" style={styles.heroBottomShadow} />
-        </Animated.View>
-
         <Animated.View
+          testID="place-detail-hero-media"
           onLayout={(event) => {
             const nextWidth = event.nativeEvent.layout.width
             if (nextWidth > 0 && nextWidth !== galleryViewportWidth) {
@@ -884,10 +958,13 @@ export default function SpotDetailScreen() {
           {...galleryPanResponder.panHandlers}
           style={[
             styles.heroGalleryWrap,
-            { opacity: heroGalleryOpacity },
+            // One cover surface grows with the drag; scroll only clips it.
+            { height: heroFootprintHeight },
             Platform.OS === 'web'
               ? ({
                   touchAction: 'pan-y',
+                  filter: coverFocus.interpolate({ inputRange: [0, 1], outputRange: ['blur(0px)', 'blur(8px)'] }),
+                  transform: [{ scale: coverFocus.interpolate({ inputRange: [0, 1], outputRange: [1, 1.04] }) }],
                 } as never)
               : null,
           ]}
@@ -907,15 +984,17 @@ export default function SpotDetailScreen() {
             ]}
           >
             {galleryImages.map((imageUrl, index) => (
-              <ImageBackground
+              Math.abs(index - galleryIndex) <= 1 ? <ImageBackground
                 key={`${imageUrl}-${index}`}
                 source={{ uri: imageUrl }}
                 style={[styles.heroGalleryPage, { width: galleryViewportWidth }]}
                 imageStyle={styles.heroImage}
-              />
+              /> : <View key={`${imageUrl}-${index}`} style={[styles.heroGalleryPage, { width: galleryViewportWidth }]} />
             ))}
           </Animated.View>
         </Animated.View>
+
+        <Animated.View pointerEvents="none" style={[styles.heroOverlay, { backgroundColor: '#000', opacity: coverFocus.interpolate({ inputRange: [0, 1], outputRange: [0.2, 0.64] }) }]} />
 
         <View pointerEvents="box-none" style={styles.heroChrome}>
           <Animated.View
@@ -923,40 +1002,40 @@ export default function SpotDetailScreen() {
             accessibilityElementsHidden={!galleryHeaderHidden}
             importantForAccessibility={galleryHeaderHidden ? 'auto' : 'no-hide-descendants'}
             aria-hidden={!galleryHeaderHidden}
-            style={{ position: 'absolute', top: insets.top + 16, left: 18, zIndex: 5, opacity: sheetTranslateY.interpolate({ inputRange: [sheetMaxOffset * 0.8, sheetMaxOffset], outputRange: [0, 1], extrapolate: 'clamp' }) }}
+            style={{ position: 'absolute', top: topContentInset(insets), left: 18, zIndex: 20, opacity: sheetTranslateY.interpolate({ inputRange: [sheetMaxOffset * 0.8, sheetMaxOffset], outputRange: [0, 1], extrapolate: 'clamp' }) }}
           >
-            <AppIconButton name="arrow-back" tone="light" accessibilityLabel="Cerrar galería y volver al lugar" onPress={() => snapSheet(0)} />
+            <AppIconButton
+              name="arrow-back"
+              tone="light"
+              accessibilityLabel="Volver"
+              onPress={handleBackPress}
+            />
           </Animated.View>
           <Animated.View
             pointerEvents={galleryHeaderHidden ? 'none' : 'auto'}
             accessibilityElementsHidden={galleryHeaderHidden}
             importantForAccessibility={galleryHeaderHidden ? 'no-hide-descendants' : 'auto'}
             aria-hidden={galleryHeaderHidden}
-            style={[styles.topActions, { paddingTop: insets.top + 16, opacity: galleryHeaderOpacity, transform: [{ translateY: galleryHeaderTranslate }] }]}
+            style={[styles.topActions, { paddingTop: topContentInset(insets), opacity: galleryHeaderOpacity, transform: [{ translateY: galleryHeaderTranslate }] }]}
           >
             <AppIconButton
               name="arrow-back"
               tone="light"
-              onPress={() => {
-                if (router.canGoBack()) {
-                  router.back()
-                  return
-                }
-
-                router.replace('/(tabs)/explore')
-              }}
+              onPress={handleBackPress}
             />
             <View style={styles.topActionRow}>
-              <AppLikeButton
-                liked={liked}
-                tone="light"
-                activeColor={detailUi.accent}
-                onPress={() => toggleLike(detailSpot.likeTargetId)}
-              />
+              {!isEvent ? (
+                <AppVisitedButton
+                  visited={visited}
+                  tone="light"
+                  activeColor={detailUi.accent}
+                  onPress={() => void toggleVisited(detailSpot.likeTargetId)}
+                />
+              ) : null}
               <AppBookmarkButton
                 bookmarked={bookmarked}
                 tone="light"
-                activeColor={detailUi.text}
+                activeColor={detailUi.accent}
                 onPress={() => void toggleBookmark(detailSpot.likeTargetId)}
               />
               <SharePlaceButton spot={detailSpot} />
@@ -974,6 +1053,8 @@ export default function SpotDetailScreen() {
             ]}
           >
             <View style={styles.heroBadges}>
+              {resolvedContextSpot.businessStatus === 'temporarily_closed' && <View style={styles.heroChip}><Text style={styles.heroChipText}>Cerrado temporalmente</Text></View>}
+              {isRecentlyAdded(detailSpot, new Date()) && <NewPlaceBadge />}
               <View style={styles.heroChip}>
                 <CategoryIcon
                   category={detailSpot.category}
@@ -984,7 +1065,10 @@ export default function SpotDetailScreen() {
               </View>
             </View>
 
-            <Text style={styles.heroTitle}>{isEvent ? detailSpot.name : detailSpot.brandName}</Text>
+            <View style={styles.heroIdentity}>
+              {!isEvent && detailSpot.logoUrl ? <View style={styles.heroLogoBadge}><Image source={{ uri: detailSpot.logoUrl }} resizeMode="cover" accessibilityLabel={`Logo de ${detailSpot.brandName}`} style={styles.heroLogo} /></View> : null}
+              <Text style={[styles.heroTitle, !isEvent && styles.heroIdentityTitle]}>{isEvent ? detailSpot.name : detailSpot.brandName}</Text>
+            </View>
             {isEvent ? (
               <Text style={styles.heroSubtitle}>
                 {`${detailSpot.brandName} · ${getBranchLocationLabel(detailSpot)}`}
@@ -1006,7 +1090,7 @@ export default function SpotDetailScreen() {
                   <View style={styles.heroLocationRow}>
                     <Ionicons name="location-outline" size={14} color="#fff7fb" />
                     <Text numberOfLines={1} ellipsizeMode="tail" style={styles.heroLocationText}>
-                      {`1 sede: ${getBranchLocationLabel(detailSpot)}`}
+                      {getBranchLocationLabel(detailSpot) ? `1 sede: ${getBranchLocationLabel(detailSpot)}` : 'Sede por confirmar'}
                     </Text>
                   </View>
                 </View>
@@ -1058,66 +1142,27 @@ export default function SpotDetailScreen() {
           <View style={styles.heroHandle} />
         </Animated.View>
       </Animated.View>
+      </Animated.View>
 
       <Animated.View
         style={[
           styles.sheet,
           {
             opacity: sheetIntroOpacity,
-            top: Animated.subtract(sheetAnimatedTop, 32),
+            marginTop: -28,
             transform: [{ translateY: sheetIntroTranslateY }],
           },
         ]}
       >
-        <View style={styles.sheetTopInset} />
-        <ScrollView
-          ref={infoScrollRef}
-          scrollEnabled={!infoScrollLocked}
-          style={[styles.sheetScroll, Platform.OS === 'web' ? ({ overflowAnchor: 'none', overscrollBehavior: 'none' } as never) : null]}
-          bounces={false}
-          overScrollMode="never"
-          scrollEventThrottle={16}
-          onScroll={event => {
-            const y = Math.max(0, event.nativeEvent.contentOffset.y)
-            const delta = y - infoScrollY.current
-            infoScrollY.current = y
-            if (scrollSettleTimer.current) clearTimeout(scrollSettleTimer.current)
-            if (sheetAnimating.current) return
-            if (y <= 1 && delta < 0 && sheetOffsetRef.current < -1) {
-              snapSheet(0, true)
-              return
-            }
-            const { contentSize, layoutMeasurement } = event.nativeEvent
-            const maxScrollY = Math.max(0, contentSize.height - layoutMeasurement.height)
-            if (maxScrollY > 1 && y >= maxScrollY - 1 && delta > 0 && !scrollCollapseTriggered.current && Math.abs(sheetOffsetRef.current) <= 1) {
-              snapSheet(-collapseDistance, true)
-              return
-            }
-            if (Date.now() < scrollLayoutSettledAt.current) return
-            if (delta < -4) upwardScrollDistance.current = 0
-            else if (delta > 0) upwardScrollDistance.current += delta
-            const collapseCover = !scrollCollapseTriggered.current && Math.abs(sheetOffsetRef.current) <= 1 && upwardScrollDistance.current >= 32
-            if (collapseCover) pendingScrollTarget.current = -collapseDistance
-            if (pendingScrollTarget.current === null) return
-            // Wait for wheel/touch momentum to settle before resizing the scroll viewport.
-            scrollSettleTimer.current = setTimeout(() => {
-              scrollSettleTimer.current = null
-              const target = pendingScrollTarget.current
-              if (!sheetAnimating.current && target !== null) snapSheet(target, true)
-            }, 100)
-          }}
-          scrollIndicatorInsets={{ bottom: insets.bottom }}
-          contentContainerStyle={[
-            styles.sheetContent,
-            {
-              paddingBottom: insets.bottom,
-              flexGrow: 1,
-            },
-          ]}
-          showsVerticalScrollIndicator={false}
-        >
-          <View style={styles.panel}>
+        <View style={[styles.sheetTopInset, !isEvent && styles.placeSheetTopInset]} />
+        <View>
+          <View style={[styles.panel, isStandalonePwa && { paddingBottom: 0 }]}>
             <View style={styles.section}>
+              {!isEvent && resolvedContextSpot.description ? (
+                <View style={styles.sectionBlock}>
+                  <Text style={[styles.bodyText, styles.placeDescription]}>{resolvedContextSpot.description}</Text>
+                </View>
+              ) : null}
               {!isEvent && otherBranches.length ? (
                 <View style={styles.sectionBlock}>
                   <View style={styles.branchSelectorStack}>
@@ -1128,69 +1173,40 @@ export default function SpotDetailScreen() {
                         }
                       }}
                       disabled={!canSelectBranch}
-                      style={[
-                        styles.branchSelectorField,
-                        selectedBranch &&
-                          hasSelectedBranchStatus &&
-                          (selectedBranchOpenStatus?.tone === 'open'
-                            ? styles.branchSelectorFieldActiveOpen
-                            : styles.branchSelectorFieldActiveClosed),
-                      ]}
+                      accessibilityRole="button"
+                      accessibilityLabel={`Cambiar sede: ${selectedBranch ? getBranchSelectorTitle(selectedBranch, otherBranches) : 'Escoge una sede'}`}
+                      style={[styles.compactBranchField, discoverySurfaceShadow]}
                     >
-                      <View style={styles.branchSelectorFieldCopy}>
+                      <View style={styles.compactBranchCopy}>
                         <Text
-                          style={[
-                            styles.branchSelectorFieldTitle,
-                            selectedBranch &&
-                              hasSelectedBranchStatus &&
-                              (selectedBranchOpenStatus?.tone === 'open'
-                                ? styles.branchSelectorFieldTitleActiveOpen
-                                : styles.branchSelectorFieldTitleActiveClosed),
-                          ]}
+                          numberOfLines={1}
+                          style={styles.compactBranchTitle}
                         >
                           {selectedBranch ? getBranchSelectorTitle(selectedBranch, otherBranches) : 'Escoge una sede'}
                         </Text>
+                      </View>
                         {selectedBranch && selectedBranchOpenStatus?.label ? (
-                          <View style={styles.branchSelectorStatusRow}>
+                          <View style={styles.compactBranchStatus}>
                             <View
                               style={[
-                                styles.branchSelectorDot,
+                                styles.compactBranchDot,
                                 selectedBranchOpenStatus?.tone === 'open'
                                   ? styles.branchSelectorDotOpen
                                   : styles.branchSelectorDotClosed,
                               ]}
                             />
                             <Text
-                              style={[
-                                styles.branchSelectorFieldMeta,
-                                selectedBranch &&
-                                  hasSelectedBranchStatus &&
-                                  (selectedBranchOpenStatus?.tone === 'open'
-                                    ? styles.branchSelectorFieldMetaActiveOpen
-                                    : styles.branchSelectorFieldMetaActiveClosed),
-                              ]}
+                              style={styles.compactBranchMeta}
                             >
                               {selectedBranchOpenStatus.label}
                             </Text>
                           </View>
                         ) : selectedBranch ? (
-                          <Text style={styles.branchSelectorFieldMeta}>Horario por confirmar</Text>
+                          <Text style={styles.compactBranchMeta}>Horario por confirmar</Text>
                         ) : null}
-                      </View>
                       {canSelectBranch ? (
-                        <View style={styles.branchSelectorAction}>
-                          <View style={styles.branchSelectorActionRow}>
-                            <Text style={styles.branchSelectorActionText}>
-                              {'Cambiar sede'}
-                            </Text>
-                            <Ionicons name="chevron-forward" size={16} color={detailUi.textSecondary} />
-                          </View>
-                        </View>
-                      ) : (
-                        <View style={styles.branchSelectorAction}>
-                          <Text style={styles.branchSelectorActionText}>Sede única</Text>
-                        </View>
-                      )}
+                        <Ionicons name="chevron-forward" size={16} color={detailUi.textSecondary} />
+                      ) : null}
                     </Pressable>
                   </View>
                   <View style={styles.sectionDivider} />
@@ -1205,32 +1221,25 @@ export default function SpotDetailScreen() {
                       transform: [{ translateY: branchContentTranslateY }],
                     }}
                   >
-                    <View style={styles.sectionBlock}>
-                      <Text style={styles.bodyText}>{resolvedContextSpot.description}</Text>
-                    </View>
-
                     <View style={[styles.sectionBlock, styles.scheduleSectionBlock]}>
                       <Text style={styles.sectionEyebrow}>Información</Text>
+                      <View style={styles.compactInfoGroup}>
                       <Pressable
+                        accessibilityRole="button"
+                        accessibilityLabel="Horario semanal"
+                        accessibilityState={{ expanded: scheduleExpanded }}
                         onPress={() => setScheduleExpanded((current) => !current)}
-                        style={styles.scheduleCard}
+                        style={styles.compactScheduleCard}
                       >
                         <View style={styles.scheduleCardHeader}>
-                          <View style={styles.statIconWrap}>
-                            <Ionicons name="time-outline" size={18} color={detailUi.text} />
+                          <View style={styles.compactInfoIcon}>
+                            <Ionicons name="time-outline" size={DETAIL_ICON_SIZE} color={detailUi.text} />
                           </View>
                           <View style={styles.scheduleCardCopy}>
                             <View style={styles.scheduleTodayInline}>
-                              <Text style={styles.scheduleTodayLabel}>Hoy</Text>
-                              <Text style={styles.scheduleTodaySeparator}>·</Text>
+                              <Text style={styles.compactTodayLabel}>Hoy</Text>
                               <Text
-                                style={[
-                                  styles.statValue,
-                                  selectedBranchOpenStatus?.tone === 'open' &&
-                                    styles.scheduleTodayValueOpen,
-                                  selectedBranchOpenStatus?.tone === 'closed' &&
-                                    styles.scheduleTodayValueClosed,
-                                ]}
+                                style={styles.compactInfoValue}
                               >
                                 {todayScheduleLabel || getScheduleDisplayLabel(resolvedContextSpot.hours) || 'Horario por confirmar'}
                               </Text>
@@ -1279,8 +1288,6 @@ export default function SpotDetailScreen() {
                                   style={[
                                     styles.scheduleDayRow,
                                     row.isToday && styles.scheduleDayRowToday,
-                                    row.isToday && selectedBranchOpenStatus?.tone === 'open' && styles.scheduleDayRowOpen,
-                                    row.isToday && selectedBranchOpenStatus?.tone === 'closed' && styles.scheduleDayRowClosed,
                                   ]}
                                 >
                                   <Text
@@ -1317,81 +1324,95 @@ export default function SpotDetailScreen() {
                           </Animated.View>
                         ) : null}
                       </Pressable>
-                    </View>
-
-                  <View style={[styles.sectionBlock, styles.quickInfoSectionBlock]}>
                     {hasValueText(resolvedContextSpot.address) ? (
                       <Pressable
-                        onPress={() => openInMaps(resolvedContextSpot.address)}
-                        style={styles.statCard}
+                        onPress={openPlaceMap}
+                        style={styles.compactInfoRow}
                       >
-                        <View style={styles.statIconWrap}>
-                          <Ionicons name="location-outline" size={18} color={detailUi.text} />
+                        <View style={styles.compactInfoIcon}>
+                          <Ionicons name="location-outline" size={DETAIL_ICON_SIZE} color={detailUi.text} />
                         </View>
                         <View style={styles.statCopy}>
-                          <Text numberOfLines={1} ellipsizeMode="tail" style={styles.statValue}>
+                          <Text style={styles.compactAddress}>
                             {normalizeCommercialCenterLabel(resolvedContextSpot.address)}
                           </Text>
-                          <Text style={styles.statLabel}>
+                          <Text style={styles.compactInfoHint}>
                             {selectedBranchDistance !== null
                               ? `A ${formatDistance(selectedBranchDistance)} km de ti`
-                              : 'Abrir ubicación'}
+                              : 'Ver ubicación y ruta'}
                           </Text>
                         </View>
                         <Ionicons
                           name="open-outline"
-                          size={18}
+                          size={DETAIL_ACTION_ICON_SIZE}
                           color={detailUi.textSecondary}
                           style={styles.statTrailingIcon}
                         />
                       </Pressable>
                     ) : null}
-                    <View style={styles.dualStatsRow}>
-                      <View style={[styles.statCard, styles.compactStatCard, styles.compactStatCardWide]}>
-                        <View style={styles.statIconWrap}>
-                          <Ionicons name="wallet-outline" size={18} color={detailUi.text} />
+                    <View>
+                      <Pressable
+                        accessibilityRole="button"
+                        accessibilityLabel="Calcular presupuesto del plan"
+                        disabled={resolvedContextSpot.businessStatus === 'temporarily_closed' || (resolvedContextSpot.minBudget <= 0 && resolvedContextSpot.maxBudget <= 0)}
+                        onPress={() => setBudgetCalculatorOpen(true)}
+                        style={({ pressed }) => [styles.compactInfoRow, pressed && styles.budgetCardPressed]}
+                      >
+                        <View style={styles.compactInfoIcon}>
+                          <Ionicons name="wallet-outline" size={DETAIL_ICON_SIZE} color={detailUi.text} />
                         </View>
                         <View style={[styles.statCopy, styles.compactStatCopy]}>
                           <Text
                             numberOfLines={1}
                             ellipsizeMode="tail"
-                            style={[styles.statValue, styles.compactStatValue]}
+                            style={styles.compactInfoValue}
                           >
-                            {getPriceLabel(resolvedContextSpot)}
+                            {getPriceLabel(resolvedContextSpot).split(' · ')[0]}
                           </Text>
                         </View>
-                      </View>
-                      <View style={[styles.statCard, styles.compactStatCard, styles.compactStatCardTight]}>
-                        <View style={styles.statIconWrap}>
-                          <Ionicons name="people-outline" size={18} color={detailUi.text} />
+                        {(resolvedContextSpot.minBudget > 0 || resolvedContextSpot.maxBudget > 0) ? <Ionicons name="calculator-outline" size={DETAIL_ACTION_ICON_SIZE} color={detailUi.textSecondary} /> : null}
+                      </Pressable>
+                      <View style={styles.compactInfoRow}>
+                        <View style={styles.compactInfoIcon}>
+                          <Ionicons name="people-outline" size={DETAIL_ICON_SIZE} color={detailUi.text} />
                         </View>
                         <View style={[styles.statCopy, styles.compactStatCopy]}>
                           <Text
                             numberOfLines={1}
                             ellipsizeMode="tail"
-                            style={[styles.statValue, styles.compactStatValue]}
+                            style={styles.compactInfoValue}
                           >
-                            {`1-${resolvedContextSpot.maxPeople} personas`}
+                            {formatPeopleLabel(resolvedContextSpot.minPeople, resolvedContextSpot.maxPeople, true)}
                           </Text>
                         </View>
                       </View>
                     </View>
                   </View>
+                  </View>
 
-                    {showMenu || hasWhatsApp || hasPhone || hasInstagram ? (
+                    {showMenu || hasWhatsApp || hasPhone || googleMapsUrl ? (
                       <View style={[styles.sectionBlock, styles.quickActionsSectionBlock]}>
-                        <Text style={styles.sectionEyebrow}>Acciones rápidas</Text>
+                        <View style={styles.branchActionsHeading}>
+                          <Text style={styles.sectionEyebrow}>En esta sede</Text>
+                        </View>
                         <View style={styles.branchActionRow}>
+                          {googleMapsUrl ? (
+                            <BranchActionButton
+                              icon="map-outline"
+                              label="Cómo llegar"
+                              onPress={() => openExternal(googleMapsUrl)}
+                            />
+                          ) : null}
                           {showMenu ? (
                             <BranchActionButton
                               icon={menuActionLabel === 'Website' ? 'globe-outline' : 'book-outline'}
-                              label={menuActionLabel}
+                              label={menuActionLabel === 'Menu' ? 'Ver carta' : 'Website'}
                               onPress={() => openExternal(resolvedContextSpot.menuUrl)}
                             />
                           ) : null}
                           {hasWhatsApp ? (
                             <BranchActionButton
-                              icon="logo-whatsapp"
+                              icon="chatbox-ellipses-outline"
                               label={
                                 normalizeSpotCategory(resolvedContextSpot.category) === 'Comida' ||
                                 resolvedContextSpot.category === 'Restaurantes'
@@ -1406,13 +1427,6 @@ export default function SpotDetailScreen() {
                               icon="call-outline"
                               label="Llamar"
                               onPress={() => openPhone(resolvedContextSpot.phone)}
-                            />
-                          ) : null}
-                          {hasInstagram ? (
-                            <BranchActionButton
-                              icon="logo-instagram"
-                              label="Instagram"
-                              onPress={() => openInstagram(resolvedContextSpot.instagram)}
                             />
                           ) : null}
                         </View>
@@ -1472,12 +1486,25 @@ export default function SpotDetailScreen() {
                   </View>
                 </>
               )}
+              {!isEvent && hasPlaceInstagram ? (
+                <View style={styles.placeSocialSection}>
+                  <Text style={styles.sectionEyebrow}>Redes del lugar</Text>
+                  <View style={styles.compactInfoGroup}>
+                    <Pressable accessibilityRole="link" accessibilityLabel={`Instagram de ${detailSpot.brandName}`} onPress={() => openInstagram(placeInstagram)} style={styles.compactInfoRow}>
+                      <View style={styles.compactInfoIcon}><Ionicons name="logo-instagram" size={DETAIL_ICON_SIZE} color={detailUi.text} /></View>
+                      <Text style={[styles.compactInfoValue, styles.placeSocialText]}>{getInstagramLabel(placeInstagram)}</Text>
+                      <Ionicons name="open-outline" size={DETAIL_ACTION_ICON_SIZE} color={detailUi.textSecondary} />
+                    </Pressable>
+                  </View>
+                </View>
+              ) : null}
               <View style={[styles.sectionBlock, styles.similarSectionBlock]}>
                 <Text style={styles.sectionEyebrow}>Lugares similares</Text>
                 {similarSpots.length ? (
                   <ScrollView
                     horizontal
                     showsHorizontalScrollIndicator={false}
+                    style={styles.similarRail}
                     contentContainerStyle={styles.similarScrollContent}
                   >
                     {similarSpots.map((item) => (
@@ -1493,8 +1520,9 @@ export default function SpotDetailScreen() {
               </View>
             </View>
           </View>
-        </ScrollView>
+        </View>
       </Animated.View>
+      </ScrollView>
 
       {!isEvent ? (
         <Modal
@@ -1527,35 +1555,34 @@ export default function SpotDetailScreen() {
               >
                 {otherBranches.map((branch) => {
                   const active = branch.id === selectedBranch?.id
-                  const branchStatus = getOpenStatus(branch.hours)
+                  const branchStatus = getOpenStatus(branch)
                   const openTone = branchStatus?.tone
                   return (
                     <Pressable
                       key={branch.id}
+                      accessibilityRole="radio"
+                      accessibilityLabel={`${getBranchSelectorTitle(branch, otherBranches)}${branchStatus?.label ? `, ${branchStatus.label}` : ''}`}
+                      accessibilityState={{ checked: active }}
+                      aria-checked={active}
                       onPress={() => {
                         setSelectedBranchId(branch.id)
                         setBranchPickerOpen(false)
                       }}
-                      style={styles.selectorOption}
+                      style={[styles.compactBranchField, styles.sheetOptionSurface, active && styles.sheetOptionSelected]}
                     >
-                      <View style={styles.selectorOptionCopy}>
+                      <View style={styles.compactBranchCopy}>
                         <Text
-                          style={[
-                            styles.selectorOptionText,
-                            openTone === 'open'
-                              ? styles.selectorOptionTextOpen
-                              : openTone === 'closed'
-                                ? styles.selectorOptionTextClosed
-                                : null,
-                          ]}
+                          numberOfLines={1}
+                          style={[styles.compactBranchTitle, !active && styles.sheetOptionIdleTitle]}
                         >
                           {getBranchSelectorTitle(branch, otherBranches)}
                         </Text>
+                      </View>
                         {branchStatus?.label ? (
-                          <View style={styles.selectorOptionStatusRow}>
+                          <View style={styles.compactBranchStatus}>
                             <View
                               style={[
-                                styles.branchSelectorDot,
+                                styles.compactBranchDot,
                                 openTone === 'open'
                                   ? styles.branchSelectorDotOpen
                                   : openTone === 'closed'
@@ -1564,21 +1591,12 @@ export default function SpotDetailScreen() {
                               ]}
                             />
                             <Text
-                              style={[
-                                styles.selectorOptionMeta,
-                                openTone === 'open'
-                                  ? styles.selectorOptionMetaOpen
-                                  : openTone === 'closed'
-                                    ? styles.selectorOptionMetaClosed
-                                    : null,
-                              ]}
+                              style={styles.compactBranchMeta}
                             >
                               {branchStatus.label}
                             </Text>
                           </View>
                         ) : null}
-                      </View>
-                      <SelectorRadio active={active} tone={openTone} />
                     </Pressable>
                   )
                 })}
@@ -1587,6 +1605,10 @@ export default function SpotDetailScreen() {
           </View>
         </Modal>
       ) : null}
+
+      {!isEvent && resolvedContextSpot && (resolvedContextSpot.minBudget > 0 || resolvedContextSpot.maxBudget > 0)
+        ? <PlanBudgetCalculator spot={resolvedContextSpot} visible={budgetCalculatorOpen && resolvedContextSpot.businessStatus !== 'temporarily_closed'} onClose={() => setBudgetCalculatorOpen(false)} />
+        : null}
 
     </Entrance>
   )
@@ -1602,8 +1624,8 @@ function BranchActionButton({
   onPress: () => void
 }) {
   return (
-    <Pressable onPress={onPress} style={styles.branchActionButton}>
-      <Ionicons name={icon} size={16} color={detailUi.text} />
+    <Pressable accessibilityRole="button" onPress={onPress} style={styles.branchActionButton}>
+      <View style={styles.branchActionGlyph}><Ionicons name={icon} size={DETAIL_ICON_SIZE} color={detailUi.text} /></View>
       <Text style={styles.branchActionText}>{label}</Text>
     </Pressable>
   )
@@ -1693,12 +1715,14 @@ function getPrimaryAction({
   hasMenu,
   hasInstagram,
   spot,
+  onMap,
 }: {
   hasWhatsApp: boolean
   hasPhone: boolean
   hasMenu: boolean
   hasInstagram: boolean
   spot: Spot
+  onMap: () => void
 }) {
   const isEvent = spot.type === 'event'
 
@@ -1725,14 +1749,14 @@ function getPrimaryAction({
 
   if (hasMenu) {
     return {
-      label: getMenuActionLabel(spot.category) === 'Menu' ? 'Ver menu' : 'Ver website',
+      label: getMenuActionLabel(spot.category, spot.menuUrl) === 'Menu' ? 'Ver menu' : 'Ver website',
       onPress: () => openExternal(spot.menuUrl),
     }
   }
 
   return {
     label: 'Como llegar',
-    onPress: () => openInMaps(spot.address),
+    onPress: onMap,
   }
 }
 
@@ -1791,6 +1815,16 @@ async function openExternal(url: string) {
   await Linking.openURL(url)
 }
 
+function getGoogleMapsUrl(spot: Spot) {
+  if (spot.googleMapsUrl && /^https:\/\//.test(spot.googleMapsUrl)) return spot.googleMapsUrl
+  const hasCoordinates = Number.isFinite(spot.latitude) && Number.isFinite(spot.longitude)
+  if (!hasCoordinates && !hasValueText(spot.address)) return null
+  const query = hasCoordinates
+    ? `${spot.latitude},${spot.longitude}`
+    : [spot.brandName || spot.name, spot.address, spot.city].filter(Boolean).join(', ')
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`
+}
+
 async function openInstagram(handleOrUrl: string) {
   const url = handleOrUrl.startsWith('http')
     ? handleOrUrl
@@ -1798,20 +1832,35 @@ async function openInstagram(handleOrUrl: string) {
   await openExternal(url)
 }
 
+function getInstagramLabel(value: string) {
+  if (/^https?:\/\//i.test(value)) {
+    try {
+      const url = new URL(value)
+      const handle = url.pathname.split('/').filter(Boolean)[0]
+      return /(^|\.)instagram\.com$/i.test(url.hostname) && handle ? `@${handle}` : 'Instagram'
+    } catch {
+      return 'Instagram'
+    }
+  }
+  const handle = value.trim().replace(/^@/, '').split(/[/?#]/)[0]
+  return handle ? `@${handle}` : 'Instagram'
+}
+
 async function openWhatsApp(phone: string) {
-  const digits = phone.replace(/\D/g, '')
-  await openExternal(`https://wa.me/${digits}`)
+  const value = String(phone ?? '').trim()
+  if (/^https?:\/\//i.test(value)) {
+    await openExternal(value)
+    return
+  }
+  const digits = value.replace(/\D/g, '')
+  if (!digits) return
+  const normalizedDigits = digits.length === 10 && digits.startsWith('3') ? `57${digits}` : digits
+  await openExternal(`https://wa.me/${normalizedDigits}`)
 }
 
 async function openPhone(phone: string) {
   const digits = phone.replace(/[^\d+]/g, '')
   await openExternal(`tel:${digits}`)
-}
-
-async function openInMaps(address: string) {
-  await openExternal(
-    `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`,
-  )
 }
 
 function hasValueLink(value: string | null | undefined) {
@@ -1836,6 +1885,31 @@ function hasValueText(value: string | null | undefined) {
 
 
 const styles = StyleSheet.create({
+  heroIdentity: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  heroIdentityTitle: { flexShrink: 1, minWidth: 0, maxWidth: '100%' },
+  heroLogoBadge: { width: 44, height: 44, borderRadius: 22, borderWidth: 2, borderColor: '#fff', backgroundColor: '#fff', overflow: 'hidden' },
+  heroLogo: { width: '100%', height: '100%' },
+  compactBranchField: { minHeight: 48, borderRadius: 14, backgroundColor: detailUi.surface, paddingHorizontal: 12, paddingVertical: 10, flexDirection: 'row', alignItems: 'center', gap: 9 },
+  compactBranchCopy: { flex: 1, minWidth: 0 },
+  compactBranchTitle: { fontSize: 14, fontWeight: '600', color: detailUi.text },
+  compactBranchStatus: { flexDirection: 'row', alignItems: 'center', gap: 5 },
+  compactBranchDot: { width: 5, height: 5, borderRadius: 3 },
+  compactBranchMeta: { fontSize: 12, lineHeight: 18, color: detailUi.textSecondary },
+  sheetOptionSurface: { borderWidth: 1, borderColor: 'transparent' },
+  sheetOptionSelected: { backgroundColor: '#e8e8ee', borderColor: '#b8b8c2' },
+  sheetOptionIdleTitle: { fontWeight: '500' },
+  branchActionsHeading: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10 },
+  branchActionGlyph: { width: 46, height: 46, borderRadius: 23, backgroundColor: detailUi.surface, alignItems: 'center', justifyContent: 'center' },
+  placeSocialSection: { marginTop: 6, paddingTop: 16, borderTopWidth: 1, borderTopColor: '#e7e7eb', gap: 12 },
+  placeSocialText: { flex: 1 },
+  compactInfoGroup: { backgroundColor: detailUi.surface, borderRadius: 18, overflow: 'hidden', paddingHorizontal: 14, paddingVertical: 4 },
+  compactInfoRow: { flexDirection: 'row', alignItems: 'center', minHeight: 52, gap: 12, paddingVertical: 12 },
+  compactInfoIcon: { width: 19, alignItems: 'center', justifyContent: 'center' },
+  compactInfoValue: { fontSize: 14, lineHeight: 21, color: detailUi.text, fontWeight: '400' },
+  compactInfoHint: { fontSize: 12, lineHeight: 18, color: detailUi.textTertiary },
+  compactAddress: { fontSize: 14, lineHeight: 20, color: detailUi.text },
+  compactTodayLabel: { fontSize: 12, lineHeight: 18, color: detailUi.textTertiary },
+  compactScheduleCard: { paddingVertical: 12, minHeight: 52 },
   emptyScreen: {
     flex: 1,
     backgroundColor: detailUi.bg,
@@ -1866,13 +1940,6 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 44,
     borderBottomRightRadius: 44,
   },
-  heroBaseWrap: {
-    ...StyleSheet.absoluteFillObject,
-  },
-  heroBaseImage: {
-    width: '100%',
-    height: '100%',
-  },
   heroGalleryWrap: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: '#0f0a10',
@@ -1892,6 +1959,7 @@ const styles = StyleSheet.create({
   },
   heroChrome: {
     ...StyleSheet.absoluteFillObject,
+    zIndex: 20,
     justifyContent: 'space-between',
     paddingHorizontal: 18,
     paddingTop: 0,
@@ -1902,32 +1970,27 @@ const styles = StyleSheet.create({
   },
   heroOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(12,9,13,0.2)',
-  },
-  heroBottomShadow: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    bottom: 0,
-    height: 0,
-    backgroundColor: 'transparent',
+    backgroundColor: 'rgba(0,0,0,0.2)',
   },
   topActions: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    zIndex: 20,
   },
   topActionRow: {
     flexDirection: 'row',
     gap: 10,
+    zIndex: 21,
   },
   heroCopy: {
     gap: 8,
   },
   heroBadges: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
     alignItems: 'center',
+    gap: 8,
     marginBottom: 0,
   },
   heroChip: {
@@ -2035,10 +2098,8 @@ const styles = StyleSheet.create({
   galleryDotShape: { width: 8, height: 8, alignItems: 'center', justifyContent: 'center' },
   galleryDotCore: { position: 'absolute', width: 8, height: 8, backgroundColor: '#ffffff' },
   sheet: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    bottom: 0,
+    position: 'relative',
+    width: '100%',
     borderTopLeftRadius: 0,
     borderTopRightRadius: 0,
     backgroundColor: detailUi.bg,
@@ -2069,10 +2130,17 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
   },
   sheetTopInset: {
-    height: 74,
+    height: 58,
   },
+  placeSheetTopInset: { height: 40 },
   sheetScroll: {
     flex: 1,
+  },
+  pageScroll: {
+    flex: 1,
+  },
+  pageScrollContent: {
+    flexGrow: 1,
   },
   sheetContent: {
     flexGrow: 1,
@@ -2148,6 +2216,7 @@ const styles = StyleSheet.create({
   compactStatCardWide: {
     flex: 1,
   },
+  budgetCardPressed: { opacity: 0.72 },
   compactStatCardTight: {
     flexShrink: 0,
     minWidth: 160,
@@ -2260,38 +2329,31 @@ const styles = StyleSheet.create({
     color: '#8b8b94',
   },
   scheduleExpandedList: {
-    gap: 8,
-    paddingTop: 2,
+    gap: 0,
+    paddingTop: 12,
+    paddingLeft: 31,
   },
   scheduleExpandedWrap: {
     overflow: 'hidden',
   },
   scheduleDayRow: {
-    borderRadius: 14,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    backgroundColor: '#f6f6f8',
+    paddingVertical: 4,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     gap: 12,
   },
   scheduleDayRowToday: {
-    backgroundColor: '#dfe0e6',
-  },
-  scheduleDayRowOpen: {
-    backgroundColor: '#E2F2E6',
-  },
-  scheduleDayRowClosed: {
-    backgroundColor: '#FAFAFB',
+    borderWidth: 0,
   },
   scheduleDayTextClosed: {
     color: '#9B9BA3',
     fontWeight: '400',
   },
   scheduleDayName: {
-    fontSize: 14,
-    fontWeight: '600',
+    fontSize: 13,
+    lineHeight: 20,
+    fontWeight: '400',
     color: '#8b8b94',
   },
   scheduleDayNameToday: {
@@ -2305,8 +2367,8 @@ const styles = StyleSheet.create({
   },
   scheduleDayValue: {
     textAlign: 'right',
-    fontSize: 14,
-    lineHeight: 18,
+    fontSize: 13,
+    lineHeight: 20,
     fontWeight: '500',
     color: '#8b8b94',
   },
@@ -2328,16 +2390,19 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   scheduleSectionBlock: {
-    marginTop: 32,
+    marginTop: 0,
   },
   quickInfoSectionBlock: {
     marginTop: 12,
   },
   quickActionsSectionBlock: {
-    marginTop: 32,
+    marginTop: 24,
   },
   similarSectionBlock: {
     marginTop: 0,
+  },
+  similarRail: {
+    marginRight: -20,
   },
   sectionDivider: {
     height: 1,
@@ -2346,8 +2411,8 @@ const styles = StyleSheet.create({
     marginBottom: 0,
   },
   sectionEyebrow: {
-    fontSize: 11,
-    lineHeight: 16,
+    fontSize: 12,
+    lineHeight: 18,
     fontWeight: '600',
     letterSpacing: 0.3,
     color: detailUi.textTertiary,
@@ -2362,6 +2427,12 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 22,
     color: detailUi.text,
+  },
+  placeDescription: {
+    fontSize: 16,
+    lineHeight: 24,
+    color: detailUi.textSecondary,
+    marginBottom: 8,
   },
   distanceCard: {
     minHeight: 48,
@@ -2634,7 +2705,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 28,
     borderTopRightRadius: 28,
     backgroundColor: detailUi.bg,
-    paddingTop: 12,
+    paddingTop: 24,
     paddingHorizontal: 18,
     paddingBottom: 26,
     maxHeight: '70%',
@@ -2645,12 +2716,15 @@ const styles = StyleSheet.create({
     elevation: 6,
   },
   selectorHeader: {
-    paddingBottom: 8,
+    paddingBottom: 4,
   },
   selectorTitle: {
-    fontSize: 18,
-    fontWeight: '500',
-    color: detailUi.text,
+    fontSize: 11,
+    lineHeight: 16,
+    fontWeight: '600',
+    letterSpacing: 0.3,
+    textTransform: 'uppercase',
+    color: detailUi.textTertiary,
   },
   selectorList: {
     gap: 10,
@@ -2756,21 +2830,21 @@ const styles = StyleSheet.create({
   },
   branchActionRow: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 10,
-  },
-  branchActionButton: {
-    minHeight: 36,
-    paddingHorizontal: 12,
-    borderRadius: 999,
-    backgroundColor: detailUi.surfaceMuted,
-    flexDirection: 'row',
-    alignItems: 'center',
     gap: 6,
   },
+  branchActionButton: {
+    minHeight: 74,
+    flex: 1,
+    minWidth: 0,
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: 8,
+  },
   branchActionText: {
-    fontSize: 13,
+    fontSize: 11,
+    lineHeight: 16,
     fontWeight: '500',
+    textAlign: 'center',
     color: detailUi.text,
   },
   branchCard: {
@@ -2887,7 +2961,7 @@ const styles = StyleSheet.create({
   },
   similarScrollContent: {
     gap: 14,
-    paddingRight: 4,
+    paddingRight: 20,
   },
   bottomBar: {
     position: 'absolute',

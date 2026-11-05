@@ -1,0 +1,80 @@
+{
+  "status": "written",
+  "catalog": "/Users/mateo/Documents/Playground/apps/mobile/public/spots-catalog.json",
+  "catalogSha256": "80bb35b699bd67c1f30a2d7c05c673b072739c9f6c85eb225c5cc422fdd4aeba",
+  "changes": [
+    {
+      "entity": "spot",
+      "id": 3650,
+      "slug": "don-samuel",
+      "mode": "update",
+      "changed": true,
+      "fields": [
+        "short_description",
+        "gallery_urls",
+        "catalog_status",
+        "missing_fields"
+      ]
+    },
+    {
+      "entity": "branch",
+      "id": 5136,
+      "slug": "don-samuel-cali",
+      "mode": "update",
+      "changed": true,
+      "fields": [
+        "neighborhood",
+        "mall",
+        "address",
+        "latitude",
+        "longitude",
+        "google_maps_url",
+        "google_place_id",
+        "business_status",
+        "is_active",
+        "whatsapp",
+        "phone",
+        "website_url",
+        "instagram",
+        "menu_url",
+        "menu_items",
+        "menu_items_verified_at",
+        "budget_scenarios",
+        "min_budget",
+        "max_budget",
+        "typical_budget",
+        "budget_basis",
+        "menu_calculation_note",
+        "hours",
+        "holiday_mode",
+        "holiday_open_time",
+        "holiday_close_time",
+        "holiday_split_open_time",
+        "holiday_split_close_time",
+        "max_people",
+        "min_people",
+        "catalog_status",
+        "supplemental_info"
+      ]
+    },
+    {
+      "entity": "branchHours",
+      "id": 5136,
+      "changed": true,
+      "count": 0
+    },
+    {
+      "entity": "hours",
+      "id": 5136,
+      "changed": true,
+      "count": 0
+    }
+  ],
+  "timingMs": {
+    "read": 19.450917000000004,
+    "validation": 86.438041,
+    "write": 109.418791,
+    "verification": 84.032959,
+    "total": 299.345
+  }
+}

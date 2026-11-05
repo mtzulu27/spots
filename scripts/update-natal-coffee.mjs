@@ -13,18 +13,11 @@ const NOW = new Date().toISOString();
 const SPOT_SLUG = 'natal-coffee';
 const MENU_URL = 'https://app.menupp.co/menu/natal';
 const IMAGE_PATHS = [
-  '/Users/mateo/Downloads/(3) Instagram/imgi_17_641779036_18575581561005744_1456310488464252616_n.jpg',
-  '/Users/mateo/Downloads/(3) Instagram/imgi_20_640395017_18574409206005744_250762442180340883_n.jpg',
-  '/Users/mateo/Downloads/(3) Instagram/imgi_29_627642366_18567061702005744_8849317294775200308_n.jpg',
-  '/Users/mateo/Downloads/(3) Instagram/imgi_37_624068718_18562599553005744_3971522703257333950_n.jpg',
-  '/Users/mateo/Downloads/(2) Instagram/imgi_8_622432064_18562079401005744_1808716012113595065_n.jpg',
-  '/Users/mateo/Downloads/(2) Instagram/imgi_13_616019367_18559847401005744_5412219760802861710_n.jpg',
-  '/Users/mateo/Downloads/(2) Instagram/imgi_17_610876268_18557742646005744_5832375541638681957_n.jpg',
-  '/Users/mateo/Downloads/(2) Instagram/imgi_22_605078485_18555347272005744_3007407891099577327_n.jpg',
-  '/Users/mateo/Downloads/(2) Instagram/imgi_27_590408814_18553767256005744_305142138789040601_n.jpg',
-  '/Users/mateo/Downloads/(2) Instagram/imgi_32_591165392_18552469414005744_9151607377550921003_n.jpg',
-  '/Users/mateo/Downloads/(2) Instagram/imgi_35_581491806_18544810390005744_9010550330920194175_n.jpg',
-  '/Users/mateo/Downloads/(2) Instagram/imgi_46_568274884_18541088074005744_1932311906128280546_n.jpg',
+  '/Users/mateo/Documents/Playground/apps/mobile/public/place-media/natal-coffee/instagram-1.jpg',
+  '/Users/mateo/Documents/Playground/apps/mobile/public/place-media/natal-coffee/instagram-2.jpg',
+  '/Users/mateo/Documents/Playground/apps/mobile/public/place-media/natal-coffee/instagram-3.jpg',
+  '/Users/mateo/Documents/Playground/apps/mobile/public/place-media/natal-coffee/instagram-recovered-20260904-0.jpg',
+  '/Users/mateo/Documents/Playground/apps/mobile/public/place-media/natal-coffee/instagram-recovered-20260904-1.jpg',
 ];
 
 function readJson(path) {

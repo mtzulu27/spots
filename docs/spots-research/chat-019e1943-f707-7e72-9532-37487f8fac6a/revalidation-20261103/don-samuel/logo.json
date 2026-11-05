@@ -1,0 +1,13 @@
+{
+  "username": "donsamuelbakery",
+  "source": "https://www.instagram.com/donsamuelbakery/",
+  "extension": "jpg",
+  "sha256": "c3004d835211f0e19c0a702053b99139b32a40d50c7de7eaaa25f8864f698043",
+  "bytes": 1884,
+  "status": "pending",
+  "requestCount": 1,
+  "preparationMs": 321.148208,
+  "visualVerdict": "cleanup",
+  "finishedAt": "2026-11-03T15:24:28.176Z",
+  "finishMs": 4.4123750000000115
+}

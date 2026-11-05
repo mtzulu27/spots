@@ -1,0 +1,535 @@
+{
+  "version": 1,
+  "place": "don-samuel",
+  "status": "blocked",
+  "scope": "full",
+  "branchInventory": [
+    {
+      "id": "5136",
+      "evidence": [
+        "review.md"
+      ]
+    }
+  ],
+  "linkQueue": [
+    {
+      "url": "https://menupp.co/donsamuelhealthy",
+      "status": "reviewed",
+      "reason": "Bio link processed using public specialized adapter.",
+      "evidence": [
+        "docs/catalog-review/benchmarks/donsamuelhealthy-menupp-links-2026-11-03T15-20-58-056Z.json",
+        "menu-review.json"
+      ]
+    },
+    {
+      "url": "https://menupp.co/donsamuelhealthy/venue/4f3dd37c-dbf8-4f37-82ac-10d663165af8/menu/ya4BlHfDDweylA3e8CTO",
+      "status": "reviewed",
+      "reason": "Returned 26 products and 41 presentations read; current visit applicability pending.",
+      "evidence": [
+        "docs/catalog-review/benchmarks/donsamuelhealthy-menupp-links-2026-11-03T15-20-58-056Z.json",
+        "menu-review.json"
+      ]
+    },
+    {
+      "url": "https://menupp.co/donsamuelhealthy/locations",
+      "status": "reviewed",
+      "reason": "Location collection read; one stored location, current inventory not fully reconciled.",
+      "evidence": [
+        "docs/catalog-review/benchmarks/donsamuelhealthy-menupp-links-2026-11-03T15-20-58-056Z.json",
+        "menu-review.json"
+      ]
+    },
+    {
+      "url": "https://menupp.co/donsamuelhealthy/survey",
+      "status": "omitted",
+      "reason": "Feedback form irrelevant; no form submitted.",
+      "evidence": [
+        "docs/catalog-review/benchmarks/donsamuelhealthy-menupp-links-2026-11-03T15-20-58-056Z.json",
+        "menu-review.json"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "kind": "profile_http",
+      "status": "reviewed",
+      "evidence": [
+        "docs/catalog-review/benchmarks/donsamuelbakery-profile-http-2026-11-03T15-20-36-621Z.json"
+      ],
+      "note": "Identity, bio, official link read; public highlights inventory unavailable."
+    },
+    {
+      "kind": "official_links",
+      "status": "reviewed",
+      "evidence": [
+        "docs/catalog-review/benchmarks/donsamuelhealthy-menupp-links-2026-11-03T15-20-58-056Z.json",
+        "menu-review.json"
+      ],
+      "note": "One stored location, 26 products and 41 presentations read; schedule inactive, physical-visit applicability pending."
+    },
+    {
+      "kind": "instagram_session",
+      "status": "blocked",
+      "evidence": [
+        "instagram-review.json"
+      ],
+      "note": "DevTools logged out; authorized IAB backup worked. Remaining stories/posts and closure scope pending."
+    },
+    {
+      "kind": "google_places",
+      "status": "reviewed",
+      "evidence": [
+        "google-places.json",
+        "google-places-address-rescue.json",
+        "rescue-review.json"
+      ],
+      "note": "Two searches inspected; all candidates rejected as different entities, no exact bakery point."
+    },
+    {
+      "kind": "web_search",
+      "status": "reviewed",
+      "evidence": [
+        "rescue-review.json"
+      ],
+      "note": "Directed search returned unrelated results; no absence claimed."
+    },
+    {
+      "kind": "media_review",
+      "status": "blocked",
+      "evidence": [
+        "media-review.json",
+        "logo.json"
+      ],
+      "note": "Candidate logo and existing assets read; candidate cleaned, existing logo preserved. Third image and app crops pending."
+    }
+  ],
+  "entities": [
+    {
+      "kind": "place",
+      "id": "3650",
+      "fields": {
+        "identity": {
+          "status": "verified",
+          "reason": "Public and visible profile match the existing handle and IDs 3650/5136 inspected locally.",
+          "evidence": [
+            "docs/catalog-review/benchmarks/donsamuelbakery-profile-http-2026-11-03T15-20-36-621Z.json",
+            "instagram-review.json",
+            "review.md"
+          ],
+          "checks": [
+            {
+              "source": "profile_http",
+              "outcome": "source_and_local_inspected",
+              "evidence": [
+                "docs/catalog-review/benchmarks/donsamuelbakery-profile-http-2026-11-03T15-20-36-621Z.json",
+                "instagram-review.json",
+                "review.md"
+              ],
+              "reason": "Public and visible profile match the existing handle and IDs 3650/5136 inspected locally."
+            }
+          ]
+        },
+        "description": {
+          "status": "blocked",
+          "reason": "Updated copy describes verified products/orders and no unverified onsite invitation; mobile/detail QA for absent point not completed.",
+          "evidence": [
+            "instagram-review.json",
+            "review.md",
+            "consolidated.json",
+            "local-verification.json"
+          ],
+          "checks": [
+            {
+              "source": "instagram_session",
+              "outcome": "partial_evidence",
+              "evidence": [
+                "instagram-review.json",
+                "review.md"
+              ],
+              "reason": "Current local copy invites visiting Lago Verde; latest post speaks of the physical point in the past. Reconcile state first."
+            }
+          ]
+        },
+        "category": {
+          "status": "verified",
+          "reason": "Existing Comida category matches official bakery menu; preserved.",
+          "evidence": [
+            "review.md",
+            "docs/catalog-review/benchmarks/donsamuelbakery-profile-http-2026-11-03T15-20-36-621Z.json",
+            "menu-review.json"
+          ],
+          "checks": [
+            {
+              "source": "official_links",
+              "outcome": "source_and_local_inspected",
+              "evidence": [
+                "review.md",
+                "docs/catalog-review/benchmarks/donsamuelbakery-profile-http-2026-11-03T15-20-36-621Z.json",
+                "menu-review.json"
+              ],
+              "reason": "Existing Comida category matches official bakery menu; preserved."
+            }
+          ]
+        },
+        "instagram": {
+          "status": "verified",
+          "reason": "Public and visible profile match the existing handle and IDs 3650/5136 inspected locally.",
+          "evidence": [
+            "docs/catalog-review/benchmarks/donsamuelbakery-profile-http-2026-11-03T15-20-36-621Z.json",
+            "instagram-review.json",
+            "review.md"
+          ],
+          "checks": [
+            {
+              "source": "profile_http",
+              "outcome": "source_and_local_inspected",
+              "evidence": [
+                "docs/catalog-review/benchmarks/donsamuelbakery-profile-http-2026-11-03T15-20-36-621Z.json",
+                "instagram-review.json",
+                "review.md"
+              ],
+              "reason": "Public and visible profile match the existing handle and IDs 3650/5136 inspected locally."
+            }
+          ]
+        },
+        "logo": {
+          "status": "verified",
+          "reason": "Helper candidate visually confirmed as brand. Existing stable 1080px logo decoded and matches branding; preserved. Candidate cleaned, no new assignment claimed.",
+          "evidence": [
+            "media-review.json",
+            "logo.json",
+            "docs/catalog-review/benchmarks/donsamuelbakery-profile-http-2026-11-03T15-20-36-621Z.json"
+          ],
+          "checks": [
+            {
+              "source": "media_review",
+              "outcome": "source_and_local_inspected",
+              "evidence": [
+                "media-review.json",
+                "logo.json",
+                "docs/catalog-review/benchmarks/donsamuelbakery-profile-http-2026-11-03T15-20-36-621Z.json"
+              ],
+              "reason": "Helper candidate visually confirmed as brand. Existing stable 1080px logo decoded and matches branding; preserved. Candidate cleaned, no new assignment claimed."
+            }
+          ]
+        },
+        "cover": {
+          "status": "blocked",
+          "reason": "Two existing real photographs decoded and reviewed as historical assets. Third-photo rescue, current place applicability and actual app crops pending.",
+          "evidence": [
+            "media-review.json"
+          ],
+          "checks": [
+            {
+              "source": "media_review",
+              "outcome": "partial_evidence",
+              "evidence": [
+                "media-review.json"
+              ],
+              "reason": "Two existing real photographs decoded and reviewed as historical assets. Third-photo rescue, current place applicability and actual app crops pending."
+            }
+          ]
+        },
+        "gallery": {
+          "status": "blocked",
+          "reason": "Three real distinct photos now reviewed, persisted and hashed; no unverified active-card crop claimed.",
+          "evidence": [
+            "media-review.json",
+            "local-verification.json",
+            "app-review.json"
+          ],
+          "checks": [
+            {
+              "source": "media_review",
+              "outcome": "partial_evidence",
+              "evidence": [
+                "media-review.json"
+              ],
+              "reason": "Two existing real photographs decoded and reviewed as historical assets. Third-photo rescue, current place applicability and actual app crops pending."
+            }
+          ]
+        },
+        "branches_inventory": {
+          "status": "blocked",
+          "reason": "One known historical branch matches catalog and Menupp; current physical operation or relocation still requires reconciliation.",
+          "evidence": [
+            "menu-review.json",
+            "instagram-review.json",
+            "review.md"
+          ],
+          "checks": [
+            {
+              "source": "official_links",
+              "outcome": "partial_evidence",
+              "evidence": [
+                "menu-review.json",
+                "instagram-review.json",
+                "review.md"
+              ],
+              "reason": "One known historical branch matches catalog and Menupp; current physical operation or relocation still requires reconciliation."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "kind": "branch",
+      "id": "5136",
+      "fields": {
+        "address": {
+          "status": "blocked",
+          "reason": "Historical mall and Pance corroborated by Menupp; current physical service/address unresolved.",
+          "evidence": [
+            "review.md",
+            "menu-review.json"
+          ],
+          "checks": [
+            {
+              "source": "official_links",
+              "outcome": "partial_evidence",
+              "evidence": [
+                "review.md",
+                "menu-review.json"
+              ],
+              "reason": "Historical mall and Pance corroborated by Menupp; current physical service/address unresolved."
+            }
+          ]
+        },
+        "coordinates": {
+          "status": "blocked",
+          "reason": "Exact bakery pin remains unresolved. Removed mall centroid from current branch; null coordinates verified locally. No alternate business candidate selected.",
+          "evidence": [
+            "review.md",
+            "google-places.json",
+            "google-places-address-rescue.json",
+            "local-verification.json"
+          ],
+          "checks": [
+            {
+              "source": "google_places",
+              "outcome": "partial_evidence",
+              "evidence": [
+                "review.md",
+                "google-places.json",
+                "google-places-address-rescue.json"
+              ],
+              "reason": "No exact matching bakery in two Places searches; Menupp coordinate equals mall pin, not verified storefront."
+            }
+          ]
+        },
+        "map_link": {
+          "status": "blocked",
+          "reason": "No exact business match selected; no mall link substituted.",
+          "evidence": [
+            "review.md",
+            "google-places.json",
+            "google-places-address-rescue.json"
+          ],
+          "checks": [
+            {
+              "source": "google_places",
+              "outcome": "partial_evidence",
+              "evidence": [
+                "review.md",
+                "google-places.json",
+                "google-places-address-rescue.json"
+              ],
+              "reason": "No exact business match selected; no mall link substituted."
+            }
+          ]
+        },
+        "business_status": {
+          "status": "blocked",
+          "reason": "Official notice refers to former physical point; current closure duration unconfirmed. Unknown subtype persisted without declaring temporary/permanent closure. Historical is_active=false retained for affirmative point-of-sale cessation evidence, not missing fiche richness.",
+          "evidence": [
+            "review.md",
+            "instagram-review.json",
+            "consolidated.json",
+            "local-verification.json"
+          ],
+          "checks": [
+            {
+              "source": "instagram_session",
+              "outcome": "partial_evidence",
+              "evidence": [
+                "review.md",
+                "instagram-review.json"
+              ],
+              "reason": "13 Oct official post refers to where point used to be and delivery; temporary/permanent duration not explicit."
+            }
+          ]
+        },
+        "weekly_hours": {
+          "status": "blocked",
+          "reason": "Inactive Menupp schedule not certified as current; hours and auxiliary rows5136 cleared. Current physical hours still unverified.",
+          "evidence": [
+            "review.md",
+            "menu-review.json",
+            "local-verification.json"
+          ],
+          "checks": [
+            {
+              "source": "official_links",
+              "outcome": "partial_evidence",
+              "evidence": [
+                "review.md",
+                "menu-review.json"
+              ],
+              "reason": "Official openSchedule.active=false; stored intervals not certified current."
+            }
+          ]
+        },
+        "holiday_hours": {
+          "status": "blocked",
+          "reason": "No current explicit holiday schedule verified.",
+          "evidence": [
+            "review.md",
+            "menu-review.json"
+          ],
+          "checks": [
+            {
+              "source": "official_links",
+              "outcome": "partial_evidence",
+              "evidence": [
+                "review.md",
+                "menu-review.json"
+              ],
+              "reason": "No current explicit holiday schedule verified."
+            }
+          ]
+        },
+        "contact": {
+          "status": "verified",
+          "reason": "Official Menupp WhatsApp persisted to existing branch; phone/web unreported, not invented. No contact message sent.",
+          "evidence": [
+            "menu-review.json",
+            "local-verification.json"
+          ],
+          "checks": [
+            {
+              "source": "official_links",
+              "outcome": "wa_phone_read",
+              "reason": "Matched official profile/menu identity.",
+              "evidence": [
+                "menu-review.json"
+              ]
+            },
+            {
+              "source": "catalog_local",
+              "outcome": "persisted",
+              "reason": "Current branch WhatsApp checked after integration.",
+              "evidence": [
+                "local-verification.json"
+              ]
+            }
+          ]
+        },
+        "menu": {
+          "status": "verified",
+          "reason": "Brand menu 26 products/41 presentations read and integrated with source IDs and prices; not certified as current onsite offering and excluded from visit calculation.",
+          "evidence": [
+            "menu-review.json",
+            "consolidated.json",
+            "local-verification.json"
+          ],
+          "checks": [
+            {
+              "source": "official_links",
+              "outcome": "menu_associations_reviewed",
+              "reason": "Category/product/presentation/base price inspected.",
+              "evidence": [
+                "menu-review.json"
+              ]
+            },
+            {
+              "source": "catalog_local",
+              "outcome": "41_rows_persisted",
+              "reason": "Actual menu rows checked after write.",
+              "evidence": [
+                "local-verification.json"
+              ]
+            }
+          ]
+        },
+        "budget_scenarios": {
+          "status": "blocked",
+          "reason": "No current verified onsite visit. Empty scenarios, zero numeric estimates and Presupuesto por confirmar persisted; no false free visit (motor returns null).",
+          "evidence": [
+            "review.md",
+            "menu-review.json",
+            "local-verification.json"
+          ],
+          "checks": [
+            {
+              "source": "official_links",
+              "outcome": "partial_evidence",
+              "evidence": [
+                "review.md",
+                "menu-review.json"
+              ],
+              "reason": "Current onsite operation not established; no inherited range or new visit scenario certified."
+            }
+          ]
+        },
+        "access": {
+          "status": "blocked",
+          "reason": "Reservation/visiting conditions pending reconciliation of physical point.",
+          "evidence": [
+            "review.md",
+            "instagram-review.json"
+          ],
+          "checks": [
+            {
+              "source": "instagram_session",
+              "outcome": "partial_evidence",
+              "evidence": [
+                "review.md",
+                "instagram-review.json"
+              ],
+              "reason": "Reservation/visiting conditions pending reconciliation of physical point."
+            }
+          ]
+        },
+        "visibility": {
+          "status": "blocked",
+          "reason": "Actual adapter and desktop UI omit the inactive point from search/grid/map and direct branch link. Mobile QA not completed before centralization.",
+          "evidence": [
+            "review.md",
+            "local-verification.json",
+            "app-review.json"
+          ],
+          "checks": [
+            {
+              "source": "catalog_local",
+              "outcome": "partial_evidence",
+              "evidence": [
+                "review.md"
+              ],
+              "reason": "Source adapter excludes inactive sole branch 5136. Actual served mobile/desktop card, detail and map not yet checked."
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "remainingActions": [
+    "Centralized owner Main must reconcile current physical point/closure duration and complete directed source rescue without repeating successful profile/Menupp acquisitions.",
+    "Finish remaining applicable source/media coverage; do not label inaccessible or unreviewed data exhausted.",
+    "Complete responsive mobile QA and intended hidden-surface/asset verification; desktop query and direct branch route already checked.",
+    "Run final validator; current blocked manifest is not a valid completion gate. No new acquisition or catalog writing in Main4 per centralization."
+  ],
+  "integration": {
+    "status": "passed",
+    "evidence": [
+      "integration.json",
+      "local-verification.json"
+    ]
+  },
+  "verification": {
+    "status": "pending",
+    "evidence": [
+      "local-verification.json",
+      "app-review.json"
+    ]
+  }
+}

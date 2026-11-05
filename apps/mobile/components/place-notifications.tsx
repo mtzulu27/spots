@@ -4,10 +4,11 @@ import { useEffect } from 'react';
 import { getCategoryLabel } from '@/lib/category-icons';
 import { useUserPreferences } from '@/lib/user-preferences';
 import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { SpotsIcon as Ionicons } from '@/components/spots-icon';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { topContentInset } from '@/lib/layout-insets';
 import { AppIconButton } from './app-ui';
-import { PlacePhoto } from './place-photo';
+import { FeedPlacePhoto } from './place-photo';
 import { CategoryIcon } from './category-icon';
 import { formatApproxBudgetPerPersonLabel } from '@/lib/explore-filters';
 import { accountUi as ui } from '@/lib/account-ui';
@@ -50,7 +51,7 @@ export function PlaceNotifications({ visible, spots, notifications, onClose, onP
     .sort((a, b) => Date.parse(b.occurredAt) - Date.parse(a.occurredAt));
 
   return <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
-    <View style={[s.overlay, { paddingTop: insets.top + 24, paddingBottom: Math.max(insets.bottom, 16) }]}>
+    <View style={[s.overlay, { paddingTop: topContentInset(insets) + 24, paddingBottom: Math.max(insets.bottom, 16) }]}> 
       <Pressable style={StyleSheet.absoluteFill} onPress={onClose} accessibilityRole="button" accessibilityLabel="Cerrar notificaciones" />
       <View style={s.panel} accessibilityViewIsModal>
         <View style={s.header}>
@@ -63,11 +64,11 @@ export function PlaceNotifications({ visible, spots, notifications, onClose, onP
             const { spot } = event;
             const badge = notificationStyles[event.type];
             return <Pressable key={event.id} accessibilityRole="button" accessibilityLabel={`${badge.label}: ${spot.name}. Ver lugar`} onPress={() => { updates.markRead([event.id]); onPlace(spot); }} style={s.item}>
-            <PlacePhoto uri={spot.image} style={s.photo} imageStyle={{ borderRadius: 12 }}>
+            <FeedPlacePhoto spot={spot} style={s.photo} imageStyle={{ borderRadius: 12 }}>
               <View style={s.categoryBadge} accessible accessibilityLabel={`Categoría: ${getCategoryLabel(spot.category)}`}>
                 <CategoryIcon category={spot.category} size={14} color={ui.text} />
               </View>
-            </PlacePhoto>
+            </FeedPlacePhoto>
             <View style={s.copy}>
               <View style={s.eventRow}>
                 <View style={[s.badge, { backgroundColor: badge.background }]}>
@@ -83,7 +84,7 @@ export function PlaceNotifications({ visible, spots, notifications, onClose, onP
                 </View>
                 <View style={s.metadataItem}>
                   <Ionicons name="wallet-outline" size={14} color={ui.textSecondary} />
-                  <Text numberOfLines={1} ellipsizeMode="tail" style={s.meta}>{formatApproxBudgetPerPersonLabel(spot.minBudget, spot.maxBudget).replace(' COP', '')}</Text>
+                  <Text numberOfLines={1} ellipsizeMode="tail" style={s.meta}>{formatApproxBudgetPerPersonLabel(spot.minBudget, spot.maxBudget, spot.typicalBudget, spot.budgetPilot, spot.budgetBasis, false).replace(' COP', '')}</Text>
                 </View>
               </View>
             </View>

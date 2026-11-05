@@ -1,4 +1,4 @@
-import { Ionicons } from '@expo/vector-icons';
+import { SpotsIcon as Ionicons } from '@/components/spots-icon';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { accountUi as ui } from '@/lib/account-ui';
 

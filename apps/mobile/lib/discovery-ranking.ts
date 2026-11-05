@@ -1,6 +1,6 @@
 import type { Spot } from './mock-spots';
 import type { UserLocation } from './location-store';
-import { getEffectiveSpotDistanceKm } from './explore-filters';
+import { createExploreSearch, getEffectiveSpotDistanceKm, sortSpots, type ExploreSort } from './explore-filters';
 import { getOpenStatusFromSchedule } from './schedule-status';
 
 export function getSuggestedZones(spots: Spot[], location: UserLocation | null) {
@@ -25,8 +25,8 @@ export function getSuggestedZones(spots: Spot[], location: UserLocation | null) 
 }
 
 function availabilityFor(spot: Spot, now: Date) {
-  const status = getOpenStatusFromSchedule(spot.hours, now);
-  const soon = status?.tone === 'closed' && [30, 60].some(minutes => getOpenStatusFromSchedule(spot.hours, new Date(now.getTime() + minutes * 60000))?.tone === 'open');
+  const status = getOpenStatusFromSchedule(spot.hours, now, spot.businessStatus);
+  const soon = status?.tone === 'closed' && [30, 60].some(minutes => getOpenStatusFromSchedule(spot.hours, new Date(now.getTime() + minutes * 60000), spot.businessStatus)?.tone === 'open');
   return { availability: status?.tone === 'open' ? 0 : soon ? 1 : status ? 3 : 2, label: soon ? 'Abre en la próxima hora' : status?.label ?? 'Horario por confirmar' };
 }
 
@@ -37,29 +37,38 @@ export function getDiscoveryStatus(place: Spot, instant: Date) {
     .sort((a, b) => a.availability - b.availability)[0];
 }
 
-export function rankSearchResults(spots: Spot[], query: string, instant: Date) {
+const recentPlaceWindowMs = 40 * 60 * 1000;
+const futurePublishToleranceMs = 15 * 60 * 1000;
+
+export function isRecentlyAdded(place: Spot, instant: Date) {
+  if (place.type !== 'place') return false;
+  const createdAt = Date.parse(place.createdAt || '');
+  if (!Number.isFinite(createdAt)) return false;
+
+  const age = instant.getTime() - createdAt;
+  // Allow a small clock skew between the catalog publisher and the device.
+  return age >= -futurePublishToleranceMs && age <= recentPlaceWindowMs;
+}
+
+export function rankSearchResults(spots: Spot[], query: string, instant: Date, sortBy?: ExploreSort, getLikesCount?: (id: string | number) => number) {
+  // An explicit order must win over availability and search relevance.
+  if (sortBy && sortBy !== 'relevance') return sortSpots(spots, sortBy, getLikesCount);
   const now = new Date(instant.toLocaleString('en-US', { timeZone: 'America/Bogota' }));
   const scheduleCache = new Map<string, number>();
   const availability = (place: Spot) => Math.min(...(place.branches?.length ? place.branches : [place]).map(branch => {
-    let rank = scheduleCache.get(branch.hours);
+    const key = `${branch.businessStatus ?? ''}:${branch.hours}`;
+    let rank = scheduleCache.get(key);
     if (rank === undefined) {
       rank = availabilityFor(branch, now).availability;
-      scheduleCache.set(branch.hours, rank);
+      scheduleCache.set(key, rank);
     }
     return rank;
   }));
-  const normalize = (value: string) => value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
-  const search = normalize(query);
-  const terms = search.split(' ').filter(Boolean);
+  const matchSearch = createExploreSearch(query);
   return spots.map((spot, index) => {
-    const name = normalize(spot.brandName || spot.name);
-    const details = normalize([spot.category, spot.neighborhood, ...spot.tags, ...(spot.branches ?? []).map(branch => branch.neighborhood)].join(' '));
-    const description = normalize(spot.description || '');
-    const relevance = !search ? 0 :
-      (name === search ? 1000 : name.startsWith(search) ? 500 : name.includes(search) ? 250 : 0)
-      + terms.reduce((score, term) => score + (name.includes(term) ? 40 : 0) + (details.includes(term) ? 15 : 0) + (description.includes(term) ? 2 : 0), 0);
+    const relevance = matchSearch(spot).score;
     return { spot, index, relevance, availability: availability(spot) };
-  }).sort((a, b) => a.availability - b.availability || b.relevance - a.relevance || a.index - b.index)
+  }).sort((a, b) => b.relevance - a.relevance || a.availability - b.availability || a.index - b.index)
     .map(entry => entry.spot);
 }
 
@@ -67,12 +76,19 @@ export function rankDiscovery(spots: Spot[], location: UserLocation | null, zone
   const now = new Date(instant.toLocaleString('en-US', { timeZone: 'America/Bogota' }));
   const scheduleCache = new Map<string, ReturnType<typeof availabilityFor>>();
   const statusFor = (spot: Spot) => {
-    let status = scheduleCache.get(spot.hours);
-    if (!status) { status = availabilityFor(spot, now); scheduleCache.set(spot.hours, status); }
+    const key = `${spot.businessStatus ?? ''}:${spot.hours}`;
+    let status = scheduleCache.get(key);
+    if (!status) { status = availabilityFor(spot, now); scheduleCache.set(key, status); }
     return status;
   };
   const availability = new Map(spots.map(place => [place.id, Math.min(...(place.branches?.length ? place.branches : [place]).map(branch => statusFor(branch).availability))]));
-  const featured = [...spots].sort((a, b) => availability.get(a.id)! - availability.get(b.id)! || (a.feedPriorityRank || Infinity) - (b.feedPriorityRank || Infinity) || (Date.parse(b.createdAt || '') || 0) - (Date.parse(a.createdAt || '') || 0)).slice(0, 10);
+  const featured = [...spots].sort((a, b) =>
+    Number(availability.get(a.id) === 3) - Number(availability.get(b.id) === 3)
+    || Number(isRecentlyAdded(b, instant)) - Number(isRecentlyAdded(a, instant))
+    || availability.get(a.id)! - availability.get(b.id)!
+    || (Date.parse(b.createdAt || '') || 0) - (Date.parse(a.createdAt || '') || 0)
+    || (a.feedPriorityRank || Infinity) - (b.feedPriorityRank || Infinity)
+  ).slice(0, 10);
   const featuredIds = new Set(featured.map(spot => spot.likeTargetId));
   const today = spots.flatMap(place => {
     const candidates = (place.branches?.length ? place.branches : [place]).filter(branch => !zone || branch.neighborhood === zone).map(spot => {

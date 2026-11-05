@@ -25,6 +25,9 @@ export async function submitPlaceSuggestion({
   if (!normalizedPlaces.length) {
     throw new Error('Agrega al menos un lugar para enviar la sugerencia.');
   }
+  if (normalizedPlaces.length > 10 || normalizedPlaces.some(place => place.length > 500)) {
+    throw new Error('Envía hasta 10 lugares, con máximo 500 caracteres por lugar.');
+  }
 
   if (!backendEnabled || !supabase) {
     throw new Error('El backend no está disponible en este momento.');
@@ -32,8 +35,8 @@ export async function submitPlaceSuggestion({
 
   const { error } = await supabase.from('place_suggestions').insert({
     submitted_by_user_id: userId ?? null,
-    submitted_by_name: fullName?.trim() || null,
-    submitted_by_email: email?.trim() || null,
+    submitted_by_name: fullName?.trim() || '',
+    submitted_by_email: email?.trim() || '',
     source: 'explore',
     status: 'pending',
     suggested_places: normalizedPlaces,

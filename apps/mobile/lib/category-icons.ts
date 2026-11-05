@@ -1,4 +1,4 @@
-import type { Ionicons } from '@expo/vector-icons';
+import type { SpotsIcon as Ionicons } from '@/components/spots-icon';
 
 const categoryLabels: Record<string, string> = {
   Restaurantes: 'Comida',

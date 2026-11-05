@@ -1,4 +1,6 @@
 import type { Spot } from '@/lib/mock-spots';
+import { createSpotSearch, isExactSpotSearchName } from '@/lib/spot-search';
+import { findRegisteredCommercialCenter, registeredCommercialCenters } from '@/lib/commercial-centers';
 import {
   hasScheduleAvailabilityForDay,
   isScheduleOpenNow,
@@ -70,6 +72,7 @@ const queryIntentMacrozones: Record<string, string[]> = {
   Oeste: ['Oeste', 'El Peñón', 'Arboleda', 'Miraflores', 'Tejares-Cristales'],
 };
 const queryIntentMalls = [
+  ...registeredCommercialCenters.map(center => center.name),
   'Lago Verde',
   'Marbella Plaza',
   'Alto Pance',
@@ -136,7 +139,7 @@ const structuredInterestGroups = [
   {
     primary: 'Tomar algo',
     aliases: ['Tomar algo', 'Bares y noche'],
-    subcategories: ['Cerveza', 'Cocktails', 'Vino', 'Café', 'Tardear', 'Cerveza artesanal', 'Rooftop', 'Pub', 'Terraza', 'Speakeasy', 'After office'],
+    subcategories: ['Cerveza', 'Cocktails', 'Vino', 'Cerveza artesanal', 'Pub', 'Speakeasy', 'After office'],
   },
   {
     primary: 'Vida nocturna',
@@ -299,13 +302,22 @@ export function formatBudget(value: number) {
   return new Intl.NumberFormat('es-CO').format(value);
 }
 
-export function formatApproxBudgetPerPersonLabel(minBudget: number, maxBudget: number) {
-  if (minBudget <= 0 && maxBudget <= 0) {
-    return 'Por definir';
-  }
+function getDisplayedBudget(minBudget: number, maxBudget: number, typicalBudget?: number) {
+  if (typeof typicalBudget === 'number' && Number.isFinite(typicalBudget) && typicalBudget > 0) return Math.round(typicalBudget);
+  if (Number.isFinite(minBudget) && minBudget > 0) return minBudget;
+  if (Number.isFinite(maxBudget) && maxBudget > 0) return maxBudget;
+  return 0;
+}
 
-  const baseBudget = minBudget > 0 ? minBudget : maxBudget;
-  return `~$${formatBudget(baseBudget)} COP / pers.`;
+export function formatApproxBudgetPerPersonLabel(minBudget: number, maxBudget: number, typicalBudget?: number, budgetPilot = false, budgetBasis?: string, includePilotName = true) {
+  if (/\bgratis\b|acceso gratuito|sin costo/i.test(budgetBasis ?? '')) return 'Gratis';
+  if (budgetPilot) {
+    if ((typicalBudget ?? minBudget) <= 0) return 'Presupuesto por confirmar';
+    const label = `~$${formatBudget(typicalBudget ?? minBudget)} COP / pers.`;
+    return includePilotName ? `${label} · Parche tranqui` : label;
+  }
+  const budget = getDisplayedBudget(minBudget, maxBudget, typicalBudget);
+  return budget > 0 ? `~$${formatBudget(budget)} COP / pers.` : 'Por definir';
 }
 
 export function isFiltersActive(filters: ExploreFilters) {
@@ -324,70 +336,109 @@ export function isFiltersActive(filters: ExploreFilters) {
   );
 }
 
+// Presentation only: never replace the stored primary category or pricing mode.
+export function getContextualSpotCategory(spot: Spot, selected: string[] = [], query = ''): string {
+  if (spot.type === 'event') return spot.category;
+  const queryInterests = parseQueryIntent(query).filters.interests;
+  const normalizedQuery = ` ${normalizeSearchText(query)} `;
+  const requested = new Set([...selected, ...queryInterests].map(normalizeSearchText));
+  const catalogSignals = getSpotCatalogSignals(spot);
+  const interestSignals = getSpotInterestSignals(spot);
+  const candidates = structuredInterestGroups.filter(group => {
+    const names = [...group.aliases, ...group.subcategories];
+    const relevant = names.filter(name => requested.has(normalizeSearchText(name)) ||
+      normalizedQuery.includes(` ${normalizeSearchText(name)} `));
+    return relevant.length > 0 && relevant.some(name =>
+      matchesStructuredInterestFilters([name], catalogSignals, interestSignals));
+  });
+  const primary = candidates.find(group => group.aliases.some(alias =>
+    normalizeSearchText(alias) === normalizeSearchText(spot.category)));
+  // A mixed/ambiguous query keeps the primary rather than choosing by array order.
+  return primary?.primary ?? (candidates.length === 1 ? candidates[0].primary : spot.category);
+}
+
 export function matchesSpotToFilters(
   spot: Spot,
   filters: ExploreFilters,
   query: string,
   userLocation?: UserLocation | null,
 ) {
-  const { residualQuery, filters: queryIntentFilters } = parseQueryIntent(query);
-  const mergedFilters = mergeFiltersWithQueryIntent(filters, queryIntentFilters);
-  const normalizedQuery = normalizeSearchText(residualQuery);
-  const matchesQuery = matchesSemanticQuery(
-    spot,
-    normalizedQuery,
-    queryIntentFilters.requiredTerms,
-  );
-  const spotCatalogSignals = getSpotCatalogSignals(spot);
-  const spotInterestSignals = getSpotInterestSignals(spot);
-  const matchesInterests = matchesStructuredInterestFilters(
-    mergedFilters.interests,
-    spotCatalogSignals,
-    spotInterestSignals,
-  );
-  const matchesPeople = mergedFilters.people === 0 || spot.maxPeople >= mergedFilters.people;
-  const matchesHubName = matchesSpotLocationFilters(spot, mergedFilters.hubName);
-  const activeDayFilters = mergedFilters.days.length > 0 ? mergedFilters.days : ['Any'];
-  const matchesDays =
-    mergedFilters.days.length === 0 ||
-    mergedFilters.days.includes('Any') ||
-    mergedFilters.days.some((day) => doesSpotMatchDayFilter(spot, day));
-  const matchesTime =
-    ((!mergedFilters.time || !mergedFilters.period) && !queryIntentFilters.dayPart) ||
-    activeDayFilters.some((day) =>
-      queryIntentFilters.dayPart
-        ? doesSpotMatchDayPart(spot, day, queryIntentFilters.dayPart)
-        : doesSpotMatchTimeSelection(spot, day, mergedFilters.time, mergedFilters.period),
-    );
-  if (mergedFilters.distance !== DEFAULT_FILTERS.distance && !userLocation) {
-    return false;
-  }
-  const effectiveDistance = getEffectiveSpotDistanceKm(spot, userLocation);
-  const matchesDistance =
-    mergedFilters.distance === DEFAULT_FILTERS.distance
-      ? true
-      : mergedFilters.distance < 0
-        ? effectiveDistance !== null && effectiveDistance > Math.abs(mergedFilters.distance)
-        : effectiveDistance !== null && effectiveDistance <= mergedFilters.distance;
-  const spotMinBudget = Number.isFinite(spot.minBudget) ? spot.minBudget : 0;
-  const spotMaxBudget = Number.isFinite(spot.maxBudget) ? spot.maxBudget : spotMinBudget;
-  const matchesBudget =
-    spotMaxBudget >= mergedFilters.minBudget && spotMinBudget <= mergedFilters.maxBudget;
-  const matchesOpenNow = !mergedFilters.openNowOnly || isSpotOpenNow(spot);
-  const matchesManualAdjusted = !mergedFilters.hideManuallyAdjusted || !spot.manuallyAdjusted;
+  return createSpotFilter(filters, query, userLocation)(spot);
+}
 
-  return (
-    matchesQuery &&
-    matchesInterests &&
-    matchesHubName &&
-    matchesPeople &&
-    matchesDays &&
-    matchesTime &&
-    matchesDistance &&
-    matchesBudget &&
-    matchesOpenNow &&
-    matchesManualAdjusted
-  );
+export function createExploreSearch(query: string) {
+  const { residualQuery } = parseQueryIntent(query, true);
+  const matchSearch = createSpotSearch(residualQuery);
+  return (spot: Spot) => isExactSpotSearchName(spot, query)
+    ? { matches: true, score: 1000, fields: ['name'] as const }
+    : matchSearch(spot);
+}
+
+// Parse the query once for the entire catalog, not once per place.
+export function createSpotFilter(
+  filters: ExploreFilters,
+  query: string,
+  userLocation?: UserLocation | null,
+) {
+  const { residualQuery, filters: queryIntentFilters } = parseQueryIntent(query, true);
+  const inferredFilters = mergeFiltersWithQueryIntent(filters, queryIntentFilters);
+  const matchSearch = createSpotSearch(residualQuery);
+  const matchesBranch = (spot: Spot) => {
+    const exactName = isExactSpotSearchName(spot, query);
+    const mergedFilters = exactName ? filters : inferredFilters;
+    if (!exactName && !matchSearch(spot).matches) return false;
+    const spotCatalogSignals = getSpotCatalogSignals(spot);
+    const spotInterestSignals = getSpotInterestSignals(spot);
+    const matchesInterests = matchesStructuredInterestFilters(
+      mergedFilters.interests,
+      spotCatalogSignals,
+      spotInterestSignals,
+    );
+    const matchesPeople = mergedFilters.people === 0 || spot.maxPeople >= mergedFilters.people;
+    const matchesHubName = matchesSpotLocationFilters(spot, mergedFilters.hubName);
+    const activeDayFilters = mergedFilters.days.length > 0 ? mergedFilters.days : ['Any'];
+    const matchesDays =
+      mergedFilters.days.length === 0 ||
+      mergedFilters.days.includes('Any') ||
+      mergedFilters.days.some((day) => doesSpotMatchDayFilter(spot, day));
+    const matchesTime =
+      ((!mergedFilters.time || !mergedFilters.period) && (exactName || !queryIntentFilters.dayPart)) ||
+      activeDayFilters.some((day) =>
+        !exactName && queryIntentFilters.dayPart
+          ? doesSpotMatchDayPart(spot, day, queryIntentFilters.dayPart)
+          : doesSpotMatchTimeSelection(spot, day, mergedFilters.time, mergedFilters.period),
+      );
+    if (mergedFilters.distance !== DEFAULT_FILTERS.distance && !userLocation) {
+      return false;
+    }
+    const effectiveDistance = getEffectiveSpotDistanceKm(spot, userLocation);
+    const matchesDistance =
+      mergedFilters.distance === DEFAULT_FILTERS.distance
+        ? true
+        : mergedFilters.distance < 0
+          ? effectiveDistance !== null && effectiveDistance > Math.abs(mergedFilters.distance)
+          : effectiveDistance !== null && effectiveDistance <= mergedFilters.distance;
+    const spotMinBudget = Number.isFinite(spot.minBudget) ? spot.minBudget : 0;
+    const spotMaxBudget = Number.isFinite(spot.maxBudget) ? spot.maxBudget : spotMinBudget;
+    const matchesBudget =
+      spotMaxBudget >= mergedFilters.minBudget && spotMinBudget <= mergedFilters.maxBudget;
+    const matchesOpenNow = !mergedFilters.openNowOnly || isSpotOpenNow(spot);
+    const matchesManualAdjusted = !mergedFilters.hideManuallyAdjusted || !spot.manuallyAdjusted;
+
+    return (
+      matchesInterests &&
+      matchesHubName &&
+      matchesPeople &&
+      matchesDays &&
+      matchesTime &&
+      matchesDistance &&
+      matchesBudget &&
+      matchesOpenNow &&
+      matchesManualAdjusted
+    );
+  };
+  // Search facts and explicit constraints must describe the same actual sede.
+  return (spot: Spot) => (spot.branches?.length ? spot.branches : [spot]).some(matchesBranch);
 }
 
 function matchesStructuredInterestFilters(
@@ -426,9 +477,9 @@ function matchesStructuredInterestFilters(
     if (primarySelected) {
       const primaryMatches =
         group.aliases.some((alias) => spotCatalogSignals.has(normalizeSearchText(alias))) ||
-        group.aliases
-          .flatMap((alias) => getInterestMatchTerms(alias))
-          .some((term) => spotInterestSignals.has(term));
+        group.subcategories.some((subcategory) =>
+          spotCatalogSignals.has(normalizeSearchText(subcategory)),
+        );
 
       if (!primaryMatches) {
         return false;
@@ -479,7 +530,7 @@ function mergeFiltersWithQueryIntent(
   };
 }
 
-function parseQueryIntent(query: string) {
+function parseQueryIntent(query: string, structuredSearch = false) {
   const normalizedQuery = normalizeSearchText(query);
   if (!normalizedQuery) {
     return {
@@ -581,109 +632,113 @@ function parseQueryIntent(query: string) {
     semanticHints.add('manana');
   }
 
-  if (applyPattern(/\bfamiliar(?:es)?\b|\bfamilia(?:r)?\b|\bniñ(?:o|os|a|as)\b/g)) {
-    interests.add('Familiar');
-    semanticHints.add('familiar');
-    semanticHints.add('familia');
-  }
+  // Legacy category inference is retained for presentation only. Search uses
+  // catalog-backed concepts instead of inventing every activity in a category.
+  if (!structuredSearch) {
+    if (applyPattern(/\bfamiliar(?:es)?\b|\bfamilia(?:r)?\b|\bniñ(?:o|os|a|as)\b/g)) {
+      interests.add('Familiar');
+      semanticHints.add('familiar');
+      semanticHints.add('familia');
+    }
 
-  if (
-    applyPattern(
-      /\bcomer\b|\bcomida\b|\balmorz(?:ar|o)\b|\bcen(?:ar|a)\b|\bdesayun(?:ar|o)\b|\bbrunch\b|\brestaurante?s?\b/g,
-    )
-  ) {
-    interests.add('Comida');
-    semanticHints.add('comer');
-    semanticHints.add('comida');
-    semanticHints.add('restaurante');
-  }
+    if (
+      applyPattern(
+        /\bcomer\b|\bcomida\b|\balmorz(?:ar|o)\b|\bcen(?:ar|a)\b|\bdesayun(?:ar|o)\b|\bbrunch\b|\brestaurante?s?\b/g,
+      )
+    ) {
+      interests.add('Comida');
+      semanticHints.add('comer');
+      semanticHints.add('comida');
+      semanticHints.add('restaurante');
+    }
 
-  if (
-    applyPattern(
-      /\btomar\b|\btrago\b|\btragos\b|\bcerveza\b|\bcervezas\b|\bpola\b|\bpolas\b|\bcoctel(?:es)?\b|\bcocktail(?:s)?\b|\bbar(?:es)?\b|\brumba\b|\bbailar\b|\bvino\b/g,
-    )
-  ) {
-    interests.add('Tomar algo');
-    interests.add('Bares y noche');
-    semanticHints.add('tomar algo');
-    semanticHints.add('bar');
-    semanticHints.add('cocteles');
-    semanticHints.add('cerveza');
-    semanticHints.add('vino');
-  }
+    if (
+      applyPattern(
+        /\btomar\b|\btrago\b|\btragos\b|\bcerveza\b|\bcervezas\b|\bpola\b|\bpolas\b|\bcoctel(?:es)?\b|\bcocktail(?:s)?\b|\bbar(?:es)?\b|\brumba\b|\bbailar\b|\bvino\b/g,
+      )
+    ) {
+      interests.add('Tomar algo');
+      interests.add('Bares y noche');
+      semanticHints.add('tomar algo');
+      semanticHints.add('bar');
+      semanticHints.add('cocteles');
+      semanticHints.add('cerveza');
+      semanticHints.add('vino');
+    }
 
-  if (
-    applyPattern(
-      /\bfamiliar(?:es)?\b|\bfamilia(?:r)?\b|\bniñ(?:o|os|a|as)\b|\bbeb[eé]s?\b/g,
-    )
-  ) {
-    interests.add('Familiar');
-    semanticHints.add('familiar');
-    semanticHints.add('familia');
-    semanticHints.add('ninos');
-  }
+    if (
+      applyPattern(
+        /\bfamiliar(?:es)?\b|\bfamilia(?:r)?\b|\bniñ(?:o|os|a|as)\b|\bbeb[eé]s?\b/g,
+      )
+    ) {
+      interests.add('Familiar');
+      semanticHints.add('familiar');
+      semanticHints.add('familia');
+      semanticHints.add('ninos');
+    }
 
-  if (
-    applyPattern(
-      /\bver animales\b|\bver animalitos\b|\banimales\b|\banimalitos\b|\bzoologic(?:o|os)\b|\bzool[oó]gic(?:o|os)\b|\bfauna\b/g,
-    )
-  ) {
-    semanticHints.add('animales');
-    semanticHints.add('zoologico');
-    semanticHints.add('fauna');
-  }
+    if (
+      applyPattern(
+        /\bver animales\b|\bver animalitos\b|\banimales\b|\banimalitos\b|\bzoologic(?:o|os)\b|\bzool[oó]gic(?:o|os)\b|\bfauna\b/g,
+      )
+    ) {
+      semanticHints.add('animales');
+      semanticHints.add('zoologico');
+      semanticHints.add('fauna');
+    }
 
-  if (
-    applyPattern(
-      /\bhiking\b|\bsenderismo\b|\btrekking\b|\bcaminar\b|\bmirador(?:es)?\b|\bplantas\b|\bjardin(?:es)?\b|\bjard[ií]n(?:es)?\b|\bbotanico\b|\bbot[aá]nico\b|\bnaturaleza\b|\baire libre\b|\bparque\b/g,
-    )
-  ) {
-    interests.add('Al aire libre');
-    interests.add('Naturaleza y aire libre');
-    semanticHints.add('naturaleza');
-    semanticHints.add('aire libre');
-    semanticHints.add('caminar');
-  }
+    if (
+      applyPattern(
+        /\bhiking\b|\bsenderismo\b|\btrekking\b|\bcaminar\b|\bmirador(?:es)?\b|\bplantas\b|\bjardin(?:es)?\b|\bjard[ií]n(?:es)?\b|\bbotanico\b|\bbot[aá]nico\b|\bnaturaleza\b|\baire libre\b|\bparque\b/g,
+      )
+    ) {
+      interests.add('Al aire libre');
+      interests.add('Naturaleza y aire libre');
+      semanticHints.add('naturaleza');
+      semanticHints.add('aire libre');
+      semanticHints.add('caminar');
+    }
 
-  if (applyPattern(/\bmascotas?\b|\bperros?\b|\bgatos?\b|\bpet friendly\b/g)) {
-    interests.add('Pet friendly');
-    semanticHints.add('pet friendly');
-    semanticHints.add('mascotas');
-  }
+    if (applyPattern(/\bmascotas?\b|\bperros?\b|\bgatos?\b|\bpet friendly\b/g)) {
+      interests.add('Pet friendly');
+      semanticHints.add('pet friendly');
+      semanticHints.add('mascotas');
+    }
 
-  if (
-    applyPattern(
-      /\bdar bala\b|\bpaintball\b|\bairsoft\b|\bgotcha\b|\bdisparar\b|\btirotear\b/g,
-    )
-  ) {
-    interests.add('Bienestar');
-    interests.add('Deporte y bienestar');
-    semanticHints.add('paintball');
-    semanticHints.add('airsoft');
-    semanticHints.add('aventura');
-  }
+    if (
+      applyPattern(
+        /\bdar bala\b|\bpaintball\b|\bairsoft\b|\bgotcha\b|\bdisparar\b|\btirotear\b/g,
+      )
+    ) {
+      interests.add('Bienestar');
+      interests.add('Deporte y bienestar');
+      semanticHints.add('paintball');
+      semanticHints.add('airsoft');
+      semanticHints.add('aventura');
+    }
 
-  if (
-    applyPattern(
-      /\barte\b|\bcultura\b|\bmuseo(?:s)?\b|\bteatro\b|\bgaler[ií]a(?:s)?\b|\bexposici[oó]n(?:es)?\b|\bpintar\b|\bpintura\b|\bceramica\b|\bcer[aá]mica\b|\bpottery\b/g,
-    )
-  ) {
-    interests.add('Arte y cultura');
-    semanticHints.add('arte');
-    semanticHints.add('cultura');
-    semanticHints.add('pintar');
-    semanticHints.add('ceramica');
-  }
+    if (
+      applyPattern(
+        /\barte\b|\bcultura\b|\bmuseo(?:s)?\b|\bteatro\b|\bgaler[ií]a(?:s)?\b|\bexposici[oó]n(?:es)?\b|\bpintar\b|\bpintura\b|\bceramica\b|\bcer[aá]mica\b|\bpottery\b/g,
+      )
+    ) {
+      interests.add('Arte y cultura');
+      semanticHints.add('arte');
+      semanticHints.add('cultura');
+      semanticHints.add('pintar');
+      semanticHints.add('ceramica');
+    }
 
-  if (applyPattern(/\bcine\b|\bpeli(?:s)?\b|\bpel[ií]cula(?:s)?\b/g)) {
-    interests.add('Cine');
-    semanticHints.add('cine');
-    semanticHints.add('pelicula');
-  }
+    if (applyPattern(/\bcine\b|\bpeli(?:s)?\b|\bpel[ií]cula(?:s)?\b/g)) {
+      interests.add('Cine');
+      semanticHints.add('cine');
+      semanticHints.add('pelicula');
+    }
 
-  if (applyPattern(/\bevento(?:s)?\b|\bconcierto(?:s)?\b|\bshow(?:s)?\b/g)) {
-    semanticHints.add('eventos');
-    semanticHints.add('show');
+    if (applyPattern(/\bevento(?:s)?\b|\bconcierto(?:s)?\b|\bshow(?:s)?\b/g)) {
+      semanticHints.add('eventos');
+      semanticHints.add('show');
+    }
   }
 
   const maxBudgetMatch = workingQuery.match(
@@ -715,8 +770,11 @@ function parseQueryIntent(query: string) {
   });
 
   queryIntentMalls.forEach((mall) => {
-    const normalizedMall = normalizeSearchText(mall);
-    const mallPattern = new RegExp(`\\b${escapeRegExp(normalizedMall)}\\b`, 'g');
+    const center = findRegisteredCommercialCenter(mall);
+    const labels = [mall, ...(center?.aliases ?? [])]
+      .map(normalizeSearchText)
+      .sort((left, right) => right.length - left.length);
+    const mallPattern = new RegExp(`\\b(?:${labels.map(escapeRegExp).join('|')})\\b`, 'g');
     if (mallPattern.test(workingQuery)) {
       const relatedZone = getQueryIntentMallZone(mall);
       hubName.add(`${LOCATION_MALL_PREFIX}${relatedZone}|||${mall}`);
@@ -726,8 +784,8 @@ function parseQueryIntent(query: string) {
 
   const residualTokens = workingQuery
     .split(/\s+/)
-    .filter((token) => token && !semanticStopWords.has(token));
-  const requiredTerms = Array.from(new Set([...residualTokens, ...semanticHints]));
+    .filter((token) => token && (structuredSearch || !semanticStopWords.has(token)));
+  const requiredTerms = Array.from(new Set([...residualTokens, ...(structuredSearch ? [] : semanticHints)]));
   const residualQuery = requiredTerms.join(' ');
 
   return {
@@ -748,6 +806,8 @@ function parseQueryIntent(query: string) {
 }
 
 function getQueryIntentMallZone(mall: string) {
+  const registered = findRegisteredCommercialCenter(mall);
+  if (registered) return registered.neighborhood;
   switch (mall) {
     case 'Lago Verde':
     case 'Marbella Plaza':
@@ -796,12 +856,18 @@ export function sortSpots(
   sortBy: ExploreSort,
   getLikesCount?: (spotId: string | number) => number,
 ) {
+  const compareNamesDescending = (a: Spot, b: Spot) => {
+    const aName = (a.brandName || a.name || '').trim();
+    const bName = (b.brandName || b.name || '').trim();
+    return bName.localeCompare(aName, 'es', { sensitivity: 'base' });
+  };
+
   if (sortBy === 'relevance') {
     return [...spots]
       .map((spot, index) => ({ spot, index }))
       .sort((a, b) => {
-        const rankDiff = b.spot.feedPriorityRank - a.spot.feedPriorityRank;
-        return rankDiff !== 0 ? rankDiff : a.index - b.index;
+        const nameDiff = compareNamesDescending(a.spot, b.spot);
+        return nameDiff !== 0 ? nameDiff : a.index - b.index;
       })
       .map((item) => item.spot);
   }
@@ -810,27 +876,15 @@ export function sortSpots(
     .map((spot, index) => ({ spot, index }))
     .sort((a, b) => {
       if (sortBy === 'recent') {
-        const bIsNew = b.spot.editorialBadge === 'Recién añadido' ? 1 : 0;
-        const aIsNew = a.spot.editorialBadge === 'Recién añadido' ? 1 : 0;
-        const newDiff = bIsNew - aIsNew;
-        if (newDiff !== 0) {
-          return newDiff;
-        }
-
-        const bCreatedAt = Date.parse(b.spot.createdAt ?? '') || 0;
-        const aCreatedAt = Date.parse(a.spot.createdAt ?? '') || 0;
-        const createdDiff = bCreatedAt - aCreatedAt;
-        if (createdDiff !== 0) {
-          return createdDiff;
-        }
-
-        const diff = Number(b.spot.spotId ?? 0) - Number(a.spot.spotId ?? 0);
-        return diff !== 0 ? diff : a.index - b.index;
+        // Places are being added in A-Z order, so the default feed reverses
+        // that sequence and keeps the newest additions visible at the top.
+        const nameDiff = compareNamesDescending(a.spot, b.spot);
+        return nameDiff !== 0 ? nameDiff : a.index - b.index;
       }
 
       if (sortBy === 'priceAsc') {
-        const aBudget = getBudgetLowerBound(a.spot);
-        const bBudget = getBudgetLowerBound(b.spot);
+        const aBudget = getDisplayedBudget(a.spot.minBudget, a.spot.maxBudget, a.spot.typicalBudget);
+        const bBudget = getDisplayedBudget(b.spot.minBudget, b.spot.maxBudget, b.spot.typicalBudget);
         const aUnknown = aBudget <= 0;
         const bUnknown = bBudget <= 0;
         if (aUnknown !== bUnknown) {
@@ -841,8 +895,8 @@ export function sortSpots(
       }
 
       if (sortBy === 'priceDesc') {
-        const aBudget = getBudgetLowerBound(a.spot);
-        const bBudget = getBudgetLowerBound(b.spot);
+        const aBudget = getDisplayedBudget(a.spot.minBudget, a.spot.maxBudget, a.spot.typicalBudget);
+        const bBudget = getDisplayedBudget(b.spot.minBudget, b.spot.maxBudget, b.spot.typicalBudget);
         const aUnknown = aBudget <= 0;
         const bUnknown = bBudget <= 0;
         if (aUnknown !== bUnknown) {
@@ -980,19 +1034,6 @@ const semanticSearchMap: Record<string, string[]> = {
   rooftop: ['rooftop', 'terraza', 'cocteles', 'bar', 'tomar algo'],
   terraza: ['terraza', 'rooftop', 'cocteles', 'vino'],
 };
-
-function matchesSemanticQuery(
-  spot: Spot,
-  normalizedQuery: string,
-  requiredTerms: string[] = [],
-) {
-  if (!normalizedQuery) return true;
-
-  const haystack = getSpotSearchDocument(spot);
-
-  const queryGroups = buildSemanticGroups(normalizedQuery, requiredTerms);
-  return queryGroups.every((group) => group.some((term) => haystack.includes(term)));
-}
 
 function getInterestMatchTerms(interest: string) {
   const normalizedInterest = normalizeSearchText(interest);
@@ -1354,6 +1395,7 @@ function doesSpotMatchTimeSelection(
   time: string,
   period: ExplorePeriod,
 ): boolean {
+  if (spot.businessStatus === 'temporarily_closed' || spot.businessStatus === 'permanently_closed') return false;
   const targetMinutes = parsePickerTimeToMinutes(time, period);
   if (targetMinutes === null) {
     return true;
@@ -1402,6 +1444,7 @@ function doesSpotMatchMinutesSelection(
   dayCode: string,
   targetMinutes: number,
 ): boolean {
+  if (spot.businessStatus === 'temporarily_closed' || spot.businessStatus === 'permanently_closed') return false;
   if (dayCode === 'Any') {
     return ['Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab', 'Dom'].some((code) =>
       doesSpotMatchMinutesSelection(spot, code, targetMinutes),
@@ -1427,8 +1470,11 @@ function doesSpotMatchMinutesSelection(
 
 function parseSortValue(value: RawParam): ExploreSort {
   const parsed = getSingleValue(value);
+  // Older Explore URLs persisted `relevance`; the default feed is now Z-A.
+  if (parsed === 'relevance') {
+    return DEFAULT_FILTERS.sortBy;
+  }
   if (
-    parsed === 'relevance' ||
     parsed === 'recent' ||
     parsed === 'priceAsc' ||
     parsed === 'priceDesc' ||
@@ -1451,10 +1497,12 @@ function getBudgetUpperBound(spot: Spot) {
 }
 
 export function isSpotOpenNow(spot: Spot) {
+  if (spot.businessStatus === 'temporarily_closed' || spot.businessStatus === 'permanently_closed') return false;
   return isScheduleOpenNow(spot.hours);
 }
 
 function doesSpotMatchDayFilter(spot: Spot, day: string) {
+  if (spot.businessStatus === 'temporarily_closed' || spot.businessStatus === 'permanently_closed') return false;
   return hasScheduleAvailabilityForDay(spot.hours, day);
 }
 

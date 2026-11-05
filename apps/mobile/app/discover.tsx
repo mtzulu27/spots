@@ -12,5 +12,5 @@ export default function DiscoverScreen() {
   const filters = parseFiltersFromParams(params);
   const query = typeof params.query === 'string' ? params.query : '';
   const places = aggregatePlaceSpotsFromList(spots.filter(spot => spot.type === 'place' && matchesSpotToFilters(spot, filters, query)));
-  return <ExploreDiscovery listing avatar={null} name="" query={query} onQuery={() => {}} onFilters={() => {}} onNotifications={() => {}} onCategory={() => {}} selected={filters.interests} spots={places} isSaved={isBookmarked} toggleSaved={toggleBookmark} href={spot => `/spot/${spot.id}`} onAll={() => {}} onMap={() => {}} onSuggest={() => {}} />;
+  return <ExploreDiscovery listing avatar={null} name="" query={query} onQuery={() => {}} onFilters={() => {}} onNotifications={() => {}} onCategory={() => {}} selected={filters.interests} spots={places} isSaved={isBookmarked} toggleSaved={toggleBookmark} href={spot => `/spot/${spot.id}`} onAll={() => {}} onMap={() => {}} />;
 }

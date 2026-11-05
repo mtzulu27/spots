@@ -1,0 +1,805 @@
+{
+  "schemaVersion": 1,
+  "data": {
+    "id": 3650,
+    "slug": "don-samuel",
+    "short_description": "Brownies, cheesecakes y cuchareables sin azúcar y sin gluten para compartir el antojo. La marca sigue atendiendo pedidos por WhatsApp.",
+    "gallery_urls": [
+      "/place-media/don-samuel/photo-reviewed-31063188c37641bf0bff.jpg",
+      "/place-media/don-samuel/photo-reviewed-a4dc576a8eac39af72a4.jpg",
+      "/place-media/don-samuel/photo-reviewed-10326a613f5286505824.jpg"
+    ],
+    "catalog_status": "reviewed_with_pending",
+    "missing_fields": [
+      "current_physical_operation",
+      "closure_classification",
+      "exact_storefront_coordinates",
+      "current_onsite_hours",
+      "onsite_budget"
+    ]
+  },
+  "write": {
+    "mode": "update",
+    "fields": [
+      "short_description",
+      "gallery_urls",
+      "catalog_status",
+      "missing_fields"
+    ]
+  },
+  "branches": [
+    {
+      "data": {
+        "id": 5136,
+        "slug": "don-samuel-cali",
+        "neighborhood": "Pance",
+        "mall": "Parque Comercial Lago Verde",
+        "address": "Parque Comercial Lago Verde, Pance, Cali",
+        "latitude": null,
+        "longitude": null,
+        "google_maps_url": "",
+        "google_place_id": "",
+        "business_status": "unknown",
+        "is_active": false,
+        "whatsapp": "https://wa.me/573337002181",
+        "phone": "",
+        "website_url": "",
+        "instagram": "https://www.instagram.com/donsamuelbakery/",
+        "menu_url": "https://menupp.co/donsamuelhealthy/venue/4f3dd37c-dbf8-4f37-82ac-10d663165af8/menu/ya4BlHfDDweylA3e8CTO",
+        "menu_items": [
+          {
+            "name": "Brownie",
+            "category": "desserts",
+            "presentation": "Porción",
+            "price": 19000,
+            "currency": "COP",
+            "menuSection": "Tortas",
+            "description": "Harina de almendras, cacao en polvo, alulosa, huevo, arequipe sin azúcar, ghee, aceite de oliva.",
+            "sourceUrl": "https://menupp.co/donsamuelhealthy/venue/4f3dd37c-dbf8-4f37-82ac-10d663165af8/menu/ya4BlHfDDweylA3e8CTO",
+            "sourceProductId": "1crFlxi34OYPbtGTp4Sp",
+            "verifiedAt": "2026-11-03T15:21:00.621Z",
+            "calculationIncluded": false,
+            "note": "Carta oficial de la marca; aplicabilidad a una visita a la antigua sede no verificada."
+          },
+          {
+            "name": "Brownie",
+            "category": "desserts",
+            "presentation": "Mediana",
+            "price": 85000,
+            "currency": "COP",
+            "menuSection": "Tortas",
+            "description": "Harina de almendras, cacao en polvo, alulosa, huevo, arequipe sin azúcar, ghee, aceite de oliva.",
+            "sourceUrl": "https://menupp.co/donsamuelhealthy/venue/4f3dd37c-dbf8-4f37-82ac-10d663165af8/menu/ya4BlHfDDweylA3e8CTO",
+            "sourceProductId": "1crFlxi34OYPbtGTp4Sp",
+            "verifiedAt": "2026-11-03T15:21:00.621Z",
+            "calculationIncluded": false,
+            "note": "Carta oficial de la marca; aplicabilidad a una visita a la antigua sede no verificada."
+          },
+          {
+            "name": "Cuchareable Proteico de Brownie",
+            "category": "desserts",
+            "presentation": "12 onz",
+            "price": 38000,
+            "currency": "COP",
+            "menuSection": "Cuchareables Proteicos",
+            "description": "Yogurt griego, queso crema, proteína ISO 100 de vainilla, esencia de vainilla, arequipe sin azúcar, bizcocho de almendras con cacao, arequipe sin azúcar, alulosa y monkfruit",
+            "sourceUrl": "https://menupp.co/donsamuelhealthy/venue/4f3dd37c-dbf8-4f37-82ac-10d663165af8/menu/ya4BlHfDDweylA3e8CTO",
+            "sourceProductId": "3Ihzaw9var955ap8e9U2",
+            "verifiedAt": "2026-11-03T15:21:00.621Z",
+            "calculationIncluded": false,
+            "note": "Carta oficial de la marca; aplicabilidad a una visita a la antigua sede no verificada."
+          },
+          {
+            "name": "Cuchareable Proteico de Brownie",
+            "category": "desserts",
+            "presentation": "8 onz",
+            "price": 22000,
+            "currency": "COP",
+            "menuSection": "Cuchareables Proteicos",
+            "description": "Yogurt griego, queso crema, proteína ISO 100 de vainilla, esencia de vainilla, arequipe sin azúcar, bizcocho de almendras con cacao, arequipe sin azúcar, alulosa y monkfruit",
+            "sourceUrl": "https://menupp.co/donsamuelhealthy/venue/4f3dd37c-dbf8-4f37-82ac-10d663165af8/menu/ya4BlHfDDweylA3e8CTO",
+            "sourceProductId": "3Ihzaw9var955ap8e9U2",
+            "verifiedAt": "2026-11-03T15:21:00.621Z",
+            "calculationIncluded": false,
+            "note": "Carta oficial de la marca; aplicabilidad a una visita a la antigua sede no verificada."
+          },
+          {
+            "name": "Chocolate",
+            "category": "desserts",
+            "presentation": "Porción",
+            "price": 29000,
+            "currency": "COP",
+            "menuSection": "Tortas",
+            "description": "Harina de almendras, yogurt griego, cacao en polvo, alulosa y monkfruit, huevo, ghee, esencia de vainilla y crema de almendras.",
+            "sourceUrl": "https://menupp.co/donsamuelhealthy/venue/4f3dd37c-dbf8-4f37-82ac-10d663165af8/menu/ya4BlHfDDweylA3e8CTO",
+            "sourceProductId": "5zRRA6vSkZm47rBj9NBv",
+            "verifiedAt": "2026-11-03T15:21:00.621Z",
+            "calculationIncluded": false,
+            "note": "Carta oficial de la marca; aplicabilidad a una visita a la antigua sede no verificada."
+          },
+          {
+            "name": "Chocolate",
+            "category": "desserts",
+            "presentation": "Mediana",
+            "price": 133000,
+            "currency": "COP",
+            "menuSection": "Tortas",
+            "description": "Harina de almendras, yogurt griego, cacao en polvo, alulosa y monkfruit, huevo, ghee, esencia de vainilla y crema de almendras.",
+            "sourceUrl": "https://menupp.co/donsamuelhealthy/venue/4f3dd37c-dbf8-4f37-82ac-10d663165af8/menu/ya4BlHfDDweylA3e8CTO",
+            "sourceProductId": "5zRRA6vSkZm47rBj9NBv",
+            "verifiedAt": "2026-11-03T15:21:00.621Z",
+            "calculationIncluded": false,
+            "note": "Carta oficial de la marca; aplicabilidad a una visita a la antigua sede no verificada."
+          },
+          {
+            "name": "Cheesecake Frutos Rojos",
+            "category": "desserts",
+            "presentation": "Porción",
+            "price": 24000,
+            "currency": "COP",
+            "menuSection": "Cheese Cakes (Tipo Vasco)",
+            "description": "Queso crema, crema de leche baja en grasa, huevo, esencia de vainilla, alulosa y monk fruit) Base de harina de almendras con alulosa y monk fruit. Bañado en mermelada de frutos rojos (Fresa, mora, arándanos, limón y monk fruit.",
+            "sourceUrl": "https://menupp.co/donsamuelhealthy/venue/4f3dd37c-dbf8-4f37-82ac-10d663165af8/menu/ya4BlHfDDweylA3e8CTO",
+            "sourceProductId": "9gwr9Ut7pBbWkhkN1Oi6",
+            "verifiedAt": "2026-11-03T15:21:00.621Z",
+            "calculationIncluded": false,
+            "note": "Carta oficial de la marca; aplicabilidad a una visita a la antigua sede no verificada."
+          },
+          {
+            "name": "Cheesecake Frutos Rojos",
+            "category": "desserts",
+            "presentation": "Completo",
+            "price": 153000,
+            "currency": "COP",
+            "menuSection": "Cheese Cakes (Tipo Vasco)",
+            "description": "Queso crema, crema de leche baja en grasa, huevo, esencia de vainilla, alulosa y monk fruit) Base de harina de almendras con alulosa y monk fruit. Bañado en mermelada de frutos rojos (Fresa, mora, arándanos, limón y monk fruit.",
+            "sourceUrl": "https://menupp.co/donsamuelhealthy/venue/4f3dd37c-dbf8-4f37-82ac-10d663165af8/menu/ya4BlHfDDweylA3e8CTO",
+            "sourceProductId": "9gwr9Ut7pBbWkhkN1Oi6",
+            "verifiedAt": "2026-11-03T15:21:00.621Z",
+            "calculationIncluded": false,
+            "note": "Carta oficial de la marca; aplicabilidad a una visita a la antigua sede no verificada."
+          },
+          {
+            "name": "Cuchareable proteico de Pistacho",
+            "category": "desserts",
+            "presentation": null,
+            "price": 44000,
+            "currency": "COP",
+            "menuSection": "Cuchareables Proteicos",
+            "description": "Yogurt griego, queso crema, proteína ISO 100 de vainilla, esencia de vainilla, crema de pistacho, bizcocho de almendras, pistachos triturados, alulosa y monkfruit",
+            "sourceUrl": "https://menupp.co/donsamuelhealthy/venue/4f3dd37c-dbf8-4f37-82ac-10d663165af8/menu/ya4BlHfDDweylA3e8CTO",
+            "sourceProductId": "CL4L8djdkZ5idpekDPiu",
+            "verifiedAt": "2026-11-03T15:21:00.621Z",
+            "calculationIncluded": false,
+            "note": "Carta oficial de la marca; aplicabilidad a una visita a la antigua sede no verificada."
+          },
+          {
+            "name": "Chocolate Dubai",
+            "category": "desserts",
+            "presentation": "Porción",
+            "price": 25000,
+            "currency": "COP",
+            "menuSection": "Tortas",
+            "description": "Harina de almendras, alulosa, huevo, ghee, aceite de oliva, cacao en polvo, crema de pistacho, pasta de arroz y pistacho triturado.",
+            "sourceUrl": "https://menupp.co/donsamuelhealthy/venue/4f3dd37c-dbf8-4f37-82ac-10d663165af8/menu/ya4BlHfDDweylA3e8CTO",
+            "sourceProductId": "CkHWZkRTKy0cGxPzLxan",
+            "verifiedAt": "2026-11-03T15:21:00.621Z",
+            "calculationIncluded": false,
+            "note": "Carta oficial de la marca; aplicabilidad a una visita a la antigua sede no verificada."
+          },
+          {
+            "name": "Chocolate Dubai",
+            "category": "desserts",
+            "presentation": "Mediana",
+            "price": 124000,
+            "currency": "COP",
+            "menuSection": "Tortas",
+            "description": "Harina de almendras, alulosa, huevo, ghee, aceite de oliva, cacao en polvo, crema de pistacho, pasta de arroz y pistacho triturado.",
+            "sourceUrl": "https://menupp.co/donsamuelhealthy/venue/4f3dd37c-dbf8-4f37-82ac-10d663165af8/menu/ya4BlHfDDweylA3e8CTO",
+            "sourceProductId": "CkHWZkRTKy0cGxPzLxan",
+            "verifiedAt": "2026-11-03T15:21:00.621Z",
+            "calculationIncluded": false,
+            "note": "Carta oficial de la marca; aplicabilidad a una visita a la antigua sede no verificada."
+          },
+          {
+            "name": "Americano",
+            "category": "drinks",
+            "presentation": null,
+            "price": 6000,
+            "currency": "COP",
+            "menuSection": "CALIENTES",
+            "description": "",
+            "sourceUrl": "https://menupp.co/donsamuelhealthy/venue/4f3dd37c-dbf8-4f37-82ac-10d663165af8/menu/ya4BlHfDDweylA3e8CTO",
+            "sourceProductId": "DKecvlSYwx55FL2sgw93",
+            "verifiedAt": "2026-11-03T15:21:00.621Z",
+            "calculationIncluded": false,
+            "note": "Carta oficial de la marca; aplicabilidad a una visita a la antigua sede no verificada."
+          },
+          {
+            "name": "Cuchareable proteico de Maracuyá",
+            "category": "desserts",
+            "presentation": "12 onz",
+            "price": 38000,
+            "currency": "COP",
+            "menuSection": "Cuchareables Proteicos",
+            "description": "Yogurt griego, queso crema, proteína ISO 100 de vainilla, esencia de vainilla, zumo natural de maracuya, bizcocho de almendras, crumble de almendras, alulosa y monkfruit",
+            "sourceUrl": "https://menupp.co/donsamuelhealthy/venue/4f3dd37c-dbf8-4f37-82ac-10d663165af8/menu/ya4BlHfDDweylA3e8CTO",
+            "sourceProductId": "IJjsWebDs7XhiTJ7SfQv",
+            "verifiedAt": "2026-11-03T15:21:00.621Z",
+            "calculationIncluded": false,
+            "note": "Carta oficial de la marca; aplicabilidad a una visita a la antigua sede no verificada."
+          },
+          {
+            "name": "Cuchareable proteico de Maracuyá",
+            "category": "desserts",
+            "presentation": "8 onz",
+            "price": 22000,
+            "currency": "COP",
+            "menuSection": "Cuchareables Proteicos",
+            "description": "Yogurt griego, queso crema, proteína ISO 100 de vainilla, esencia de vainilla, zumo natural de maracuya, bizcocho de almendras, crumble de almendras, alulosa y monkfruit",
+            "sourceUrl": "https://menupp.co/donsamuelhealthy/venue/4f3dd37c-dbf8-4f37-82ac-10d663165af8/menu/ya4BlHfDDweylA3e8CTO",
+            "sourceProductId": "IJjsWebDs7XhiTJ7SfQv",
+            "verifiedAt": "2026-11-03T15:21:00.621Z",
+            "calculationIncluded": false,
+            "note": "Carta oficial de la marca; aplicabilidad a una visita a la antigua sede no verificada."
+          },
+          {
+            "name": "Crocante de Arequipe",
+            "category": "desserts",
+            "presentation": "Porción",
+            "price": 19000,
+            "currency": "COP",
+            "menuSection": "Tortas",
+            "description": "Harina de almendras, alulosa y monkfruit, huevo, leche de almendras, banano triturado, arequipe sin azúcar, esencia de vainilla y almendras tostadas trituradas.",
+            "sourceUrl": "https://menupp.co/donsamuelhealthy/venue/4f3dd37c-dbf8-4f37-82ac-10d663165af8/menu/ya4BlHfDDweylA3e8CTO",
+            "sourceProductId": "Ihd0GcZr89QWwq4hVnb1",
+            "verifiedAt": "2026-11-03T15:21:00.621Z",
+            "calculationIncluded": false,
+            "note": "Carta oficial de la marca; aplicabilidad a una visita a la antigua sede no verificada."
+          },
+          {
+            "name": "Crocante de Arequipe",
+            "category": "desserts",
+            "presentation": "Mediana",
+            "price": 85000,
+            "currency": "COP",
+            "menuSection": "Tortas",
+            "description": "Harina de almendras, alulosa y monkfruit, huevo, leche de almendras, banano triturado, arequipe sin azúcar, esencia de vainilla y almendras tostadas trituradas.",
+            "sourceUrl": "https://menupp.co/donsamuelhealthy/venue/4f3dd37c-dbf8-4f37-82ac-10d663165af8/menu/ya4BlHfDDweylA3e8CTO",
+            "sourceProductId": "Ihd0GcZr89QWwq4hVnb1",
+            "verifiedAt": "2026-11-03T15:21:00.621Z",
+            "calculationIncluded": false,
+            "note": "Carta oficial de la marca; aplicabilidad a una visita a la antigua sede no verificada."
+          },
+          {
+            "name": "Coca Cola Zero",
+            "category": "drinks",
+            "presentation": null,
+            "price": 9000,
+            "currency": "COP",
+            "menuSection": "FRÍAS",
+            "description": "",
+            "sourceUrl": "https://menupp.co/donsamuelhealthy/venue/4f3dd37c-dbf8-4f37-82ac-10d663165af8/menu/ya4BlHfDDweylA3e8CTO",
+            "sourceProductId": "KJbWzN3n2tJy0CD3dSgR",
+            "verifiedAt": "2026-11-03T15:21:00.621Z",
+            "calculationIncluded": false,
+            "note": "Carta oficial de la marca; aplicabilidad a una visita a la antigua sede no verificada."
+          },
+          {
+            "name": "Cuchareable proteico de tiramisú",
+            "category": "desserts",
+            "presentation": null,
+            "price": 38000,
+            "currency": "COP",
+            "menuSection": "Cuchareables Proteicos",
+            "description": "Yogurt griego, queso crema, proteína ISO 100 de vainilla, esencia de vainilla, bizcocho de almendras bañado en espresso, cacao en polvo, alulosa y monkfruit",
+            "sourceUrl": "https://menupp.co/donsamuelhealthy/venue/4f3dd37c-dbf8-4f37-82ac-10d663165af8/menu/ya4BlHfDDweylA3e8CTO",
+            "sourceProductId": "NduymWTPIi7HLvZc3SP1",
+            "verifiedAt": "2026-11-03T15:21:00.621Z",
+            "calculationIncluded": false,
+            "note": "Carta oficial de la marca; aplicabilidad a una visita a la antigua sede no verificada."
+          },
+          {
+            "name": "Arroz con Leche",
+            "category": "desserts",
+            "presentation": null,
+            "price": 26000,
+            "currency": "COP",
+            "menuSection": "Otros",
+            "description": "Arroz arbóreo, leche de almendras, crema de almendras, agua, alulosa y monk fruit",
+            "sourceUrl": "https://menupp.co/donsamuelhealthy/venue/4f3dd37c-dbf8-4f37-82ac-10d663165af8/menu/ya4BlHfDDweylA3e8CTO",
+            "sourceProductId": "ONVjXJQ1M0DlpHVE9jVr",
+            "verifiedAt": "2026-11-03T15:21:00.621Z",
+            "calculationIncluded": false,
+            "note": "Carta oficial de la marca; aplicabilidad a una visita a la antigua sede no verificada."
+          },
+          {
+            "name": "Banano",
+            "category": "desserts",
+            "presentation": "Porción",
+            "price": 15000,
+            "currency": "COP",
+            "menuSection": "Tortas",
+            "description": "Harina de almendras, banano triturado, huevo, leche de almendras, crema de maní, esencia de vainilla, maní tostado triturado.",
+            "sourceUrl": "https://menupp.co/donsamuelhealthy/venue/4f3dd37c-dbf8-4f37-82ac-10d663165af8/menu/ya4BlHfDDweylA3e8CTO",
+            "sourceProductId": "UjG67emKV6FdNBLmeNo4",
+            "verifiedAt": "2026-11-03T15:21:00.621Z",
+            "calculationIncluded": false,
+            "note": "Carta oficial de la marca; aplicabilidad a una visita a la antigua sede no verificada."
+          },
+          {
+            "name": "Banano",
+            "category": "desserts",
+            "presentation": "Mediana",
+            "price": 62000,
+            "currency": "COP",
+            "menuSection": "Tortas",
+            "description": "Harina de almendras, banano triturado, huevo, leche de almendras, crema de maní, esencia de vainilla, maní tostado triturado.",
+            "sourceUrl": "https://menupp.co/donsamuelhealthy/venue/4f3dd37c-dbf8-4f37-82ac-10d663165af8/menu/ya4BlHfDDweylA3e8CTO",
+            "sourceProductId": "UjG67emKV6FdNBLmeNo4",
+            "verifiedAt": "2026-11-03T15:21:00.621Z",
+            "calculationIncluded": false,
+            "note": "Carta oficial de la marca; aplicabilidad a una visita a la antigua sede no verificada."
+          },
+          {
+            "name": "Marquesa de Almendras",
+            "category": "desserts",
+            "presentation": "Porción",
+            "price": 30000,
+            "currency": "COP",
+            "menuSection": "Tortas",
+            "description": "Harina de almendras, harina de coco, alulosa con monkfruit, huevo, leche de almendras, arequipe sin azúcar y esencia de vainilla) Con una capa de frosting de queso crema y alulosa con almendras fileteadas.",
+            "sourceUrl": "https://menupp.co/donsamuelhealthy/venue/4f3dd37c-dbf8-4f37-82ac-10d663165af8/menu/ya4BlHfDDweylA3e8CTO",
+            "sourceProductId": "W09ykJ0Hoglx7wi3EDSV",
+            "verifiedAt": "2026-11-03T15:21:00.621Z",
+            "calculationIncluded": false,
+            "note": "Carta oficial de la marca; aplicabilidad a una visita a la antigua sede no verificada."
+          },
+          {
+            "name": "Marquesa de Almendras",
+            "category": "desserts",
+            "presentation": "Mediana",
+            "price": 160000,
+            "currency": "COP",
+            "menuSection": "Tortas",
+            "description": "Harina de almendras, harina de coco, alulosa con monkfruit, huevo, leche de almendras, arequipe sin azúcar y esencia de vainilla) Con una capa de frosting de queso crema y alulosa con almendras fileteadas.",
+            "sourceUrl": "https://menupp.co/donsamuelhealthy/venue/4f3dd37c-dbf8-4f37-82ac-10d663165af8/menu/ya4BlHfDDweylA3e8CTO",
+            "sourceProductId": "W09ykJ0Hoglx7wi3EDSV",
+            "verifiedAt": "2026-11-03T15:21:00.621Z",
+            "calculationIncluded": false,
+            "note": "Carta oficial de la marca; aplicabilidad a una visita a la antigua sede no verificada."
+          },
+          {
+            "name": "Cheesecake Arequipe",
+            "category": "desserts",
+            "presentation": "Porción",
+            "price": 24000,
+            "currency": "COP",
+            "menuSection": "Cheese Cakes (Tipo Vasco)",
+            "description": "Queso crema, crema de leche baja en grasa, huevo, esencia de vainilla, alulosa y monk fruit. Base de harina de almendras con alulosa y monk fruit, bañado en salsa de arequipe sin azúcar con crema de leche.",
+            "sourceUrl": "https://menupp.co/donsamuelhealthy/venue/4f3dd37c-dbf8-4f37-82ac-10d663165af8/menu/ya4BlHfDDweylA3e8CTO",
+            "sourceProductId": "XSoCdqNtAvVAxhOLa0tz",
+            "verifiedAt": "2026-11-03T15:21:00.621Z",
+            "calculationIncluded": false,
+            "note": "Carta oficial de la marca; aplicabilidad a una visita a la antigua sede no verificada."
+          },
+          {
+            "name": "Cheesecake Arequipe",
+            "category": "desserts",
+            "presentation": "Mediana",
+            "price": 125000,
+            "currency": "COP",
+            "menuSection": "Cheese Cakes (Tipo Vasco)",
+            "description": "Queso crema, crema de leche baja en grasa, huevo, esencia de vainilla, alulosa y monk fruit. Base de harina de almendras con alulosa y monk fruit, bañado en salsa de arequipe sin azúcar con crema de leche.",
+            "sourceUrl": "https://menupp.co/donsamuelhealthy/venue/4f3dd37c-dbf8-4f37-82ac-10d663165af8/menu/ya4BlHfDDweylA3e8CTO",
+            "sourceProductId": "XSoCdqNtAvVAxhOLa0tz",
+            "verifiedAt": "2026-11-03T15:21:00.621Z",
+            "calculationIncluded": false,
+            "note": "Carta oficial de la marca; aplicabilidad a una visita a la antigua sede no verificada."
+          },
+          {
+            "name": "Cuchareable proteico de Limón",
+            "category": "desserts",
+            "presentation": "12 onz",
+            "price": 34000,
+            "currency": "COP",
+            "menuSection": "Cuchareables Proteicos",
+            "description": "Yogurt griego, queso crema, proteína ISO 100 de vainilla, esencia de vainilla, zumo natural de limón , bizcocho de almendras, crumble de almendras, alulosa y monkfruit",
+            "sourceUrl": "https://menupp.co/donsamuelhealthy/venue/4f3dd37c-dbf8-4f37-82ac-10d663165af8/menu/ya4BlHfDDweylA3e8CTO",
+            "sourceProductId": "cXFT3CJyjBSjSv4tnyZQ",
+            "verifiedAt": "2026-11-03T15:21:00.621Z",
+            "calculationIncluded": false,
+            "note": "Carta oficial de la marca; aplicabilidad a una visita a la antigua sede no verificada."
+          },
+          {
+            "name": "Cuchareable proteico de Limón",
+            "category": "desserts",
+            "presentation": "8 onz",
+            "price": 19000,
+            "currency": "COP",
+            "menuSection": "Cuchareables Proteicos",
+            "description": "Yogurt griego, queso crema, proteína ISO 100 de vainilla, esencia de vainilla, zumo natural de limón , bizcocho de almendras, crumble de almendras, alulosa y monkfruit",
+            "sourceUrl": "https://menupp.co/donsamuelhealthy/venue/4f3dd37c-dbf8-4f37-82ac-10d663165af8/menu/ya4BlHfDDweylA3e8CTO",
+            "sourceProductId": "cXFT3CJyjBSjSv4tnyZQ",
+            "verifiedAt": "2026-11-03T15:21:00.621Z",
+            "calculationIncluded": false,
+            "note": "Carta oficial de la marca; aplicabilidad a una visita a la antigua sede no verificada."
+          },
+          {
+            "name": "Soda Bretaña",
+            "category": "drinks",
+            "presentation": null,
+            "price": 8000,
+            "currency": "COP",
+            "menuSection": "FRÍAS",
+            "description": "",
+            "sourceUrl": "https://menupp.co/donsamuelhealthy/venue/4f3dd37c-dbf8-4f37-82ac-10d663165af8/menu/ya4BlHfDDweylA3e8CTO",
+            "sourceProductId": "e0AzCNpdJgIGNbW4HQsk",
+            "verifiedAt": "2026-11-03T15:21:00.621Z",
+            "calculationIncluded": false,
+            "note": "Carta oficial de la marca; aplicabilidad a una visita a la antigua sede no verificada."
+          },
+          {
+            "name": "Cheesecake Original",
+            "category": "desserts",
+            "presentation": "Porción",
+            "price": 23000,
+            "currency": "COP",
+            "menuSection": "Cheese Cakes (Tipo Vasco)",
+            "description": "Queso crema, crema de leche baja en grasa, huevo, esencia de vainilla, alulosa y monk fruit) Base de harina de almendras con alulosa y monk fruit.",
+            "sourceUrl": "https://menupp.co/donsamuelhealthy/venue/4f3dd37c-dbf8-4f37-82ac-10d663165af8/menu/ya4BlHfDDweylA3e8CTO",
+            "sourceProductId": "nBFInPZHRNmQHrR5dui5",
+            "verifiedAt": "2026-11-03T15:21:00.621Z",
+            "calculationIncluded": false,
+            "note": "Carta oficial de la marca; aplicabilidad a una visita a la antigua sede no verificada."
+          },
+          {
+            "name": "Cheesecake Original",
+            "category": "desserts",
+            "presentation": "Mediana",
+            "price": 118000,
+            "currency": "COP",
+            "menuSection": "Cheese Cakes (Tipo Vasco)",
+            "description": "Queso crema, crema de leche baja en grasa, huevo, esencia de vainilla, alulosa y monk fruit) Base de harina de almendras con alulosa y monk fruit.",
+            "sourceUrl": "https://menupp.co/donsamuelhealthy/venue/4f3dd37c-dbf8-4f37-82ac-10d663165af8/menu/ya4BlHfDDweylA3e8CTO",
+            "sourceProductId": "nBFInPZHRNmQHrR5dui5",
+            "verifiedAt": "2026-11-03T15:21:00.621Z",
+            "calculationIncluded": false,
+            "note": "Carta oficial de la marca; aplicabilidad a una visita a la antigua sede no verificada."
+          },
+          {
+            "name": "Soda Hatsu",
+            "category": "drinks",
+            "presentation": null,
+            "price": 7000,
+            "currency": "COP",
+            "menuSection": "FRÍAS",
+            "description": "",
+            "sourceUrl": "https://menupp.co/donsamuelhealthy/venue/4f3dd37c-dbf8-4f37-82ac-10d663165af8/menu/ya4BlHfDDweylA3e8CTO",
+            "sourceProductId": "niJDpB8mvBOTx7DgxQCn",
+            "verifiedAt": "2026-11-03T15:21:00.621Z",
+            "calculationIncluded": false,
+            "note": "Carta oficial de la marca; aplicabilidad a una visita a la antigua sede no verificada."
+          },
+          {
+            "name": "Fresas con Crema Vegana",
+            "category": "desserts",
+            "presentation": null,
+            "price": 26000,
+            "currency": "COP",
+            "menuSection": "Otros",
+            "description": "Fresa picada, crema de coco, crema de almendras, alulosa y monk fruit.",
+            "sourceUrl": "https://menupp.co/donsamuelhealthy/venue/4f3dd37c-dbf8-4f37-82ac-10d663165af8/menu/ya4BlHfDDweylA3e8CTO",
+            "sourceProductId": "qKjkSLUV4iYZlhZyDwCH",
+            "verifiedAt": "2026-11-03T15:21:00.621Z",
+            "calculationIncluded": false,
+            "note": "Carta oficial de la marca; aplicabilidad a una visita a la antigua sede no verificada."
+          },
+          {
+            "name": "Capuccino",
+            "category": "drinks",
+            "presentation": null,
+            "price": 9000,
+            "currency": "COP",
+            "menuSection": "CALIENTES",
+            "description": "",
+            "sourceUrl": "https://menupp.co/donsamuelhealthy/venue/4f3dd37c-dbf8-4f37-82ac-10d663165af8/menu/ya4BlHfDDweylA3e8CTO",
+            "sourceProductId": "tTr2hyMTP3ssVAMs3SHt",
+            "verifiedAt": "2026-11-03T15:21:00.621Z",
+            "calculationIncluded": false,
+            "note": "Carta oficial de la marca; aplicabilidad a una visita a la antigua sede no verificada."
+          },
+          {
+            "name": "Cheesecake Chocolate",
+            "category": "desserts",
+            "presentation": "Porción",
+            "price": 25000,
+            "currency": "COP",
+            "menuSection": "Cheese Cakes (Tipo Vasco)",
+            "description": "Queso crema, crema de leche baja en grasa, huevo, esencia de vainilla, alulosa y monk fruit) Base de harina de almendras con alulosa y monk fruit. Bañado en salsa de chocolate a base de cacao en polvo, alulosa y agua.",
+            "sourceUrl": "https://menupp.co/donsamuelhealthy/venue/4f3dd37c-dbf8-4f37-82ac-10d663165af8/menu/ya4BlHfDDweylA3e8CTO",
+            "sourceProductId": "tkzKcQphiMZ149fCbJgJ",
+            "verifiedAt": "2026-11-03T15:21:00.621Z",
+            "calculationIncluded": false,
+            "note": "Carta oficial de la marca; aplicabilidad a una visita a la antigua sede no verificada."
+          },
+          {
+            "name": "Cheesecake Chocolate",
+            "category": "desserts",
+            "presentation": "Mediana",
+            "price": 128000,
+            "currency": "COP",
+            "menuSection": "Cheese Cakes (Tipo Vasco)",
+            "description": "Queso crema, crema de leche baja en grasa, huevo, esencia de vainilla, alulosa y monk fruit) Base de harina de almendras con alulosa y monk fruit. Bañado en salsa de chocolate a base de cacao en polvo, alulosa y agua.",
+            "sourceUrl": "https://menupp.co/donsamuelhealthy/venue/4f3dd37c-dbf8-4f37-82ac-10d663165af8/menu/ya4BlHfDDweylA3e8CTO",
+            "sourceProductId": "tkzKcQphiMZ149fCbJgJ",
+            "verifiedAt": "2026-11-03T15:21:00.621Z",
+            "calculationIncluded": false,
+            "note": "Carta oficial de la marca; aplicabilidad a una visita a la antigua sede no verificada."
+          },
+          {
+            "name": "Zanahoria Cheesecake",
+            "category": "desserts",
+            "presentation": "Porción",
+            "price": 26000,
+            "currency": "COP",
+            "menuSection": "Tortas",
+            "description": "Harina de almendras, alulosa y monkfruit, huevo, yogurt griego, nuez del nogal, ghee, canela en polvo, zanahoria rallada, esencia de vainilla, jengibre en polvo, queso crema y crema de leche.",
+            "sourceUrl": "https://menupp.co/donsamuelhealthy/venue/4f3dd37c-dbf8-4f37-82ac-10d663165af8/menu/ya4BlHfDDweylA3e8CTO",
+            "sourceProductId": "urEW9VRXFFduJy6R6Fo2",
+            "verifiedAt": "2026-11-03T15:21:00.621Z",
+            "calculationIncluded": false,
+            "note": "Carta oficial de la marca; aplicabilidad a una visita a la antigua sede no verificada."
+          },
+          {
+            "name": "Zanahoria Cheesecake",
+            "category": "desserts",
+            "presentation": "Mediana",
+            "price": 119000,
+            "currency": "COP",
+            "menuSection": "Tortas",
+            "description": "Harina de almendras, alulosa y monkfruit, huevo, yogurt griego, nuez del nogal, ghee, canela en polvo, zanahoria rallada, esencia de vainilla, jengibre en polvo, queso crema y crema de leche.",
+            "sourceUrl": "https://menupp.co/donsamuelhealthy/venue/4f3dd37c-dbf8-4f37-82ac-10d663165af8/menu/ya4BlHfDDweylA3e8CTO",
+            "sourceProductId": "urEW9VRXFFduJy6R6Fo2",
+            "verifiedAt": "2026-11-03T15:21:00.621Z",
+            "calculationIncluded": false,
+            "note": "Carta oficial de la marca; aplicabilidad a una visita a la antigua sede no verificada."
+          },
+          {
+            "name": "Cuchareable Proteico de Arequipe",
+            "category": "desserts",
+            "presentation": "12 onz",
+            "price": 38000,
+            "currency": "COP",
+            "menuSection": "Cuchareables Proteicos",
+            "description": "Yogurt griego, queso crema, proteína ISO 100 de vainilla, esencia de vainilla, arequipe sin azúcar, bizcocho de almendras, crumble de almendras, alulosa y monkfruit",
+            "sourceUrl": "https://menupp.co/donsamuelhealthy/venue/4f3dd37c-dbf8-4f37-82ac-10d663165af8/menu/ya4BlHfDDweylA3e8CTO",
+            "sourceProductId": "v5cKxBHcQz1sfjdjmY2o",
+            "verifiedAt": "2026-11-03T15:21:00.621Z",
+            "calculationIncluded": false,
+            "note": "Carta oficial de la marca; aplicabilidad a una visita a la antigua sede no verificada."
+          },
+          {
+            "name": "Cuchareable Proteico de Arequipe",
+            "category": "desserts",
+            "presentation": "8 onz",
+            "price": 20000,
+            "currency": "COP",
+            "menuSection": "Cuchareables Proteicos",
+            "description": "Yogurt griego, queso crema, proteína ISO 100 de vainilla, esencia de vainilla, arequipe sin azúcar, bizcocho de almendras, crumble de almendras, alulosa y monkfruit",
+            "sourceUrl": "https://menupp.co/donsamuelhealthy/venue/4f3dd37c-dbf8-4f37-82ac-10d663165af8/menu/ya4BlHfDDweylA3e8CTO",
+            "sourceProductId": "v5cKxBHcQz1sfjdjmY2o",
+            "verifiedAt": "2026-11-03T15:21:00.621Z",
+            "calculationIncluded": false,
+            "note": "Carta oficial de la marca; aplicabilidad a una visita a la antigua sede no verificada."
+          },
+          {
+            "name": "Agua",
+            "category": "drinks",
+            "presentation": null,
+            "price": 5000,
+            "currency": "COP",
+            "menuSection": "FRÍAS",
+            "description": "",
+            "sourceUrl": "https://menupp.co/donsamuelhealthy/venue/4f3dd37c-dbf8-4f37-82ac-10d663165af8/menu/ya4BlHfDDweylA3e8CTO",
+            "sourceProductId": "wDwb6gXqPDMyXVrwFl8e",
+            "verifiedAt": "2026-11-03T15:21:00.621Z",
+            "calculationIncluded": false,
+            "note": "Carta oficial de la marca; aplicabilidad a una visita a la antigua sede no verificada."
+          },
+          {
+            "name": "Cuchareable proteico de Selva Negra",
+            "category": "desserts",
+            "presentation": null,
+            "price": 40000,
+            "currency": "COP",
+            "menuSection": "Cuchareables Proteicos",
+            "description": "Yogurt griego, queso crema, proteína ISO 100 de vainilla, esencia de vainilla, cacao en polvo, bizcocho de almendras con cacao, mermelada natural de frutos rojos, alulosa y monkfruit",
+            "sourceUrl": "https://menupp.co/donsamuelhealthy/venue/4f3dd37c-dbf8-4f37-82ac-10d663165af8/menu/ya4BlHfDDweylA3e8CTO",
+            "sourceProductId": "zepITnPZPBQBFC227t8U",
+            "verifiedAt": "2026-11-03T15:21:00.621Z",
+            "calculationIncluded": false,
+            "note": "Carta oficial de la marca; aplicabilidad a una visita a la antigua sede no verificada."
+          }
+        ],
+        "menu_items_verified_at": "2026-11-03T15:21:00.621Z",
+        "budget_scenarios": [],
+        "min_budget": 0,
+        "max_budget": 0,
+        "typical_budget": 0,
+        "budget_basis": "Presupuesto por confirmar",
+        "menu_calculation_note": "La carta oficial se conserva como inventario de la marca. El aviso oficial del 13 de octubre refiere al antiguo punto de venta y dirige a pedidos a domicilio; no hay consumo presencial actual verificado para construir escenarios.",
+        "hours": "",
+        "holiday_mode": "inherit",
+        "holiday_open_time": null,
+        "holiday_close_time": null,
+        "holiday_split_open_time": null,
+        "holiday_split_close_time": null,
+        "max_people": null,
+        "min_people": null,
+        "catalog_status": "reviewed_with_pending",
+        "missing_fields": [
+          "closure_classification",
+          "exact_storefront_coordinates",
+          "current_onsite_hours",
+          "holiday_hours",
+          "onsite_budget"
+        ],
+        "supplemental_info": {
+          "reviewedAt": "2026-11-03",
+          "physicalPoint": "El aviso oficial del 13 de octubre habla de donde quedaba el punto de venta y orienta a pedidos a domicilio. No confirma si el cierre es temporal o definitivo ni una nueva sede.",
+          "visibilityReason": "Se conserva la antigua sede inactiva por evidencia oficial del cese del punto presencial, no por falta de datos. business_status unknown expresa que no se puede clasificar la duracion del cierre.",
+          "coordinates": "Sin punto exacto validado del negocio; no se sustituye por la ubicacion del mall."
+        }
+      },
+      "write": {
+        "mode": "update",
+        "fields": [
+          "neighborhood",
+          "mall",
+          "address",
+          "latitude",
+          "longitude",
+          "google_maps_url",
+          "google_place_id",
+          "business_status",
+          "is_active",
+          "whatsapp",
+          "phone",
+          "website_url",
+          "instagram",
+          "menu_url",
+          "menu_items",
+          "menu_items_verified_at",
+          "budget_scenarios",
+          "min_budget",
+          "max_budget",
+          "typical_budget",
+          "budget_basis",
+          "menu_calculation_note",
+          "hours",
+          "holiday_mode",
+          "holiday_open_time",
+          "holiday_close_time",
+          "holiday_split_open_time",
+          "holiday_split_close_time",
+          "max_people",
+          "min_people",
+          "catalog_status",
+          "supplemental_info"
+        ],
+        "hours": "replace"
+      },
+      "weeklyHours": []
+    }
+  ],
+  "fieldDecisions": {
+    "taxonomy": {
+      "status": "confirmed",
+      "sources": [
+        "https://menupp.co/donsamuelhealthy/venue/4f3dd37c-dbf8-4f37-82ac-10d663165af8/menu/ya4BlHfDDweylA3e8CTO"
+      ],
+      "checkedAt": "2026-11-03T15:21:00.621Z",
+      "reason": "Direccion oficial indica Lago Verde y B/Pance; el usuario identifico Lago Verde como mall."
+    },
+    "description": {
+      "status": "preferred",
+      "sources": [
+        "https://www.instagram.com/donsamuelbakery/",
+        "https://www.instagram.com/donsamuelbakery/p/DecP7Zbx55g/"
+      ],
+      "reason": "Describe oferta y continuidad de pedidos sin invitar a una visita presencial no verificada."
+    },
+    "visibility": {
+      "status": "preferred",
+      "sources": [
+        "https://www.instagram.com/donsamuelbakery/p/DecP7Zbx55g/"
+      ],
+      "publishedAt": "2026-10-13",
+      "checkedAt": "2026-11-03",
+      "reason": "El aviso refiere expresamente al antiguo punto presencial. Conservamos sede inactiva, sin borrar registro ni cerrar globalmente una marca que sigue tomando pedidos. No ocultamos por pobreza de ficha."
+    },
+    "business_status": {
+      "status": "pending",
+      "sources": [
+        "instagram-review.json",
+        "google-places.json",
+        "google-places-address-rescue.json"
+      ],
+      "reason": "No se conoce si la interrupcion del punto es temporal o permanente; no inventar subtipo, reapertura ni traslado."
+    },
+    "coordinates": {
+      "status": "pending",
+      "sources": [
+        "https://menupp.co/donsamuelhealthy/venue/4f3dd37c-dbf8-4f37-82ac-10d663165af8/menu/ya4BlHfDDweylA3e8CTO",
+        "google-places.json",
+        "google-places-address-rescue.json"
+      ],
+      "reason": "Punto Menupp coincide con el mall; ningun candidato corresponde a la panaderia. Se dejan coordenadas exactas pendientes."
+    },
+    "hours": {
+      "status": "pending",
+      "sources": [
+        "https://menupp.co/donsamuelhealthy/venue/4f3dd37c-dbf8-4f37-82ac-10d663165af8/menu/ya4BlHfDDweylA3e8CTO",
+        "instagram-review.json"
+      ],
+      "reason": "Configuracion openSchedule.active=false y evidencia de antiguo punto; no reciclar intervalos como vigentes. Se eliminan solo las filas horarias de 5136."
+    },
+    "menu": {
+      "status": "preferred",
+      "sources": [
+        "https://menupp.co/donsamuelhealthy/venue/4f3dd37c-dbf8-4f37-82ac-10d663165af8/menu/ya4BlHfDDweylA3e8CTO"
+      ],
+      "checkedAt": "2026-11-03T15:21:00.621Z",
+      "reason": "41 presentaciones y precios base COP revisados, sin promociones. No se certifican como presupuesto presencial: calculationIncluded=false."
+    },
+    "budget": {
+      "status": "pending",
+      "sources": [
+        "https://menupp.co/donsamuelhealthy/venue/4f3dd37c-dbf8-4f37-82ac-10d663165af8/menu/ya4BlHfDDweylA3e8CTO",
+        "instagram-review.json"
+      ],
+      "reason": "No hay seleccion presencial actual verificable. Escenarios vacios, importes cero y texto pendiente; no reutilizar promedio heredado."
+    },
+    "logo": {
+      "status": "confirmed",
+      "sources": [
+        "media-review.json",
+        "logo.json"
+      ],
+      "reason": "Marca coincidente y existente 1080px visualmente valido; conservar asset estable, helper candidato limpio sin nueva asignacion."
+    },
+    "gallery": {
+      "status": "confirmed",
+      "sources": [
+        "media-review.json",
+        "https://www.instagram.com/donsamuelbakery/p/DXc3o7LH53-/"
+      ],
+      "reason": "Tres fotos reales distintas revisadas, portada heredada valida y tercera foto oficial sin placas; logo incidental en utensilios."
+    },
+    "contact": {
+      "status": "preferred",
+      "sources": [
+        "https://menupp.co/donsamuelhealthy/venue/4f3dd37c-dbf8-4f37-82ac-10d663165af8/menu/ya4BlHfDDweylA3e8CTO"
+      ],
+      "reason": "WhatsApp oficial de la marca. No se envio mensaje ni se verifico atencion por ese canal."
+    }
+  },
+  "pending": [
+    "No se pudo determinar duracion del cierre del punto ni localizar una nueva sede.",
+    "Coordenadas exactas del antiguo local no corroboradas; no se geocodifica por nombre del mall.",
+    "Horarios/festivos y presupuesto presencial no verificables para el punto dejado de atender."
+  ],
+  "coverage": {
+    "profile": "docs/catalog-review/benchmarks/donsamuelbakery-profile-http-2026-11-03T15-20-36-621Z.json",
+    "officialLinks": "docs/catalog-review/benchmarks/donsamuelhealthy-menupp-links-2026-11-03T15-20-58-056Z.json",
+    "instagram": "instagram-review.json",
+    "places": [
+      "google-places.json",
+      "google-places-address-rescue.json"
+    ],
+    "menu": "menu-review.json",
+    "media": "media-review.json",
+    "rescue": "rescue-review.json"
+  }
+}

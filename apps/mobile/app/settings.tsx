@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { SettingsControls } from '@/components/settings-controls';
-import { Ionicons } from '@expo/vector-icons';
+import { SpotsIcon as Ionicons } from '@/components/spots-icon';
 import { Stack, useRouter } from 'expo-router';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { topContentInset } from '@/lib/layout-insets';
 import { AppAvatar, AppIconButton } from '@/components/app-ui';
 import { accountUi as ui } from '@/lib/account-ui';
 import { useAuthStore } from '@/lib/auth-store';
@@ -11,6 +12,7 @@ import { useLocationStore } from '@/lib/location-store';
 import { useSpotsStore } from '@/lib/spots-store';
 import { PlaceNotifications } from '@/components/place-notifications';
 import { aggregatePlaceSpotsFromList } from '@/lib/mock-spots';
+import { SettingsDivider, SettingsListItem, settingsListStyles } from '@/components/settings-list';
 
 type Row = { title: string; icon: keyof typeof Ionicons.glyphMap; action: () => void };
 
@@ -41,18 +43,20 @@ export default function SettingsScreen() {
   ];
   return <View style={s.screen}>
     <Stack.Screen options={{ headerShown: false }} />
-    <View style={[s.header, { paddingTop: Math.max(insets.top, 16) }]}>
+    <View style={[s.header, { paddingTop: topContentInset(insets) }]}> 
       <AppIconButton name="arrow-back" accessibilityLabel="Volver" tone="light" size={44} onPress={back} />
       <Text accessibilityRole="header" style={s.title}>{detail?.title ?? 'Ajustes'}</Text>
       <View style={{ width: 44 }} />
     </View>
     <ScrollView contentContainerStyle={[s.content, { paddingBottom: insets.bottom + 32 }]}>
-      {detail ? <View style={detail.title === 'Notificaciones' ? s.group : s.detail}>
-        {!!detail.text && <Text style={s.body}>{detail.text}</Text>}
+      {detail ? <View style={settingsListStyles.group}>
+        {!!detail.text && <View style={settingsListStyles.detail}><Text style={settingsListStyles.body}>{detail.text}</Text></View>}
+        {!!detail.text && <SettingsDivider />}
         <SettingsControls title={detail.title} />
         {detail.title === 'Tu ubicación' && <>
-          <Pressable accessibilityRole="button" disabled={loading} onPress={requestLocation} style={s.action}><Text style={s.label}>{loading ? 'Buscando ubicación…' : 'Usar mi ubicación'}</Text></Pressable>
-          <Text accessibilityLiveRegion="polite" style={s.body}>{userLocation ? 'Ubicación disponible.' : error ? 'No pudimos acceder. Revisa el permiso en tu navegador.' : 'No has compartido una ubicación disponible.'}</Text>
+          <SettingsListItem label={loading ? 'Buscando ubicación…' : 'Usar mi ubicación'} onPress={loading ? undefined : requestLocation} trailing={<Ionicons name="location-outline" size={20} color={ui.textTertiary} />} />
+          <SettingsDivider />
+          <View style={settingsListStyles.detail}><Text accessibilityLiveRegion="polite" style={settingsListStyles.body}>{userLocation ? 'Ubicación disponible.' : error ? 'No pudimos acceder. Revisa el permiso en tu navegador.' : 'No has compartido una ubicación disponible.'}</Text></View>
         </>}
       </View> : <>
         <Pressable accessibilityRole="button" accessibilityLabel="Editar mi perfil" onPress={() => router.push('/edit-profile')} style={s.profile}>
@@ -62,13 +66,9 @@ export default function SettingsScreen() {
         </Pressable>
         {groups.map(group => <View key={group.title} style={s.section}>
           <Text accessibilityRole="header" style={s.sectionTitle}>{group.title}</Text>
-          <View style={s.group}>{group.rows.map((row, index) => <View key={row.title}>
-            <Pressable accessibilityRole="button" accessibilityLabel={row.title} onPress={row.action} style={({ pressed }) => [s.row, pressed && { backgroundColor: ui.surfaceMuted }]}>
-              <Ionicons name={row.icon} size={23} color={ui.text} />
-              <Text style={[s.label, { flex: 1 }]}>{row.title}</Text>
-              <Ionicons name="chevron-forward" size={18} color={ui.textTertiary} />
-            </Pressable>
-            {index < group.rows.length - 1 && <View style={s.divider} />}
+          <View style={settingsListStyles.group}>{group.rows.map((row, index) => <View key={row.title}>
+            <SettingsListItem label={row.title} leading={<Ionicons name={row.icon} size={23} color={ui.text} />} trailing={<Ionicons name="chevron-forward" size={18} color={ui.textTertiary} />} onPress={row.action} />
+            {index < group.rows.length - 1 && <SettingsDivider inset />}
           </View>)}</View>
         </View>)}
         <Pressable accessibilityRole="button" disabled={signingOut} style={s.signOut} onPress={async () => {
@@ -93,7 +93,7 @@ const s = StyleSheet.create({
   sectionTitle: { paddingHorizontal: 16, fontSize: 14, fontWeight: '500', color: ui.textSecondary },
   group: { borderRadius: 26, overflow: 'hidden', backgroundColor: ui.surface },
   row: { minHeight: 58, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 18, paddingVertical: 14, gap: 14 },
-  divider: { marginLeft: 55, marginRight: 18, height: StyleSheet.hairlineWidth, backgroundColor: '#d6d6dc' },
+  divider: { marginLeft: 55, marginRight: 18, height: StyleSheet.hairlineWidth, backgroundColor: ui.border },
   signOut: { flexDirection: 'row', gap: 14, alignItems: 'center', backgroundColor: ui.surface, borderRadius: 24, padding: 18 },
   detail: { backgroundColor: ui.surface, borderRadius: 24, padding: 20, gap: 20 },
   body: { fontSize: 14, lineHeight: 22, color: ui.textSecondary },

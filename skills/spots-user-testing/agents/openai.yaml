@@ -1,0 +1,4 @@
+interface:
+  display_name: "Spots User Testing"
+  short_description: "Pruebas sinteticas de Spots con evidencia verificable"
+  default_prompt: "Usa $spots-user-testing para probar una funcionalidad de Spots con perfiles temporales y un informe basado en evidencias."
